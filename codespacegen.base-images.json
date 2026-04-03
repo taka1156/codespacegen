@@ -4,6 +4,7 @@
     "node": "node:22-alpine",
     "rust": "rust:1-alpine",
     "moonbit": {
+        "image": "ubuntu:24.04",
         "install": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash"
     }
 }
