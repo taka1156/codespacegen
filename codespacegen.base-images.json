@@ -1,0 +1,9 @@
+{
+    "go": "golang:1.24-alpine",
+    "python": "python:3.12-alpine",
+    "node": "node:22-alpine",
+    "rust": "rust:1-alpine",
+    "moonbit": {
+        "install": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash"
+    }
+}

@@ -1,0 +1,28 @@
+{
+    "name": "codespacegen",
+    "dockerComposeFile": "./docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/workspace",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "MS-CEINTL.vscode-language-pack-ja",
+                "golang.go",
+                "streetsidesoftware.code-spell-checker",
+                "username.errorlens"
+            ],
+            "settings": {
+                "terminal.integrated.cwd": "${containerWorkspaceFolder}",
+                "editor.formatOnSave": true,
+                "[go]": {
+                    "editor.defaultFormatter": "golang.go"
+                },
+                "files.insertFinalNewline": true,
+                "errorLens.enabledDiagnosticLevels": [
+                    "error",
+                    "warning"
+                ]
+            }
+        }
+    }
+}
