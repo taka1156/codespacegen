@@ -93,7 +93,7 @@ RUN curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
 ```json
 {
   "moonbit": {
-    "image": "alpine:3.20",
+    "image": "ubuntu:24.04",
     "install": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash"
   }
 }
