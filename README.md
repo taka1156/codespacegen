@@ -177,11 +177,11 @@ git push origin v0.1.0
 最新リリースから自動でダウンロードして `/usr/local/bin` に配置します。
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/taka1156/codespace-template/master/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/taka1156/codespacegen/master/install.sh | bash
 ```
 
 インストール先を変える場合:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/taka1156/codespace-template/master/install.sh | INSTALL_DIR=$HOME/.local/bin bash
+curl -fsSL https://raw.githubusercontent.com/taka1156/codespacegen/master/install.sh | INSTALL_DIR=$HOME/.local/bin bash
 ```
