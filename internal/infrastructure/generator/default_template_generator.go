@@ -2,6 +2,7 @@ package generator
 
 import (
 	"fmt"
+	"strings"
 
 	"codespacegen/internal/domain/entity"
 )
@@ -13,6 +14,9 @@ func NewDefaultTemplateGenerator() *DefaultTemplateGenerator {
 }
 
 func (g *DefaultTemplateGenerator) Generate(config entity.CodespaceConfig) ([]entity.GeneratedFile, error) {
+	baseSetup := renderBaseSetupBlock(config.BaseImage)
+	timezoneSetup := renderTimezoneSetupBlock(config.BaseImage)
+
 	installBlock := ""
 	if config.InstallCommand != "" {
 		installBlock = fmt.Sprintf("RUN %s\n\n", config.InstallCommand)
@@ -27,25 +31,11 @@ ENV LANG=ja_JP.UTF-8 \
     LC_ALL=ja_JP.UTF-8 \
     TZ=Asia/Tokyo
 
-RUN <<-EOF
-apk add --no-cache \
-    bash \
-    bash-completion \
-    tzdata \
-    git \
-    git-lfs \
-    vim \
-    curl \
-    musl-locales \
-    musl-locales-lang
-EOF
+%s
 
 RUN git lfs install
 
-RUN <<-EOF
-ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
-echo "Asia/Tokyo" > /etc/timezone
-EOF
+%s
 
 RUN <<-EOF
 curl -o ~/.git-prompt.sh https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh
@@ -61,7 +51,7 @@ echo 'export PS1="\[\033[01;32m\]\u@\h\[\033[01;33m\] \w \[\033[01;31m\]\$(__git
 EOF
 
 %sCMD ["bash"]
-`, config.BaseImage, config.WorkspaceFolder, config.WorkspaceFolder, installBlock)
+`, config.BaseImage, config.WorkspaceFolder, baseSetup, timezoneSetup, config.WorkspaceFolder, installBlock)
 
 	devcontainer := fmt.Sprintf(`{
   "name": %q,
@@ -99,4 +89,55 @@ EOF
 		{RelativePath: "devcontainer.json", Content: devcontainer},
 		{RelativePath: config.ComposeFileName, Content: compose},
 	}, nil
+}
+
+func isAlpineImage(baseImage string) bool {
+	return strings.Contains(strings.ToLower(strings.TrimSpace(baseImage)), "alpine")
+}
+
+func renderBaseSetupBlock(baseImage string) string {
+	if isAlpineImage(baseImage) {
+		return `RUN <<-EOF
+apk add --no-cache \
+  bash \
+  bash-completion \
+  tzdata \
+  git \
+  git-lfs \
+  vim \
+  curl \
+  musl-locales \
+  musl-locales-lang
+EOF`
+	}
+
+	return `RUN <<-EOF
+apt-get update
+apt-get install -y --no-install-recommends \
+  bash \
+  bash-completion \
+  tzdata \
+  git \
+  git-lfs \
+  vim \
+  curl \
+  locales
+rm -rf /var/lib/apt/lists/*
+locale-gen ja_JP.UTF-8
+update-locale LANG=ja_JP.UTF-8 LC_ALL=ja_JP.UTF-8
+EOF`
+}
+
+func renderTimezoneSetupBlock(baseImage string) string {
+	if isAlpineImage(baseImage) {
+		return `RUN <<-EOF
+ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+echo "Asia/Tokyo" > /etc/timezone
+EOF`
+	}
+
+	return `RUN <<-EOF
+ln -fs /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+dpkg-reconfigure -f noninteractive tzdata
+EOF`
 }
