@@ -153,3 +153,35 @@ services:
 ```bash
 go test ./...
 ```
+
+## リリース（GitHub Actions）
+
+タグを push すると GitHub Actions がクロスビルドして GitHub Releases に成果物を添付します。
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+生成される主なアセット:
+
+- `codespacegen_linux_amd64.tar.gz`
+- `codespacegen_linux_arm64.tar.gz`
+- `codespacegen_darwin_amd64.tar.gz`
+- `codespacegen_darwin_arm64.tar.gz`
+- `codespacegen_windows_amd64.exe`
+- `checksums.txt`
+
+## インストール（curl）
+
+最新リリースから自動でダウンロードして `/usr/local/bin` に配置します。
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/taka1156/codespace-template/master/install.sh | bash
+```
+
+インストール先を変える場合:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/taka1156/codespace-template/master/install.sh | INSTALL_DIR=$HOME/.local/bin bash
+```
