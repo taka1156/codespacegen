@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="taka1156/codespace-template"
+REPO="taka1156/codespacegen"
 BINARY_NAME="codespacegen"
 INSTALL_DIR="${INSTALL_DIR:-/usr/local/bin}"
 
