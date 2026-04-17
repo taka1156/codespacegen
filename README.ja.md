@@ -65,6 +65,17 @@ go run ./cmd/codespacegen
 
 ### codespacegen.json の書き方
 
+JSON Schema の検証や補完に対応したエディタでは、次のように schema を関連付けできます。
+
+```json
+{
+  "$schema": "./codespacegen.schema.json",
+  "go": "golang:1.24-alpine"
+}
+```
+
+`codespacegen.json` をリポジトリルートに置く場合、`./codespacegen.schema.json` で同梱の schema ファイルを参照できます。
+
 **形式 1: 文字列でイメージ名を直接指定**
 
 ```json

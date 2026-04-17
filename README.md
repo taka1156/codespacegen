@@ -65,6 +65,17 @@ Base image definitions are separated into [codespacegen.json](codespacegen.json)
 
 ### codespacegen.json format
 
+You can attach the JSON Schema in editors that support JSON Schema validation and completion.
+
+```json
+{
+	"$schema": "./codespacegen.schema.json",
+	"go": "golang:1.24-alpine"
+}
+```
+
+If `codespacegen.json` is at the repository root, `./codespacegen.schema.json` points to the bundled schema file in this repository.
+
 **Pattern 1: string value for a direct image name**
 
 ```json
