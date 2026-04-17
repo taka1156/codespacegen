@@ -1,108 +1,108 @@
 # codespacegen
 
-Codespace向けの以下3ファイルを生成するCLIです。
+[日本語版はこちら](README.ja.md)
+
+codespacegen is a CLI that generates the following three files for Codespaces and devcontainers.
 
 - Dockerfile
 - devcontainer.json
 - docker-compose.yaml
 
-## アーキテクチャ
+## Architecture
 
-オニオンアーキテクチャで実装しています。
-
-- Domain: ルールとモデル
+- Domain: rules and models
 	- internal/domain/entity
 	- internal/domain/service
-- Application: ユースケース
+- Application: use cases
 	- internal/application/usecase
 	- internal/application/port
-- Infrastructure: 外部I/O実装
+- Infrastructure: external I/O implementations
 	- internal/infrastructure/generator
 	- internal/infrastructure/persistence
-- Entry Point: CLI
+- Entry point: CLI
 	- cmd/codespacegen
 
-依存方向は外側から内側のみです。
+Dependencies only point inward.
 
-## 使い方
+## Usage
 
-### 実行
+### Run
 
 ```bash
 go run ./cmd/codespacegen
 ```
 
-デフォルトでは .devcontainer 配下にファイルを生成します。
+By default, files are generated under .devcontainer.
 
-### 主なオプション
+### Main options
 
-| オプション | 既定値 | 説明 |
+| Option | Default | Description |
 |---|---|---|
-| `-output` | `.devcontainer` | 出力先ディレクトリ |
-| `-name` | *(対話入力必須)* | プロジェクト名。毎回確認され、`devcontainer.json` の `name` に反映 |
-| `-language` | *(対話入力、Enter で空)* | プログラミング言語。毎回確認される。空の場合は言語固有設定を使わず `alpine:latest` を採用 |
-| `-service` | *(対話入力、Enter で `app`)* | docker compose のサービス名。毎回確認され、`devcontainer.json` と `docker-compose.yaml` 両方に反映 |
-| `-workspace-folder` | *(対話入力、Enter で `/workspace`)* | コンテナ内ワークスペースパス。毎回確認される |
-| `-timezone` | `Asia/Tokyo` | コンテナ内のタイムゾーン。Dockerfile の `ENV TZ` と timezone 設定に反映 |
-| `-base-image` | *(言語デフォルト)* | Dockerベースイメージを直接指定。`-language` のデフォルトより優先 |
-| `-image-config` | `codespacegen.base-images.json` | ベースイメージ定義のローカルパスまたは `https://` URL。`install` のみ指定してイメージを省略した場合は `alpine:latest` を自動採用 |
-| `-port` | *(対話入力、Enter で ports なし)* | ポート指定（例: `3000` → `3000:3000` に自動正規化、`8080:3000` も可）。毎回確認される |
-| `-compose-file` | `docker-compose.yaml` | Composeファイル名 |
-| `-force` | `false` | 既存ファイルを上書き |
+| `-output` | `.devcontainer` | Output directory |
+| `-name` | *(interactive, required)* | Project name. Prompted every time and mapped to the `name` field in `devcontainer.json` |
+| `-language` | *(interactive, empty on Enter)* | Programming language. Prompted every time. If empty, no language-specific setting is used and `alpine:latest` is selected |
+| `-service` | *(interactive, `app` on Enter)* | Docker Compose service name. Prompted every time and reflected in both `devcontainer.json` and `docker-compose.yaml` |
+| `-workspace-folder` | *(interactive, `/workspace` on Enter)* | Workspace path inside the container. Prompted every time |
+| `-timezone` | `Asia/Tokyo` | Timezone inside the container. Reflected in `ENV TZ` and timezone setup in the Dockerfile |
+| `-base-image` | *(language default)* | Explicit Docker base image. Overrides the default derived from `-language` |
+| `-image-config` | `codespacegen.base-images.json` | Local path or `https://` URL for base image definitions. If only `install` is specified and `image` is omitted, `alpine:latest` is used automatically |
+| `-port` | *(interactive, no ports on Enter)* | Port mapping. For example, `3000` is normalized to `3000:3000`, and `8080:3000` is also accepted. Prompted every time |
+| `-compose-file` | `docker-compose.yaml` | Compose file name |
+| `-force` | `false` | Overwrite existing files |
 
-言語ごとのデフォルトベースイメージ:
+Default base images by language:
 
 - go: golang:1.24-alpine
 - python: python:3.12-alpine
 - node: node:22-alpine
 - rust: rust:1-alpine
 
-ベースイメージ定義はルートの [codespacegen.base-images.json](codespacegen.base-images.json) に切り出しています。
+Base image definitions are separated into [codespacegen.base-images.json](codespacegen.base-images.json) at the repository root.
 
-- JSONが存在する場合: JSONの値を読み込み（同一キーは上書き）
-- JSONが存在しない場合: CLI内部のデフォルト値で動作
-- -base-image を指定した場合: JSON/デフォルトより優先
+- If the JSON file exists: values are loaded from the file and matching keys override defaults
+- If the JSON file does not exist: built-in CLI defaults are used
+- If `-base-image` is specified: it takes precedence over both JSON and built-in defaults
 
-### codespacegen.base-images.json の書き方
+### codespacegen.base-images.json format
 
-**形式1: 文字列（イメージ名を直指定）**
-
-```json
-{
-  "go": "golang:1.24-alpine"
-}
-```
-
-**形式2: オブジェクト（curl でインストール、`image` 省略時は `alpine:latest` を自動採用）**
+**Pattern 1: string value for a direct image name**
 
 ```json
 {
-  "moonbit": {
-    "install": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash"
-  }
+	"go": "golang:1.24-alpine"
 }
 ```
 
-生成される Dockerfile には以下の `RUN` ステップが追加されます。
+**Pattern 2: object value for install commands, with `alpine:latest` used automatically when `image` is omitted**
+
+```json
+{
+	"moonbit": {
+		"install": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash"
+	}
+}
+```
+
+The generated Dockerfile adds the following `RUN` step.
 
 ```dockerfile
 RUN curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
 ```
 
-**形式2 応用: イメージも明示したい場合**
+**Pattern 2 variant: specify both image and install command**
 
 ```json
 {
-  "moonbit": {
-    "image": "ubuntu:24.04",
-    "install": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash"
-  }
+	"moonbit": {
+		"image": "ubuntu:24.04",
+		"install": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash"
+	}
 }
 ```
 
-形式1・2 は同一ファイルに混在できます。
+Patterns 1 and 2 can be mixed in the same file.
 
-例:
+Example:
 
 ```bash
 go run ./cmd/codespacegen \
@@ -116,56 +116,56 @@ go run ./cmd/codespacegen \
 	-force
 ```
 
-リモートJSONをURL指定する例:
+Example using a remote JSON URL:
 
 ```bash
 go run ./cmd/codespacegen -image-config https://example.com/my-base-images.json -language go -force
 ```
 
-- `https://` URLのみ対応（`http://` は拒否）
-- JSONが存在しない・未指定の場合は内蔵のAlpineデフォルトで動作
+- Only `https://` URLs are supported. `http://` is rejected
+- If the JSON is missing or not specified, built-in Alpine defaults are used
 
-明示イメージで上書きする例:
+Example overriding with an explicit image:
 
 ```bash
 go run ./cmd/codespacegen -language python -base-image python:3.12-alpine -force
 ```
 
-ポートを明示する例:
+Example exposing a port:
 
 ```bash
 go run ./cmd/codespacegen -language go -port 3000 -force
 ```
 
-`-port` 未指定時は実行中に対話形式でポート入力を促します。
+If `-port` is not specified, the CLI prompts for a port interactively during execution.
 
-生成される `docker-compose.yaml` は以下の構成です（ポート入力時のみ `ports` を追加）。
+The generated `docker-compose.yaml` looks like this, with `ports` added only when a port is provided.
 
 ```yaml
 services:
-    app:
-      build: .
-      tty: true
-      volumes:
-        - ../:/workspace
+		app:
+			build: .
+			tty: true
+			volumes:
+				- ../:/workspace
 ```
 
-## テスト
+## Tests
 
 ```bash
 go test ./...
 ```
 
-## リリース（GitHub Actions）
+## Release with GitHub Actions
 
-タグを push すると GitHub Actions がクロスビルドして GitHub Releases に成果物を添付します。
+When you push a tag, GitHub Actions cross-builds binaries and uploads them to GitHub Releases.
 
 ```bash
 git tag v0.1.0
 git push origin v0.1.0
 ```
 
-生成される主なアセット:
+Main generated assets:
 
 - `codespacegen_linux_amd64.tar.gz`
 - `codespacegen_linux_arm64.tar.gz`
@@ -174,15 +174,15 @@ git push origin v0.1.0
 - `codespacegen_windows_amd64.exe`
 - `checksums.txt`
 
-## インストール（curl）
+## Install with curl
 
-最新リリースから自動でダウンロードして `/usr/local/bin` に配置します。
+The latest release is downloaded automatically and installed into `/usr/local/bin`.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/taka1156/codespacegen/master/install.sh | bash
 ```
 
-インストール先を変える場合:
+To change the install destination:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/taka1156/codespacegen/master/install.sh | INSTALL_DIR=$HOME/.local/bin bash
