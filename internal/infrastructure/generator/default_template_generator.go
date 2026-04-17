@@ -101,6 +101,7 @@ func renderBaseSetupBlock(baseImage string) string {
 apk add --no-cache \
   bash \
   bash-completion \
+  ca-certificates \
   tzdata \
   git \
   git-lfs \
@@ -116,6 +117,7 @@ apt-get update
 apt-get install -y --no-install-recommends \
   bash \
   bash-completion \
+  ca-certificates \
   tzdata \
   git \
   git-lfs \

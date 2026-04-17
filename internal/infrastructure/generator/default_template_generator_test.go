@@ -26,6 +26,9 @@ func TestDefaultTemplateGenerator_Generate_UsesApkForAlpineImage(t *testing.T) {
 	if !strings.Contains(dockerfile, "apk add --no-cache") {
 		t.Fatal("expected Dockerfile to use apk for alpine image")
 	}
+	if !strings.Contains(dockerfile, "ca-certificates") {
+		t.Fatal("expected Dockerfile to install ca-certificates for alpine image")
+	}
 	if strings.Contains(dockerfile, "apt-get install") {
 		t.Fatal("expected Dockerfile not to use apt-get for alpine image")
 	}
@@ -49,6 +52,9 @@ func TestDefaultTemplateGenerator_Generate_UsesAptForUbuntuImage(t *testing.T) {
 	dockerfile := findGeneratedFile(t, files, "Dockerfile")
 	if !strings.Contains(dockerfile, "apt-get install -y --no-install-recommends") {
 		t.Fatal("expected Dockerfile to use apt-get for ubuntu image")
+	}
+	if !strings.Contains(dockerfile, "ca-certificates") {
+		t.Fatal("expected Dockerfile to install ca-certificates for ubuntu image")
 	}
 	if strings.Contains(dockerfile, "apk add --no-cache") {
 		t.Fatal("expected Dockerfile not to use apk for ubuntu image")
