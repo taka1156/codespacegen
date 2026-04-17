@@ -83,6 +83,34 @@ func TestDefaultTemplateGenerator_Generate_EmbedsInstallCommand(t *testing.T) {
 	}
 }
 
+func TestDefaultTemplateGenerator_Generate_UsesCustomTimezone(t *testing.T) {
+	g := NewDefaultTemplateGenerator()
+	cfg := entity.CodespaceConfig{
+		ContainerName:   "test",
+		ServiceName:     "app",
+		WorkspaceFolder: "/workspace",
+		BaseImage:       "ubuntu:latest",
+		Timezone:        "America/New_York",
+		ComposeFileName: "docker-compose.yaml",
+	}
+
+	files, err := g.Generate(cfg)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	dockerfile := findGeneratedFile(t, files, "Dockerfile")
+	if !strings.Contains(dockerfile, "TZ=America/New_York") {
+		t.Fatal("expected Dockerfile to use custom timezone in ENV")
+	}
+	if !strings.Contains(dockerfile, "/usr/share/zoneinfo/America/New_York") {
+		t.Fatal("expected Dockerfile to use custom timezone in setup block")
+	}
+	if strings.Contains(dockerfile, entity.DefaultTimezone) {
+		t.Fatal("expected Dockerfile not to keep default timezone when custom timezone is provided")
+	}
+}
+
 func findGeneratedFile(t *testing.T, files []entity.GeneratedFile, relativePath string) string {
 	t.Helper()
 	for _, f := range files {

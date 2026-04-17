@@ -15,7 +15,11 @@ func NewDefaultTemplateGenerator() *DefaultTemplateGenerator {
 
 func (g *DefaultTemplateGenerator) Generate(config entity.CodespaceConfig) ([]entity.GeneratedFile, error) {
 	baseSetup := renderBaseSetupBlock(config.BaseImage)
-	timezoneSetup := renderTimezoneSetupBlock(config.BaseImage)
+	timezone := strings.TrimSpace(config.Timezone)
+	if timezone == "" {
+		timezone = entity.DefaultTimezone
+	}
+	timezoneSetup := renderTimezoneSetupBlock(config.BaseImage, timezone)
 
 	installBlock := ""
 	if config.InstallCommand != "" {
@@ -29,7 +33,7 @@ WORKDIR %s
 ENV LANG=ja_JP.UTF-8 \
     LANGUAGE=ja_JP:ja \
     LC_ALL=ja_JP.UTF-8 \
-    TZ=Asia/Tokyo
+  TZ=%s
 
 %s
 
@@ -51,7 +55,7 @@ echo 'export PS1="\[\033[01;32m\]\u@\h\[\033[01;33m\] \w \[\033[01;31m\]\$(__git
 EOF
 
 %sCMD ["bash"]
-`, config.BaseImage, config.WorkspaceFolder, baseSetup, timezoneSetup, config.WorkspaceFolder, installBlock)
+`, config.BaseImage, config.WorkspaceFolder, timezone, baseSetup, timezoneSetup, config.WorkspaceFolder, installBlock)
 
 	devcontainer := fmt.Sprintf(`{
   "name": %q,
@@ -130,16 +134,16 @@ update-locale LANG=ja_JP.UTF-8 LC_ALL=ja_JP.UTF-8
 EOF`
 }
 
-func renderTimezoneSetupBlock(baseImage string) string {
+func renderTimezoneSetupBlock(baseImage string, timezone string) string {
 	if isAlpineImage(baseImage) {
 		return `RUN <<-EOF
-ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
-echo "Asia/Tokyo" > /etc/timezone
+ln -sf /usr/share/zoneinfo/` + timezone + ` /etc/localtime
+echo "` + timezone + `" > /etc/timezone
 EOF`
 	}
 
 	return `RUN <<-EOF
-ln -fs /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+ln -fs /usr/share/zoneinfo/` + timezone + ` /etc/localtime
 dpkg-reconfigure -f noninteractive tzdata
 EOF`
 }

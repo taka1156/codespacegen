@@ -4,7 +4,31 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"codespacegen/internal/domain/entity"
 )
+
+func TestResolveTimezone_UsesDefaultWhenEmpty(t *testing.T) {
+	timezone, err := resolveTimezone("")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if timezone != entity.DefaultTimezone {
+		t.Fatalf("unexpected timezone: %s", timezone)
+	}
+}
+
+func TestResolveTimezone_TrimsExplicitValue(t *testing.T) {
+	timezone, err := resolveTimezone("  Europe/Berlin  ")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if timezone != "Europe/Berlin" {
+		t.Fatalf("unexpected timezone: %s", timezone)
+	}
+}
 
 func TestResolveBaseImage_MoonbitFromConfig(t *testing.T) {
 	dir := t.TempDir()

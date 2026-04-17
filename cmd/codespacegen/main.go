@@ -33,6 +33,7 @@ func main() {
 		language        = flag.String("language", "", "programming language (go/python/node/rust or image-config keys)")
 		workspaceFolder = flag.String("workspace-folder", "/workspace", "workspace folder inside container")
 		baseImage       = flag.String("base-image", "", "base Docker image (overrides -language default)")
+		timezone        = flag.String("timezone", entity.DefaultTimezone, "timezone inside container")
 		imageConfig     = flag.String("image-config", "codespacegen.base-images.json", "local path or https:// URL to base image config JSON")
 		port            = flag.String("port", "", "port mapping (e.g. 3000 or 3000:3000)")
 		composeFile     = flag.String("compose-file", "docker-compose.yaml", "docker compose file name")
@@ -77,11 +78,18 @@ func main() {
 		os.Exit(1)
 	}
 
+	resolvedTimezone, err := resolveTimezone(*timezone)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+
 	config := entity.CodespaceConfig{
 		ContainerName:   resolvedProjectName,
 		ServiceName:     resolvedServiceName,
 		WorkspaceFolder: resolvedWorkspaceFolder,
 		BaseImage:       resolvedBaseImage,
+		Timezone:        resolvedTimezone,
 		ComposeFileName: *composeFile,
 		PortMapping:     resolvedPort,
 		InstallCommand:  resolvedInstall,
@@ -185,6 +193,14 @@ func resolveWorkspaceFolder(explicitWorkspaceFolder string) (string, error) {
 		return "", fmt.Errorf("failed to read workspace folder: %w", err)
 	}
 	return strings.TrimSpace(value), nil
+}
+
+func resolveTimezone(explicitTimezone string) (string, error) {
+	value := strings.TrimSpace(explicitTimezone)
+	if value == "" {
+		return entity.DefaultTimezone, nil
+	}
+	return value, nil
 }
 
 func resolveServiceName(explicitServiceName string) (string, error) {

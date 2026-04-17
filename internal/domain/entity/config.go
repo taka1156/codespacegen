@@ -1,11 +1,14 @@
 package entity
 
 // CodespaceConfig holds values used to generate devcontainer artifacts.
+const DefaultTimezone = "Asia/Tokyo"
+
 type CodespaceConfig struct {
 	ContainerName   string
 	ServiceName     string
 	WorkspaceFolder string
 	BaseImage       string
+	Timezone        string
 	ComposeFileName string
 	PortMapping     string
 	InstallCommand  string

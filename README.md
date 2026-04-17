@@ -43,6 +43,7 @@ go run ./cmd/codespacegen
 | `-language` | *(対話入力、Enter で空)* | プログラミング言語。毎回確認される。空の場合は言語固有設定を使わず `alpine:latest` を採用 |
 | `-service` | *(対話入力、Enter で `app`)* | docker compose のサービス名。毎回確認され、`devcontainer.json` と `docker-compose.yaml` 両方に反映 |
 | `-workspace-folder` | *(対話入力、Enter で `/workspace`)* | コンテナ内ワークスペースパス。毎回確認される |
+| `-timezone` | `Asia/Tokyo` | コンテナ内のタイムゾーン。Dockerfile の `ENV TZ` と timezone 設定に反映 |
 | `-base-image` | *(言語デフォルト)* | Dockerベースイメージを直接指定。`-language` のデフォルトより優先 |
 | `-image-config` | `codespacegen.base-images.json` | ベースイメージ定義のローカルパスまたは `https://` URL。`install` のみ指定してイメージを省略した場合は `alpine:latest` を自動採用 |
 | `-port` | *(対話入力、Enter で ports なし)* | ポート指定（例: `3000` → `3000:3000` に自動正規化、`8080:3000` も可）。毎回確認される |
@@ -110,6 +111,7 @@ go run ./cmd/codespacegen \
 	-language go \
 	-service app \
 	-workspace-folder /workspace \
+	-timezone Asia/Tokyo \
 	-compose-file docker-compose.yaml \
 	-force
 ```
