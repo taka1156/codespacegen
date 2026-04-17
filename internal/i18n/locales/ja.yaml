@@ -3,7 +3,7 @@ prompt_project_name_required:
 prompt_project_name_with_default:
   other: "プロジェクト名を入力してください（必須、未入力で {{.Default}}）: "
 error_project_name_required:
-  other: "project name is required"
+  other: "プロジェクト名は必須です。"
 msg_project_name_mandatory:
   other: "プロジェクト名は必須です。"
 prompt_language:
