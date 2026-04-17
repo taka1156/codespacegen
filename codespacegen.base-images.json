@@ -1,4 +1,5 @@
 {
+    "$schema": "https://raw.githubusercontent.com/taka1156/codespacegen/refs/heads/master/codespacegen.base-images.schema.json",
     "go": {
         "image": "golang:1.24-alpine",
         "timezone": "Asia/Tokyo"

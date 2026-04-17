@@ -1,0 +1,48 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/taka1156/codespacegen/master/codespacegen.base-images.schema.json",
+    "title": "codespacegen base images config",
+    "description": "Language-to-image mapping used by codespacegen -image-config.",
+    "type": "object",
+    "propertyNames": {
+        "type": "string",
+        "minLength": 1
+    },
+    "additionalProperties": {
+        "oneOf": [
+            {
+                "type": "string",
+                "description": "Direct image name (e.g. golang:1.24-alpine)."
+            },
+            {
+                "type": "object",
+                "description": "Extended configuration for a language entry.",
+                "properties": {
+                    "image": {
+                        "type": "string",
+                        "description": "Base image name. If omitted while install is set, codespacegen uses alpine:latest."
+                    },
+                    "install": {
+                        "type": "string",
+                        "description": "Shell command injected as RUN in Dockerfile."
+                    },
+                    "timezone": {
+                        "type": "string",
+                        "description": "Default timezone for this language entry (e.g. UTC, Asia/Tokyo)."
+                    }
+                },
+                "additionalProperties": false
+            }
+        ]
+    },
+    "examples": [
+        {
+            "go": "golang:1.24-alpine",
+            "moonbit": {
+                "image": "ubuntu:24.04",
+                "install": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
+                "timezone": "UTC"
+            }
+        }
+    ]
+}
