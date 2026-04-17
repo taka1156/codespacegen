@@ -1,0 +1,8 @@
+pre-push:
+  commands:
+    copilot-review:
+      run: bash scripts/run-copilot-review.sh
+      fail_text: "Copilotレビューでブロックされました。レビューの問題を修正してからpushしてください。"
+
+# 英語でレビューする場合は以下を実行:
+# bash scripts/run-copilot-review.sh --lang=en
