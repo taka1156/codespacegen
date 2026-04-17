@@ -1,0 +1,24 @@
+prompt_project_name_required:
+  other: "Enter project name (required): "
+prompt_project_name_with_default:
+  other: "Enter project name (required, default: {{.Default}}): "
+error_project_name_required:
+  other: "project name is required"
+msg_project_name_mandatory:
+  other: "Project name is required."
+prompt_language:
+  other: "Enter language (default: alpine): "
+prompt_workspace_folder:
+  other: "Enter workspace folder (default: {{.Default}}): "
+prompt_timezone:
+  other: "Enter timezone (default: {{.Default}}): "
+prompt_service_name:
+  other: "Enter service name (default: {{.Default}}): "
+prompt_port_empty:
+  other: "Enter port mapping (e.g. 3000 or 3000:3000, press Enter to skip): "
+prompt_port_with_default:
+  other: "Enter port mapping (e.g. 3000 or 3000:3000, default: {{.Default}}): "
+error_invalid_port_format:
+  other: "Invalid port format. Please use 3000 or 3000:3000."
+msg_generated_files:
+  other: "Generated Codespace files in {{.OutputDir}}"

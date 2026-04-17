@@ -49,6 +49,7 @@ By default, files are generated under .devcontainer.
 | `-port` | *(interactive, no ports on Enter)* | Port mapping. For example, `3000` is normalized to `3000:3000`, and `8080:3000` is also accepted. Prompted every time |
 | `-compose-file` | `docker-compose.yaml` | Compose file name |
 | `-force` | `false` | Overwrite existing files |
+| `-lang` | *(auto-detect)* | Language for CLI messages (`en` or `ja`). Defaults to system locale |
 
 Default base images by language:
 
