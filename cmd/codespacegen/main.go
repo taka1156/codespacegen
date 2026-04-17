@@ -33,7 +33,7 @@ func main() {
 		language        = flag.String("language", "", "programming language (go/python/node/rust or image-config keys)")
 		workspaceFolder = flag.String("workspace-folder", "/workspace", "workspace folder inside container")
 		baseImage       = flag.String("base-image", "", "base Docker image (overrides -language default)")
-		timezone        = flag.String("timezone", entity.DefaultTimezone, "timezone inside container")
+		timezone        = flag.String("timezone", "", "timezone inside container (default: image-config timezone or UTC)")
 		imageConfig     = flag.String("image-config", "codespacegen.base-images.json", "local path or https:// URL to base image config JSON")
 		port            = flag.String("port", "", "port mapping (e.g. 3000 or 3000:3000)")
 		composeFile     = flag.String("compose-file", "docker-compose.yaml", "docker compose file name")
@@ -72,13 +72,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	resolvedBaseImage, resolvedInstall, err := resolveBaseImage(resolvedLanguage, *baseImage, *imageConfig)
+	resolvedBaseImage, resolvedInstall, resolvedConfigTimezone, err := resolveBaseImage(resolvedLanguage, *baseImage, *imageConfig)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
 
-	resolvedTimezone, err := resolveTimezone(*timezone)
+	resolvedTimezone, err := resolveTimezone(*timezone, resolvedConfigTimezone)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
@@ -195,12 +195,21 @@ func resolveWorkspaceFolder(explicitWorkspaceFolder string) (string, error) {
 	return strings.TrimSpace(value), nil
 }
 
-func resolveTimezone(explicitTimezone string) (string, error) {
-	value := strings.TrimSpace(explicitTimezone)
-	if value == "" {
-		return entity.DefaultTimezone, nil
+func resolveTimezone(explicitTimezone string, configTimezone string) (string, error) {
+	defaultTimezone := strings.TrimSpace(explicitTimezone)
+	if defaultTimezone == "" {
+		defaultTimezone = strings.TrimSpace(configTimezone)
 	}
-	return value, nil
+	if defaultTimezone == "" {
+		defaultTimezone = entity.DefaultTimezone
+	}
+
+	value, err := promptWithDefault(fmt.Sprintf("タイムゾーンを入力してください（未入力で %s）: ", defaultTimezone), defaultTimezone)
+	if err != nil {
+		return "", fmt.Errorf("failed to read timezone: %w", err)
+	}
+
+	return strings.TrimSpace(value), nil
 }
 
 func resolveServiceName(explicitServiceName string) (string, error) {
@@ -269,31 +278,32 @@ func normalizePortMapping(value string) (string, error) {
 }
 
 type languageEntry struct {
-	Image   string
-	Install string
+	Image    string
+	Install  string
+	Timezone string
 }
 
-func resolveBaseImage(language string, explicitBaseImage string, imageConfig string) (string, string, error) {
+func resolveBaseImage(language string, explicitBaseImage string, imageConfig string) (string, string, string, error) {
 	if explicitBaseImage != "" {
-		return explicitBaseImage, "", nil
+		return explicitBaseImage, "", "", nil
 	}
 
 	if strings.TrimSpace(language) == "" {
-		return "alpine:latest", "", nil
+		return "alpine:latest", "", "", nil
 	}
 
 	entries, err := loadLanguageBaseImages(imageConfig)
 	if err != nil {
-		return "", "", err
+		return "", "", "", err
 	}
 
 	key := strings.ToLower(strings.TrimSpace(language))
 	entry, ok := entries[key]
 	if !ok {
-		return "", "", fmt.Errorf("unsupported language: %s", language)
+		return "", "", "", fmt.Errorf("unsupported language: %s", language)
 	}
 
-	return entry.Image, entry.Install, nil
+	return entry.Image, entry.Install, entry.Timezone, nil
 }
 
 func loadLanguageBaseImages(source string) (map[string]languageEntry, error) {
@@ -331,6 +341,17 @@ func loadLanguageBaseImages(source string) (map[string]languageEntry, error) {
 		if err != nil {
 			return nil, fmt.Errorf("invalid entry for %q: %w", k, err)
 		}
+
+		base := resolved[normalizedKey]
+		if entry.Image == "" {
+			entry.Image = base.Image
+		}
+		if entry.Install == "" {
+			entry.Install = base.Install
+		}
+		if entry.Timezone == "" {
+			entry.Timezone = base.Timezone
+		}
 		resolved[normalizedKey] = entry
 	}
 
@@ -344,20 +365,22 @@ func parseLanguageEntry(raw json.RawMessage) (languageEntry, error) {
 	}
 
 	var obj struct {
-		Image   string `json:"image"`
-		Install string `json:"install"`
+		Image    string `json:"image"`
+		Install  string `json:"install"`
+		Timezone string `json:"timezone"`
 	}
 	if err := json.Unmarshal(raw, &obj); err != nil {
-		return languageEntry{}, fmt.Errorf("must be a string or {\"image\",\"install\"} object: %w", err)
+		return languageEntry{}, fmt.Errorf("must be a string or {\"image\",\"install\",\"timezone\"} object: %w", err)
 	}
 
 	img := strings.TrimSpace(obj.Image)
 	install := strings.TrimSpace(obj.Install)
+	timezone := strings.TrimSpace(obj.Timezone)
 	if img == "" && install != "" {
 		img = "alpine:latest"
 	}
 
-	return languageEntry{Image: img, Install: install}, nil
+	return languageEntry{Image: img, Install: install, Timezone: timezone}, nil
 }
 
 func fetchBaseImageConfig(source string) ([]byte, error) {

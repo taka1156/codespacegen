@@ -1,7 +1,7 @@
 package entity
 
 // CodespaceConfig holds values used to generate devcontainer artifacts.
-const DefaultTimezone = "Asia/Tokyo"
+const DefaultTimezone = "UTC"
 
 type CodespaceConfig struct {
 	ContainerName   string
