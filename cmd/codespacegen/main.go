@@ -34,7 +34,7 @@ func main() {
 		workspaceFolder = flag.String("workspace-folder", "/workspace", "workspace folder inside container")
 		baseImage       = flag.String("base-image", "", "base Docker image (overrides -language default)")
 		timezone        = flag.String("timezone", "", "timezone inside container (default: image-config timezone or UTC)")
-		imageConfig     = flag.String("image-config", "codespacegen.base-images.json", "local path or https:// URL to base image config JSON")
+		imageConfig     = flag.String("image-config", "codespacegen.json", "local path or https:// URL to base image config JSON")
 		port            = flag.String("port", "", "port mapping (e.g. 3000 or 3000:3000)")
 		composeFile     = flag.String("compose-file", "docker-compose.yaml", "docker compose file name")
 		overwrite       = flag.Bool("force", false, "overwrite existing files")

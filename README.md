@@ -45,7 +45,7 @@ By default, files are generated under .devcontainer.
 | `-workspace-folder` | *(interactive, `/workspace` on Enter)* | Workspace path inside the container. Prompted every time |
 | `-timezone` | `Asia/Tokyo` | Timezone inside the container. Reflected in `ENV TZ` and timezone setup in the Dockerfile |
 | `-base-image` | *(language default)* | Explicit Docker base image. Overrides the default derived from `-language` |
-| `-image-config` | `codespacegen.base-images.json` | Local path or `https://` URL for base image definitions. If only `install` is specified and `image` is omitted, `alpine:latest` is used automatically |
+| `-image-config` | `codespacegen.json` | Local path or `https://` URL for base image definitions. If only `install` is specified and `image` is omitted, `alpine:latest` is used automatically |
 | `-port` | *(interactive, no ports on Enter)* | Port mapping. For example, `3000` is normalized to `3000:3000`, and `8080:3000` is also accepted. Prompted every time |
 | `-compose-file` | `docker-compose.yaml` | Compose file name |
 | `-force` | `false` | Overwrite existing files |
@@ -57,13 +57,13 @@ Default base images by language:
 - node: node:22-alpine
 - rust: rust:1-alpine
 
-Base image definitions are separated into [codespacegen.base-images.json](codespacegen.base-images.json) at the repository root.
+Base image definitions are separated into [codespacegen.json](codespacegen.json) at the repository root.
 
 - If the JSON file exists: values are loaded from the file and matching keys override defaults
 - If the JSON file does not exist: built-in CLI defaults are used
 - If `-base-image` is specified: it takes precedence over both JSON and built-in defaults
 
-### codespacegen.base-images.json format
+### codespacegen.json format
 
 **Pattern 1: string value for a direct image name**
 

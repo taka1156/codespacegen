@@ -45,7 +45,7 @@ go run ./cmd/codespacegen
 | `-workspace-folder` | *(対話入力、Enter で `/workspace`)* | コンテナ内ワークスペースパス。毎回確認される |
 | `-timezone` | `Asia/Tokyo` | コンテナ内のタイムゾーン。Dockerfile の `ENV TZ` と timezone 設定に反映 |
 | `-base-image` | *(言語デフォルト)* | Dockerベースイメージを直接指定。`-language` のデフォルトより優先 |
-| `-image-config` | `codespacegen.base-images.json` | ベースイメージ定義のローカルパスまたは `https://` URL。`install` のみ指定してイメージを省略した場合は `alpine:latest` を自動採用 |
+| `-image-config` | `codespacegen.json` | ベースイメージ定義のローカルパスまたは `https://` URL。`install` のみ指定してイメージを省略した場合は `alpine:latest` を自動採用 |
 | `-port` | *(対話入力、Enter で ports なし)* | ポート指定。たとえば `3000` は `3000:3000` に自動正規化され、`8080:3000` も利用できます。毎回確認されます |
 | `-compose-file` | `docker-compose.yaml` | Composeファイル名 |
 | `-force` | `false` | 既存ファイルを上書き |
@@ -57,13 +57,13 @@ go run ./cmd/codespacegen
 - node: node:22-alpine
 - rust: rust:1-alpine
 
-ベースイメージ定義はリポジトリルートの [codespacegen.base-images.json](codespacegen.base-images.json) に分離しています。
+ベースイメージ定義はリポジトリルートの [codespacegen.json](codespacegen.json) に分離しています。
 
 - JSON が存在する場合: ファイルの値を読み込み、同名キーでデフォルトを上書き
 - JSON が存在しない場合: CLI 内蔵のデフォルト値で動作
 - `-base-image` を指定した場合: JSON と内蔵デフォルトの両方より優先
 
-### codespacegen.base-images.json の書き方
+### codespacegen.json の書き方
 
 **形式 1: 文字列でイメージ名を直接指定**
 

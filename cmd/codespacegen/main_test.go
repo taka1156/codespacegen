@@ -72,7 +72,7 @@ func TestResolveBaseImage_MoonbitFromConfig(t *testing.T) {
 }
 
 func TestResolveBaseImage_ExplicitBaseImageOverridesConfig(t *testing.T) {
-	image, install, timezone, err := resolveBaseImage("moonbit", "ubuntu:latest", "codespacegen.base-images.json")
+	image, install, timezone, err := resolveBaseImage("moonbit", "ubuntu:latest", "codespacegen.json")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -117,7 +117,7 @@ func TestResolveBaseImage_UsesDefaultImageWhenOnlyTimezoneIsOverridden(t *testin
 }
 
 func TestResolveBaseImage_UnsupportedLanguageReturnsError(t *testing.T) {
-	_, _, _, err := resolveBaseImage("unknownlang", "", "codespacegen.base-images.json")
+	_, _, _, err := resolveBaseImage("unknownlang", "", "codespacegen.json")
 	if err == nil {
 		t.Fatal("expected error for unsupported language")
 	}

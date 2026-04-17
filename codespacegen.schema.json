@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://raw.githubusercontent.com/taka1156/codespacegen/master/codespacegen.base-images.schema.json",
+    "$id": "https://raw.githubusercontent.com/taka1156/codespacegen/master/codespacegen.schema.json",
     "title": "codespacegen base images config",
     "description": "Language-to-image mapping used by codespacegen -image-config.",
     "type": "object",
