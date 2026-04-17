@@ -6,6 +6,7 @@
         "moonbit",
         "softprops",
         "trimpath",
+        "tzdata",
         "usecase"
     ]
 }
