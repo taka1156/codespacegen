@@ -137,7 +137,7 @@ func resolveProjectName(explicitProjectName string) (string, error) {
 					if defaultProjectName != "" {
 						return defaultProjectName, nil
 					}
-					return "", fmt.Errorf("project name is required")
+					return "", fmt.Errorf("%s", i18n.T("error_project_name_required"))
 				}
 				return line, nil
 			}
