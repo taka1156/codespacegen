@@ -4,14 +4,15 @@ package entity
 const DefaultTimezone = "UTC"
 
 type CodespaceConfig struct {
-	ContainerName   string
-	ServiceName     string
-	WorkspaceFolder string
-	BaseImage       string
-	Timezone        string
-	ComposeFileName string
-	PortMapping     string
-	InstallCommand  string
+	ContainerName    string
+	ServiceName      string
+	WorkspaceFolder  string
+	BaseImage        string
+	Timezone         string
+	ComposeFileName  string
+	PortMapping      string
+	InstallCommand   string
+	VSCodeExtensions []string
 }
 
 func (c CodespaceConfig) Validate() error {

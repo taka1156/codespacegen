@@ -1,47 +1,95 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://raw.githubusercontent.com/taka1156/codespacegen/master/codespacegen.schema.json",
-    "title": "codespacegen base images config",
-    "description": "Language-to-image mapping used by codespacegen -image-config.",
+    "title": "codespacegen image config",
+    "description": "Configuration for common defaults and language-specific overrides used by codespacegen -image-config.",
     "type": "object",
-    "propertyNames": {
-        "type": "string",
-        "minLength": 1
+    "properties": {
+        "$schema": {
+            "type": "string",
+            "description": "Optional schema URI for editor validation."
+        },
+        "common": {
+            "$ref": "#/$defs/configEntry",
+            "description": "Base settings applied to all languages. Language-specific settings take precedence."
+        }
     },
-    "additionalProperties": {
-        "oneOf": [
-            {
-                "type": "string",
-                "description": "Direct image name (e.g. golang:1.24-alpine)."
-            },
-            {
-                "type": "object",
-                "description": "Extended configuration for a language entry.",
-                "properties": {
-                    "image": {
-                        "type": "string",
-                        "description": "Base image name. If omitted while install is set, codespacegen uses alpine:latest."
-                    },
-                    "install": {
-                        "type": "string",
-                        "description": "Shell command injected as RUN in Dockerfile."
-                    },
-                    "timezone": {
-                        "type": "string",
-                        "description": "Default timezone for this language entry (e.g. UTC, Asia/Tokyo)."
-                    }
+    "patternProperties": {
+        "^(?!\\$schema$|common$).+": {
+            "oneOf": [
+                {
+                    "type": "string",
+                    "description": "Direct image name (e.g. golang:1.24-alpine)."
                 },
-                "additionalProperties": false
-            }
-        ]
+                {
+                    "$ref": "#/$defs/configEntry",
+                    "description": "Extended configuration for a language entry."
+                }
+            ]
+        }
+    },
+    "additionalProperties": false,
+    "$defs": {
+        "configEntry": {
+            "type": "object",
+            "properties": {
+                "image": {
+                    "type": "string",
+                    "description": "Base image name. If omitted while install is set, codespacegen uses alpine:latest."
+                },
+                "install": {
+                    "type": "string",
+                    "description": "Shell command injected as RUN in Dockerfile."
+                },
+                "timezone": {
+                    "type": "string",
+                    "description": "Default timezone for this entry (e.g. UTC, Asia/Tokyo)."
+                },
+                "vscodeExtensions": {
+                    "type": "array",
+                    "description": "VS Code extension IDs (e.g. golang.Go).",
+                    "items": {
+                        "type": "string",
+                        "minLength": 1
+                    }
+                }
+            },
+            "additionalProperties": false
+        }
     },
     "examples": [
         {
-            "go": "golang:1.24-alpine",
+            "$schema": "https://raw.githubusercontent.com/taka1156/codespacegen/refs/heads/master/codespacegen.schema.json",
+            "common": {
+                "timezone": "Asia/Tokyo",
+                "vscodeExtensions": [
+                    "MS-CEINTL.vscode-language-pack-ja",
+                    "streetsidesoftware.code-spell-checker"
+                ]
+            },
+            "go": {
+                "image": "golang:1.24-alpine",
+                "vscodeExtensions": [
+                    "golang.Go"
+                ]
+            },
             "moonbit": {
                 "image": "ubuntu:24.04",
                 "install": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
-                "timezone": "UTC"
+                "timezone": "UTC",
+                "vscodeExtensions": [
+                    "moonbit.moonbit-lang"
+                ]
+            }
+        },
+        {
+            "go": "golang:1.24-alpine",
+            "node:eslint": {
+                "image": "node:22-alpine",
+                "vscodeExtensions": [
+                    "dbaeumer.vscode-eslint",
+                    "esbenp.prettier-vscode"
+                ]
             }
         }
     ]
