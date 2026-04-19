@@ -5,6 +5,8 @@ SKILL_FILE=".github/skills/git-hook-code-review/SKILL.md"
 REVIEW_SCRIPT="./scripts/review-check.sh"
 LANG_OPT="ja"
 
+cd "$(git rev-parse --show-toplevel)"
+
 if [ ! -f "$SKILL_FILE" ]; then
   echo "エラー: スキルファイルが見つかりません: ${SKILL_FILE}" >&2
   exit 1
@@ -32,12 +34,17 @@ fi
 
 # pushされる差分を取得
 # 優先順: origin追跡ブランチ → HEAD~1 → 空ツリー（初回push時）
-BRANCH=$(git rev-parse --abbrev-ref HEAD)
+# pushされる差分を取得（ブランチ名に依存しない）
+read local_ref local_sha remote_ref remote_sha
+
 EMPTY_TREE="4b825dc642cb6eb9a060e54bf8d69288fbee4904"
-DIFF=$(git diff "origin/${BRANCH}" HEAD 2>/dev/null \
-  || git diff HEAD~1 HEAD 2>/dev/null \
-  || git diff "${EMPTY_TREE}" HEAD 2>/dev/null \
-  || true)
+
+if [ "$remote_sha" = "0000000000000000000000000000000000000000" ]; then
+  # 初回 push
+  DIFF=$(git diff "$EMPTY_TREE" "$local_sha")
+else
+  DIFF=$(git diff "$remote_sha" "$local_sha")
+fi
 
 if [ -z "$DIFF" ]; then
   echo "差分なし。Copilotレビューをスキップします。"
