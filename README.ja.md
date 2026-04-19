@@ -49,6 +49,7 @@ go run ./cmd/codespacegen
 | `-port` | *(対話入力、Enter で ports なし)* | ポート指定。たとえば `3000` は `3000:3000` に自動正規化され、`8080:3000` も利用できます。毎回確認されます |
 | `-compose-file` | `docker-compose.yaml` | Composeファイル名 |
 | `-force` | `false` | 既存ファイルを上書き |
+| `-lang` | *(自動検出)* | CLI メッセージの言語 (`en` or `ja`)。未指定の場合はシステムロケールを使用 |
 
 言語ごとのデフォルトベースイメージ:
 

@@ -1,0 +1,24 @@
+prompt_project_name_required:
+  other: "プロジェクト名を入力してください（必須）: "
+prompt_project_name_with_default:
+  other: "プロジェクト名を入力してください（必須、未入力で {{.Default}}）: "
+error_project_name_required:
+  other: "プロジェクト名は必須です。"
+msg_project_name_mandatory:
+  other: "プロジェクト名は必須です。"
+prompt_language:
+  other: "言語を入力してください（未入力で alpine 固定）: "
+prompt_workspace_folder:
+  other: "ワークスペースを入力してください（未入力で {{.Default}}）: "
+prompt_timezone:
+  other: "タイムゾーンを入力してください（未入力で {{.Default}}）: "
+prompt_service_name:
+  other: "サービス名を入力してください（未入力で {{.Default}}）: "
+prompt_port_empty:
+  other: "公開ポートを入力してください (例: 3000 または 3000:3000、不要ならEnter): "
+prompt_port_with_default:
+  other: "公開ポートを入力してください (例: 3000 または 3000:3000、未入力で {{.Default}}): "
+error_invalid_port_format:
+  other: "無効なポート形式です。3000 または 3000:3000 の形式で入力してください。"
+msg_generated_files:
+  other: "Codespaceファイルを {{.OutputDir}} に生成しました"

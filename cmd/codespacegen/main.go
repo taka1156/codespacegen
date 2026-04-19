@@ -16,6 +16,7 @@ import (
 
 	"codespacegen/internal/application/usecase"
 	"codespacegen/internal/domain/entity"
+	"codespacegen/internal/i18n"
 	"codespacegen/internal/infrastructure/generator"
 	"codespacegen/internal/infrastructure/persistence"
 )
@@ -38,9 +39,14 @@ func main() {
 		port            = flag.String("port", "", "port mapping (e.g. 3000 or 3000:3000)")
 		composeFile     = flag.String("compose-file", "docker-compose.yaml", "docker compose file name")
 		overwrite       = flag.Bool("force", false, "overwrite existing files")
+		lang            = flag.String("lang", "", "language for CLI messages (en/ja, default: auto-detect)")
 	)
 
 	flag.Parse()
+
+	if *lang != "" {
+		i18n.SetLang(*lang)
+	}
 
 	resolvedProjectName, err := resolveProjectName(*containerName)
 	if err != nil {
@@ -109,7 +115,7 @@ func main() {
 		resolvedOutput = *outputDir
 	}
 
-	fmt.Printf("Generated Codespace files in %s\n", resolvedOutput)
+	fmt.Println(i18n.T("msg_generated_files", map[string]interface{}{"OutputDir": resolvedOutput}))
 }
 
 func resolveProjectName(explicitProjectName string) (string, error) {
@@ -118,9 +124,9 @@ func resolveProjectName(explicitProjectName string) (string, error) {
 
 	for {
 		if defaultProjectName == "" {
-			fmt.Print("プロジェクト名を入力してください（必須）: ")
+			fmt.Print(i18n.T("prompt_project_name_required"))
 		} else {
-			fmt.Printf("プロジェクト名を入力してください（必須、未入力で %s）: ", defaultProjectName)
+			fmt.Print(i18n.T("prompt_project_name_with_default", map[string]interface{}{"Default": defaultProjectName}))
 		}
 
 		line, err := reader.ReadString('\n')
@@ -131,7 +137,7 @@ func resolveProjectName(explicitProjectName string) (string, error) {
 					if defaultProjectName != "" {
 						return defaultProjectName, nil
 					}
-					return "", fmt.Errorf("project name is required")
+					return "", fmt.Errorf("%s", i18n.T("error_project_name_required"))
 				}
 				return line, nil
 			}
@@ -143,7 +149,7 @@ func resolveProjectName(explicitProjectName string) (string, error) {
 			if defaultProjectName != "" {
 				return defaultProjectName, nil
 			}
-			fmt.Println("プロジェクト名は必須です。")
+			fmt.Println(i18n.T("msg_project_name_mandatory"))
 			continue
 		}
 
@@ -176,7 +182,7 @@ func promptWithDefault(prompt string, defaultValue string) (string, error) {
 
 func resolveLanguage(explicitLanguage string) (string, error) {
 	defaultLanguage := strings.TrimSpace(explicitLanguage)
-	value, err := promptWithDefault("言語を入力してください（未入力で alpine 固定）: ", defaultLanguage)
+	value, err := promptWithDefault(i18n.T("prompt_language"), defaultLanguage)
 	if err != nil {
 		return "", fmt.Errorf("failed to read language: %w", err)
 	}
@@ -188,7 +194,7 @@ func resolveWorkspaceFolder(explicitWorkspaceFolder string) (string, error) {
 	if defaultWorkspaceFolder == "" {
 		defaultWorkspaceFolder = "/workspace"
 	}
-	value, err := promptWithDefault(fmt.Sprintf("ワークスペースを入力してください（未入力で %s）: ", defaultWorkspaceFolder), defaultWorkspaceFolder)
+	value, err := promptWithDefault(i18n.T("prompt_workspace_folder", map[string]interface{}{"Default": defaultWorkspaceFolder}), defaultWorkspaceFolder)
 	if err != nil {
 		return "", fmt.Errorf("failed to read workspace folder: %w", err)
 	}
@@ -204,7 +210,7 @@ func resolveTimezone(explicitTimezone string, configTimezone string) (string, er
 		defaultTimezone = entity.DefaultTimezone
 	}
 
-	value, err := promptWithDefault(fmt.Sprintf("タイムゾーンを入力してください（未入力で %s）: ", defaultTimezone), defaultTimezone)
+	value, err := promptWithDefault(i18n.T("prompt_timezone", map[string]interface{}{"Default": defaultTimezone}), defaultTimezone)
 	if err != nil {
 		return "", fmt.Errorf("failed to read timezone: %w", err)
 	}
@@ -217,7 +223,7 @@ func resolveServiceName(explicitServiceName string) (string, error) {
 	if defaultServiceName == "" {
 		defaultServiceName = "app"
 	}
-	value, err := promptWithDefault(fmt.Sprintf("サービス名を入力してください（未入力で %s）: ", defaultServiceName), defaultServiceName)
+	value, err := promptWithDefault(i18n.T("prompt_service_name", map[string]interface{}{"Default": defaultServiceName}), defaultServiceName)
 	if err != nil {
 		return "", fmt.Errorf("failed to read service name: %w", err)
 	}
@@ -229,9 +235,9 @@ func resolvePortMapping(explicitPort string) (string, error) {
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		if defaultPort == "" {
-			fmt.Print("公開ポートを入力してください (例: 3000 または 3000:3000、不要ならEnter): ")
+			fmt.Print(i18n.T("prompt_port_empty"))
 		} else {
-			fmt.Printf("公開ポートを入力してください (例: 3000 または 3000:3000、未入力で %s): ", defaultPort)
+			fmt.Print(i18n.T("prompt_port_with_default", map[string]interface{}{"Default": defaultPort}))
 		}
 		line, err := reader.ReadString('\n')
 		if err != nil {
@@ -261,7 +267,7 @@ func resolvePortMapping(explicitPort string) (string, error) {
 			return normalized, nil
 		}
 
-		fmt.Println("無効なポート形式です。3000 または 3000:3000 の形式で入力してください。")
+		fmt.Println(i18n.T("error_invalid_port_format"))
 	}
 }
 
