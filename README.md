@@ -1,4 +1,9 @@
-# codespacegen
+ <picture >
+ 	  <source media="(prefers-color-scheme: dark)" srcset="./logo-dark.svg">
+	  <source media="(prefers-color-scheme: light)" srcset="./logo-light.svg">
+	  <img alt="codespacegen logo" src="./logo-light.svg" width="100%" height="100%">
+  </picture>
+
 
 [日本語版はこちら](README.ja.md)
 
