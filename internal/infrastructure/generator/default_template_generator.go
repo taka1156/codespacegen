@@ -1,6 +1,7 @@
 package generator
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -8,6 +9,23 @@ import (
 )
 
 type DefaultTemplateGenerator struct{}
+
+type devcontainerJSON struct {
+	Name            string                     `json:"name"`
+	Service         string                     `json:"service"`
+	WorkspaceFolder string                     `json:"workspaceFolder"`
+	DockerCompose   string                     `json:"dockerComposeFile"`
+	Customizations  devcontainerCustomizations `json:"customizations"`
+}
+
+type devcontainerCustomizations struct {
+	VSCode devcontainerVSCode `json:"vscode"`
+}
+
+type devcontainerVSCode struct {
+	Settings   map[string]string `json:"settings"`
+	Extensions []string          `json:"extensions"`
+}
 
 func NewDefaultTemplateGenerator() *DefaultTemplateGenerator {
 	return &DefaultTemplateGenerator{}
@@ -57,24 +75,30 @@ EOF
 %sCMD ["bash"]
 `, config.BaseImage, config.WorkspaceFolder, timezone, baseSetup, timezoneSetup, config.WorkspaceFolder, installBlock)
 
-	devcontainer := fmt.Sprintf(`{
-  "name": %q,
-  "dockerComposeFile": %q,
-  "service": %q,
-  "workspaceFolder": %q,
-  "customizations": {
-    "vscode": {
-      "settings": {
-        "terminal.integrated.defaultProfile.linux": "bash"
-      },
-      "extensions": [
-        "GitHub.copilot",
-        "GitHub.copilot-chat"
-      ]
-    }
-  }
-}
-`, config.ContainerName, config.ComposeFileName, config.ServiceName, config.WorkspaceFolder)
+	extensions := []string{"GitHub.copilot", "GitHub.copilot-chat"}
+	extensions = append(extensions, config.VSCodeExtensions...)
+	extensions = uniqueStringsPreserveOrder(extensions)
+
+	devcontainerObj := devcontainerJSON{
+		Name:            config.ContainerName,
+		Service:         config.ServiceName,
+		WorkspaceFolder: config.WorkspaceFolder,
+		DockerCompose:   config.ComposeFileName,
+		Customizations: devcontainerCustomizations{
+			VSCode: devcontainerVSCode{
+				Settings: map[string]string{
+					"terminal.integrated.defaultProfile.linux": "bash",
+				},
+				Extensions: extensions,
+			},
+		},
+	}
+
+	devcontainerBytes, err := json.MarshalIndent(devcontainerObj, "", "  ")
+	if err != nil {
+		return nil, fmt.Errorf("failed to render devcontainer.json: %w", err)
+	}
+	devcontainer := string(devcontainerBytes) + "\n"
 
 	compose := fmt.Sprintf(`services:
     %s:
@@ -93,6 +117,20 @@ EOF
 		{RelativePath: "devcontainer.json", Content: devcontainer},
 		{RelativePath: config.ComposeFileName, Content: compose},
 	}, nil
+}
+
+func uniqueStringsPreserveOrder(values []string) []string {
+	seen := make(map[string]struct{}, len(values))
+	result := make([]string, 0, len(values))
+	for _, v := range values {
+		if _, ok := seen[v]; ok {
+			continue
+		}
+		seen[v] = struct{}{}
+		result = append(result, v)
+	}
+
+	return result
 }
 
 func isAlpineImage(baseImage string) bool {
