@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"reflect"
 	"testing"
 
 	"codespacegen/internal/domain/entity"
@@ -55,7 +56,7 @@ func TestResolveBaseImage_MoonbitFromConfig(t *testing.T) {
 		t.Fatalf("failed to write config file: %v", err)
 	}
 
-	image, install, timezone, err := resolveBaseImage("moonbit", "", cfgPath)
+	image, install, timezone, extensions, err := resolveBaseImage("moonbit", "", cfgPath)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -69,10 +70,13 @@ func TestResolveBaseImage_MoonbitFromConfig(t *testing.T) {
 	if timezone != "Europe/Berlin" {
 		t.Fatalf("unexpected timezone: %s", timezone)
 	}
+	if len(extensions) != 0 {
+		t.Fatalf("unexpected extensions: %#v", extensions)
+	}
 }
 
 func TestResolveBaseImage_ExplicitBaseImageOverridesConfig(t *testing.T) {
-	image, install, timezone, err := resolveBaseImage("moonbit", "ubuntu:latest", "codespacegen.json")
+	image, install, timezone, extensions, err := resolveBaseImage("moonbit", "ubuntu:latest", "codespacegen.json")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -85,6 +89,9 @@ func TestResolveBaseImage_ExplicitBaseImageOverridesConfig(t *testing.T) {
 	}
 	if timezone != "" {
 		t.Fatalf("expected empty timezone, got: %s", timezone)
+	}
+	if len(extensions) != 0 {
+		t.Fatalf("expected empty extensions, got: %#v", extensions)
 	}
 }
 
@@ -100,7 +107,7 @@ func TestResolveBaseImage_UsesDefaultImageWhenOnlyTimezoneIsOverridden(t *testin
 		t.Fatalf("failed to write config file: %v", err)
 	}
 
-	image, install, timezone, err := resolveBaseImage("go", "", cfgPath)
+	image, install, timezone, extensions, err := resolveBaseImage("go", "", cfgPath)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -114,11 +121,87 @@ func TestResolveBaseImage_UsesDefaultImageWhenOnlyTimezoneIsOverridden(t *testin
 	if timezone != "UTC" {
 		t.Fatalf("unexpected timezone: %s", timezone)
 	}
+	if len(extensions) != 0 {
+		t.Fatalf("unexpected extensions: %#v", extensions)
+	}
 }
 
 func TestResolveBaseImage_UnsupportedLanguageReturnsError(t *testing.T) {
-	_, _, _, err := resolveBaseImage("unknownlang", "", "codespacegen.json")
+	_, _, _, _, err := resolveBaseImage("unknownlang", "", "codespacegen.json")
 	if err == nil {
 		t.Fatal("expected error for unsupported language")
+	}
+}
+
+func TestLoadLanguageBaseImages_MergesCommonAndLanguageSettings(t *testing.T) {
+	dir := t.TempDir()
+	cfgPath := filepath.Join(dir, "images.json")
+	cfg := `{
+  "common": {
+    "timezone": "Asia/Tokyo",
+    "vscodeExtensions": [
+      "MS-CEINTL.vscode-language-pack-ja"
+    ]
+  },
+  "go": {
+    "timezone": "UTC",
+    "vscodeExtensions": [
+      "golang.Go",
+      "MS-CEINTL.vscode-language-pack-ja"
+    ]
+  }
+}`
+	if err := os.WriteFile(cfgPath, []byte(cfg), 0o644); err != nil {
+		t.Fatalf("failed to write config file: %v", err)
+	}
+
+	entries, err := loadLanguageBaseImages(cfgPath)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	goEntry, ok := entries["go"]
+	if !ok {
+		t.Fatal("expected go entry")
+	}
+
+	if goEntry.Image != "golang:1.24-alpine" {
+		t.Fatalf("unexpected image: %s", goEntry.Image)
+	}
+	if goEntry.Timezone != "UTC" {
+		t.Fatalf("unexpected timezone: %s", goEntry.Timezone)
+	}
+
+	want := []string{"MS-CEINTL.vscode-language-pack-ja", "golang.Go", "MS-CEINTL.vscode-language-pack-ja"}
+	if !reflect.DeepEqual(goEntry.VSCodeExtensions, want) {
+		t.Fatalf("unexpected extensions: %#v", goEntry.VSCodeExtensions)
+	}
+}
+
+func TestLoadLanguageBaseImages_AppliesCommonToDefaultLanguage(t *testing.T) {
+	dir := t.TempDir()
+	cfgPath := filepath.Join(dir, "images.json")
+	cfg := `{
+  "common": {
+    "timezone": "Asia/Tokyo",
+    "vscodeExtensions": ["username.errorlens"]
+  }
+}`
+	if err := os.WriteFile(cfgPath, []byte(cfg), 0o644); err != nil {
+		t.Fatalf("failed to write config file: %v", err)
+	}
+
+	entries, err := loadLanguageBaseImages(cfgPath)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	goEntry := entries["go"]
+	if goEntry.Timezone != "Asia/Tokyo" {
+		t.Fatalf("unexpected timezone: %s", goEntry.Timezone)
+	}
+	want := []string{"username.errorlens"}
+	if !reflect.DeepEqual(goEntry.VSCodeExtensions, want) {
+		t.Fatalf("unexpected extensions: %#v", goEntry.VSCodeExtensions)
 	}
 }

@@ -78,7 +78,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	resolvedBaseImage, resolvedInstall, resolvedConfigTimezone, err := resolveBaseImage(resolvedLanguage, *baseImage, *imageConfig)
+	resolvedBaseImage, resolvedInstall, resolvedConfigTimezone, resolvedExtensions, err := resolveBaseImage(resolvedLanguage, *baseImage, *imageConfig)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
@@ -91,14 +91,15 @@ func main() {
 	}
 
 	config := entity.CodespaceConfig{
-		ContainerName:   resolvedProjectName,
-		ServiceName:     resolvedServiceName,
-		WorkspaceFolder: resolvedWorkspaceFolder,
-		BaseImage:       resolvedBaseImage,
-		Timezone:        resolvedTimezone,
-		ComposeFileName: *composeFile,
-		PortMapping:     resolvedPort,
-		InstallCommand:  resolvedInstall,
+		ContainerName:    resolvedProjectName,
+		ServiceName:      resolvedServiceName,
+		WorkspaceFolder:  resolvedWorkspaceFolder,
+		BaseImage:        resolvedBaseImage,
+		Timezone:         resolvedTimezone,
+		ComposeFileName:  *composeFile,
+		PortMapping:      resolvedPort,
+		InstallCommand:   resolvedInstall,
+		VSCodeExtensions: resolvedExtensions,
 	}
 
 	generatorImpl := generator.NewDefaultTemplateGenerator()
@@ -284,32 +285,33 @@ func normalizePortMapping(value string) (string, error) {
 }
 
 type languageEntry struct {
-	Image    string
-	Install  string
-	Timezone string
+	Image            string
+	Install          string
+	Timezone         string
+	VSCodeExtensions []string
 }
 
-func resolveBaseImage(language string, explicitBaseImage string, imageConfig string) (string, string, string, error) {
+func resolveBaseImage(language string, explicitBaseImage string, imageConfig string) (string, string, string, []string, error) {
 	if explicitBaseImage != "" {
-		return explicitBaseImage, "", "", nil
+		return explicitBaseImage, "", "", nil, nil
 	}
 
 	if strings.TrimSpace(language) == "" {
-		return "alpine:latest", "", "", nil
+		return "alpine:latest", "", "", nil, nil
 	}
 
 	entries, err := loadLanguageBaseImages(imageConfig)
 	if err != nil {
-		return "", "", "", err
+		return "", "", "", nil, err
 	}
 
 	key := strings.ToLower(strings.TrimSpace(language))
 	entry, ok := entries[key]
 	if !ok {
-		return "", "", "", fmt.Errorf("unsupported language: %s", language)
+		return "", "", "", nil, fmt.Errorf("unsupported language: %s", language)
 	}
 
-	return entry.Image, entry.Install, entry.Timezone, nil
+	return entry.Image, entry.Install, entry.Timezone, entry.VSCodeExtensions, nil
 }
 
 func loadLanguageBaseImages(source string) (map[string]languageEntry, error) {
@@ -338,9 +340,18 @@ func loadLanguageBaseImages(source string) (map[string]languageEntry, error) {
 		return nil, fmt.Errorf("failed to parse base image config: %w", err)
 	}
 
+	common, err := parseCommonEntry(overrides)
+	if err != nil {
+		return nil, err
+	}
+
+	for k, v := range resolved {
+		resolved[k] = mergeLanguageEntries(common, v)
+	}
+
 	for k, v := range overrides {
 		normalizedKey := strings.ToLower(strings.TrimSpace(k))
-		if normalizedKey == "" {
+		if normalizedKey == "" || normalizedKey == "common" || normalizedKey == "$schema" {
 			continue
 		}
 		entry, err := parseLanguageEntry(v)
@@ -349,19 +360,54 @@ func loadLanguageBaseImages(source string) (map[string]languageEntry, error) {
 		}
 
 		base := resolved[normalizedKey]
-		if entry.Image == "" {
-			entry.Image = base.Image
-		}
-		if entry.Install == "" {
-			entry.Install = base.Install
-		}
-		if entry.Timezone == "" {
-			entry.Timezone = base.Timezone
-		}
-		resolved[normalizedKey] = entry
+		resolved[normalizedKey] = mergeLanguageEntries(base, entry)
 	}
 
 	return resolved, nil
+}
+
+func parseCommonEntry(overrides map[string]json.RawMessage) (languageEntry, error) {
+	for k, v := range overrides {
+		if strings.ToLower(strings.TrimSpace(k)) != "common" {
+			continue
+		}
+
+		entry, err := parseLanguageEntry(v)
+		if err != nil {
+			return languageEntry{}, fmt.Errorf("invalid entry for %q: %w", k, err)
+		}
+		return entry, nil
+	}
+
+	return languageEntry{}, nil
+}
+
+func mergeLanguageEntries(base languageEntry, override languageEntry) languageEntry {
+	merged := languageEntry{
+		Image:    firstNonEmpty(override.Image, base.Image),
+		Install:  firstNonEmpty(override.Install, base.Install),
+		Timezone: firstNonEmpty(override.Timezone, base.Timezone),
+	}
+
+	merged.VSCodeExtensions = append(merged.VSCodeExtensions, base.VSCodeExtensions...)
+	merged.VSCodeExtensions = append(merged.VSCodeExtensions, override.VSCodeExtensions...)
+
+	if merged.Image == "" && merged.Install != "" {
+		merged.Image = "alpine:latest"
+	}
+
+	return merged
+}
+
+func firstNonEmpty(values ...string) string {
+	for _, v := range values {
+		trimmed := strings.TrimSpace(v)
+		if trimmed != "" {
+			return trimmed
+		}
+	}
+
+	return ""
 }
 
 func parseLanguageEntry(raw json.RawMessage) (languageEntry, error) {
@@ -371,22 +417,30 @@ func parseLanguageEntry(raw json.RawMessage) (languageEntry, error) {
 	}
 
 	var obj struct {
-		Image    string `json:"image"`
-		Install  string `json:"install"`
-		Timezone string `json:"timezone"`
+		Image            string   `json:"image"`
+		Install          string   `json:"install"`
+		Timezone         string   `json:"timezone"`
+		VSCodeExtensions []string `json:"vscodeExtensions"`
 	}
 	if err := json.Unmarshal(raw, &obj); err != nil {
-		return languageEntry{}, fmt.Errorf("must be a string or {\"image\",\"install\",\"timezone\"} object: %w", err)
+		return languageEntry{}, fmt.Errorf("must be a string or {\"image\",\"install\",\"timezone\",\"vscodeExtensions\"} object: %w", err)
 	}
 
 	img := strings.TrimSpace(obj.Image)
 	install := strings.TrimSpace(obj.Install)
 	timezone := strings.TrimSpace(obj.Timezone)
+	vscodeExtensions := make([]string, 0, len(obj.VSCodeExtensions))
+	for _, ext := range obj.VSCodeExtensions {
+		trimmed := strings.TrimSpace(ext)
+		if trimmed != "" {
+			vscodeExtensions = append(vscodeExtensions, trimmed)
+		}
+	}
 	if img == "" && install != "" {
 		img = "alpine:latest"
 	}
 
-	return languageEntry{Image: img, Install: install, Timezone: timezone}, nil
+	return languageEntry{Image: img, Install: install, Timezone: timezone, VSCodeExtensions: vscodeExtensions}, nil
 }
 
 func fetchBaseImageConfig(source string) ([]byte, error) {
