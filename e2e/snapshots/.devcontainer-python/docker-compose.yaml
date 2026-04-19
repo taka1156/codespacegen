@@ -1,0 +1,6 @@
+services:
+    app:
+      build: .
+      tty: true
+      volumes:
+        - ../:/workspace

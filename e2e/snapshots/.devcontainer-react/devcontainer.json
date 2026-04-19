@@ -1,0 +1,21 @@
+{
+  "name": "sample",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "dockerComposeFile": "docker-compose.yaml",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      },
+      "extensions": [
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "jawandarajbir.react-vscode-extension-pack",
+        "dbaeumer.vscode-eslint",
+        "stylelint.vscode-stylelint",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  }
+}
