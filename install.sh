@@ -45,7 +45,7 @@ main() {
   download_url="https://github.com/${REPO}/releases/latest/download/${asset}"
 
   tmpdir="$(mktemp -d)"
-  trap 'rm -rf "$tmpdir"' EXIT
+  trap '[[ -n "${tmpdir:-}" ]] && rm -rf "$tmpdir"' EXIT
 
   echo "downloading ${asset} ..."
   curl -fsSL "$download_url" -o "$tmpdir/$asset"
