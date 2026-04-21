@@ -22,3 +22,39 @@ error_invalid_port_format:
   other: "無効なポート形式です。3000 または 3000:3000 の形式で入力してください。"
 msg_generated_files:
   other: "Codespaceファイルを {{.OutputDir}} に生成しました"
+error_failed_to_read_project_name:
+  other: "プロジェクト名の読み取りに失敗しました"
+error_failed_to_read_language:
+  other: "言語の読み取りに失敗しました"
+error_failed_to_read_workspace_folder:
+  other: "ワークスペースフォルダの読み取りに失敗しました"
+error_failed_to_read_timezone:
+  other: "タイムゾーンの読み取りに失敗しました"
+error_failed_to_read_service_name:
+  other: "サービス名の読み取りに失敗しました"
+error_failed_to_read_port_input:
+  other: "ポート入力の読み取りに失敗しました"
+error_invalid_port_mapping:
+  other: "無効なポートマッピング: {{.Value}}"
+error_unsupported_language:
+  other: "サポートされていない言語: {{.Language}}"
+error_image_required_for_language:
+  other: "言語 \"{{.Language}}\" にはイメージが必要です: 設定ファイルの \"image\" を指定してください"
+error_failed_to_parse_base_image_config:
+  other: "ベースイメージ設定のパースに失敗しました"
+error_invalid_entry_for_key:
+  other: "\"{{.Key}}\" のエントリが不正です"
+error_must_be_string_or_object:
+  other: "文字列または {\"image\",\"install\",\"timezone\",\"locale\",\"vscodeExtensions\"} オブジェクトである必要があります"
+error_image_required_when_install:
+  other: "install コマンドが指定されている場合は image が必要です\n（インストールコマンドはコンテナイメージに強く依存するためです。）"
+error_failed_to_fetch_base_image_config_url:
+  other: "URL からベースイメージ設定の取得に失敗しました"
+error_base_image_config_url_status:
+  other: "ベースイメージ設定 URL がステータス {{.StatusCode}} を返しました"
+error_failed_to_read_base_image_config_response:
+  other: "ベースイメージ設定のレスポンス読み取りに失敗しました"
+error_http_not_allowed_for_image_config:
+  other: "-image-config に http:// は使用できません。https:// を使用してください"
+error_failed_to_read_base_image_config:
+  other: "ベースイメージ設定の読み取りに失敗しました"
