@@ -68,8 +68,8 @@ resolve_tag() {
 	tag="$(strip_v_prefix "${TAG}")"
 
 	if [[ -z "$tag" ]]; then
-		tag="$(git describe --tags 2>/dev/null)" \
-			|| die "no tag found. Use -t to specify a tag."
+		tag="$(git describe --tags 2>/dev/null)" ||
+			die "no tag found. Use -t to specify a tag."
 		tag="$(strip_v_prefix "$tag")"
 	fi
 
@@ -80,11 +80,17 @@ create_tag() {
 	local tag="$1"
 	local full_tag="v${tag}"
 
-	[[ -n "$(git tag -l "$full_tag")" ]] \
-		&& die "tag ${full_tag} already exists"
+	[[ -n "$(git tag -l "$full_tag")" ]] &&
+		return 1
 
 	git tag "$full_tag"
 	echo "Created tag: ${full_tag}"
+	return 0
+}
+
+remote_has_tag() {
+	local full_tag="$1"
+	git ls-remote --tags origin "refs/tags/${full_tag}" | grep -q .
 }
 
 push_tag() {
@@ -103,12 +109,23 @@ main() {
 	local tag
 	tag="$(resolve_tag)"
 
-	create_tag "$tag"
+	local full_tag="v${tag}"
+	if create_tag "$tag"; then
+		:
+	else
+		if [[ "$PUSH" == true ]]; then
+			echo "Tag already exists locally: ${full_tag}"
+		else
+			die "tag ${full_tag} already exists"
+		fi
+	fi
 
 	if [[ "$PUSH" == true ]]; then
-		push_tag "v${tag}"
+		if remote_has_tag "$full_tag"; then
+			die "tag ${full_tag} already exists on origin"
+		fi
+		push_tag "$full_tag"
 	fi
 }
 
 main "$@"
- 
