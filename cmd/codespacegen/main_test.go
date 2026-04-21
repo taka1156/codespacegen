@@ -11,6 +11,15 @@ import (
 	"codespacegen/internal/domain/entity"
 )
 
+// ─── version ──────────────────────────────────────────────────────────────────
+
+// デフォルト値は "dev"（ldflags でビルド時に上書きされる）。
+func TestVersion_DefaultIsDev(t *testing.T) {
+	if version != "dev" {
+		t.Fatalf("expected default version to be \"dev\", got: %s", version)
+	}
+}
+
 // ─── resolveTimezone ───────────────────────────────────────────────────────────
 
 func TestResolveTimezone_UsesDefaultWhenEmpty(t *testing.T) {
@@ -210,8 +219,8 @@ func TestResolveBaseImage_UnsupportedLanguageReturnsError(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error for unsupported language")
 	}
-	if !strings.Contains(err.Error(), "unsupported language") {
-		t.Fatalf("expected 'unsupported language' in error, got: %v", err)
+	if !strings.Contains(err.Error(), "unknownlang") {
+		t.Fatalf("expected language key 'unknownlang' in error, got: %v", err)
 	}
 }
 

@@ -22,3 +22,39 @@ error_invalid_port_format:
   other: "Invalid port format. Please use 3000 or 3000:3000."
 msg_generated_files:
   other: "Generated Codespace files in {{.OutputDir}}"
+error_failed_to_read_project_name:
+  other: "failed to read project name"
+error_failed_to_read_language:
+  other: "failed to read language"
+error_failed_to_read_workspace_folder:
+  other: "failed to read workspace folder"
+error_failed_to_read_timezone:
+  other: "failed to read timezone"
+error_failed_to_read_service_name:
+  other: "failed to read service name"
+error_failed_to_read_port_input:
+  other: "failed to read port input"
+error_invalid_port_mapping:
+  other: "invalid port mapping: {{.Value}}"
+error_unsupported_language:
+  other: "unsupported language: {{.Language}}"
+error_image_required_for_language:
+  other: "image is required for language \"{{.Language}}\": set \"image\" in the config"
+error_failed_to_parse_base_image_config:
+  other: "failed to parse base image config"
+error_invalid_entry_for_key:
+  other: "invalid entry for \"{{.Key}}\""
+error_must_be_string_or_object:
+  other: "must be a string or {\"image\",\"install\",\"timezone\",\"locale\",\"vscodeExtensions\"} object"
+error_image_required_when_install:
+  other: "image is required when install command is provided\n(This is because the installation command is highly dependent on the container image.)"
+error_failed_to_fetch_base_image_config_url:
+  other: "failed to fetch base image config from URL"
+error_base_image_config_url_status:
+  other: "base image config URL returned status {{.StatusCode}}"
+error_failed_to_read_base_image_config_response:
+  other: "failed to read base image config response"
+error_http_not_allowed_for_image_config:
+  other: "http:// is not allowed for -image-config; use https://"
+error_failed_to_read_base_image_config:
+  other: "failed to read base image config"
