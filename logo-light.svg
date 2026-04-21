@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 160" width="520" height="160">
+  <defs>
+    <linearGradient id="bgC4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff"/>
+      <stop offset="100%" style="stop-color:#f7f8fa"/>
+    </linearGradient>
+    <linearGradient id="markGrad4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563eb"/>
+      <stop offset="100%" style="stop-color:#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="genGrad4" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#2563eb"/>
+      <stop offset="100%" style="stop-color:#7c3aed"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="520" height="160" fill="url(#bgC4)"/>
+
+  <!-- Icon mark -->
+  <g transform="translate(20, 24)">
+    <rect x="0" y="0" width="112" height="112" rx="22" fill="url(#markGrad4)"/>
+    <path d="M34,30 L22,56 L34,82"
+          fill="none" stroke="white" stroke-width="6"
+          stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M78,30 L90,56 L78,82"
+          fill="none" stroke="white" stroke-width="6"
+          stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="44" y1="56" x2="64" y2="56"
+          stroke="white" stroke-width="4.5" stroke-linecap="round"/>
+    <polyline points="56,47 68,56 56,65"
+              fill="none" stroke="white" stroke-width="4.5"
+              stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- "codespacegen" as one word, gen in blue/purple -->
+  <text x="152" y="90"
+        font-family="'Helvetica Neue', Arial, sans-serif"
+        font-size="46"
+        font-weight="700"
+        letter-spacing="-1.5">
+    <tspan fill="#0f172a">codespace</tspan><tspan fill="#2563eb">gen</tspan>
+  </text>
+
+  <!-- Tagline -->
+  <circle cx="162" cy="114" r="3.5" fill="#2563eb"/>
+  <text x="174" y="120"
+        font-family="'Helvetica Neue', Arial, sans-serif"
+        font-size="13"
+        font-weight="400"
+        fill="#64748b"
+        letter-spacing="0.3">devcontainer file generator</text>
+</svg>
