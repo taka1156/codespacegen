@@ -1,6 +1,11 @@
 {
     "$schema": "https://raw.githubusercontent.com/taka1156/codespacegen/refs/heads/master/codespacegen.schema.json",
     "common": {
+        "locale": {
+            "lang": "en.UTF-8",
+            "language": "en_US:en",
+            "lcAll": "en.UTF-8"
+        },
         "timezone": "Asia/Tokyo",
         "vscodeExtensions": [
             "MS-CEINTL.vscode-language-pack-ja",

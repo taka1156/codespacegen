@@ -6,11 +6,24 @@ const DefaultImage = "alpine:latest"
 // CodespaceConfig holds values used to generate devcontainer artifacts.
 const DefaultTimezone = "UTC"
 
+type LocaleConfig struct {
+	Lang     string
+	Language string
+	LcAll    string
+}
+
+var DefaultLocale = LocaleConfig{
+	Lang:     "ja_JP.UTF-8",
+	Language: "ja_JP:ja",
+	LcAll:    "ja_JP.UTF-8",
+}
+
 type CodespaceConfig struct {
 	ContainerName    string
 	ServiceName      string
 	WorkspaceFolder  string
 	BaseImage        string
+	Locale           LocaleConfig
 	Timezone         string
 	ComposeFileName  string
 	PortMapping      string
