@@ -24,7 +24,7 @@ e2e:
 bin:
 	mkdir -p $(BIN_DIR)
 	go build -o $(BIN_DIR)/$(BINARY) $(CMD)
-	$(BIN_DIR)/codespacegen -output $(BIN_DIR)
+	$(BIN_DIR)/codespacegen -output $(BIN_DIR)/.devcontainer
 
 clean:
 	rm -rf $(BIN_DIR)
