@@ -22,6 +22,7 @@ import (
 )
 
 var (
+	version            = "dev"
 	portOnlyPattern    = regexp.MustCompile(`^\d+$`)
 	portMappingPattern = regexp.MustCompile(`^\d+:\d+$`)
 )
@@ -40,9 +41,15 @@ func main() {
 		composeFile     = flag.String("compose-file", "docker-compose.yaml", "docker compose file name")
 		overwrite       = flag.Bool("force", false, "overwrite existing files")
 		lang            = flag.String("lang", "", "language for CLI messages (en/ja, default: auto-detect)")
+		showVersion     = flag.Bool("v", false, "print version and exit")
 	)
 
 	flag.Parse()
+
+	if *showVersion {
+		fmt.Println(version)
+		return
+	}
 
 	if *lang != "" {
 		i18n.SetLang(*lang)
