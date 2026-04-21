@@ -1,12 +1,34 @@
 package generator
 
 import (
+	"bytes"
+	"embed"
 	"encoding/json"
 	"fmt"
 	"strings"
+	"text/template"
 
 	"codespacegen/internal/domain/entity"
 )
+
+//go:embed template/Dockerfile.tmpl template/docker-compose.yaml.tmpl
+var templateFiles embed.FS
+
+type dockerfileData struct {
+	BaseImage       string
+	WorkspaceFolder string
+	Timezone        string
+	Locale          entity.LocaleConfig
+	BaseSetup       string
+	TimezoneSetup   string
+	InstallBlock    string
+}
+
+type composeData struct {
+	ServiceName     string
+	WorkspaceFolder string
+	PortMapping     string
+}
 
 type DefaultTemplateGenerator struct{}
 
@@ -32,7 +54,12 @@ func NewDefaultTemplateGenerator() *DefaultTemplateGenerator {
 }
 
 func (g *DefaultTemplateGenerator) Generate(config entity.CodespaceConfig) ([]entity.GeneratedFile, error) {
-	baseSetup := renderBaseSetupBlock(config.BaseImage)
+	locale := config.Locale
+	if locale.Lang == "" {
+		locale = entity.DefaultLocale
+	}
+
+	baseSetup := renderBaseSetupBlock(config.BaseImage, locale)
 	timezone := strings.TrimSpace(config.Timezone)
 	if timezone == "" {
 		timezone = entity.DefaultTimezone
@@ -44,36 +71,39 @@ func (g *DefaultTemplateGenerator) Generate(config entity.CodespaceConfig) ([]en
 		installBlock = fmt.Sprintf("RUN %s\n\n", config.InstallCommand)
 	}
 
-	dockerfile := fmt.Sprintf(`FROM %s
+	// Dockerfile
+	dockerfileTmpl, err := template.ParseFS(templateFiles, "template/Dockerfile.tmpl")
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse Dockerfile template: %w", err)
+	}
+	var dockerfileBuf bytes.Buffer
+	if err := dockerfileTmpl.Execute(&dockerfileBuf, dockerfileData{
+		BaseImage:       config.BaseImage,
+		WorkspaceFolder: config.WorkspaceFolder,
+		Timezone:        timezone,
+		Locale:          locale,
+		BaseSetup:       baseSetup,
+		TimezoneSetup:   timezoneSetup,
+		InstallBlock:    installBlock,
+	}); err != nil {
+		return nil, fmt.Errorf("failed to render Dockerfile: %w", err)
+	}
+	dockerfile := dockerfileBuf.String()
 
-WORKDIR %s
-
-ENV LANG=ja_JP.UTF-8 \
-    LANGUAGE=ja_JP:ja \
-    LC_ALL=ja_JP.UTF-8 \
-  TZ=%s
-
-%s
-
-RUN git lfs install
-
-%s
-
-RUN <<-EOF
-curl -o ~/.git-prompt.sh https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh
-curl -o ~/.git-completion.sh https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash
-
-echo "[ -f ~/.git-prompt.sh ] && source ~/.git-prompt.sh" >> ~/.bashrc
-echo "[ -f ~/.git-completion.sh ] && source ~/.git-completion.sh" >> ~/.bashrc
-echo "GIT_PS1_SHOWDIRTYSTATE=true" >> ~/.bashrc
-echo "GIT_PS1_SHOWUNTRACKEDFILES=true" >> ~/.bashrc
-echo "GIT_PS1_SHOWUPSTREAM=auto"  >> ~/.bashrc
-git config --system --add safe.directory %s
-echo 'export PS1="\[\033[01;32m\]\u@\h\[\033[01;33m\] \w \[\033[01;31m\]\$(__git_ps1 \"(%%s)\") \\n+\[\033[01;34m\]\\$ \[\033[00m\]"' >> ~/.bashrc
-EOF
-
-%sCMD ["bash"]
-`, config.BaseImage, config.WorkspaceFolder, timezone, baseSetup, timezoneSetup, config.WorkspaceFolder, installBlock)
+	// docker-compose
+	composeTmpl, err := template.ParseFS(templateFiles, "template/docker-compose.yaml.tmpl")
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse docker-compose template: %w", err)
+	}
+	var composeBuf bytes.Buffer
+	if err := composeTmpl.Execute(&composeBuf, composeData{
+		ServiceName:     config.ServiceName,
+		WorkspaceFolder: config.WorkspaceFolder,
+		PortMapping:     config.PortMapping,
+	}); err != nil {
+		return nil, fmt.Errorf("failed to render docker-compose: %w", err)
+	}
+	compose := composeBuf.String()
 
 	extensions := []string{"GitHub.copilot", "GitHub.copilot-chat"}
 	extensions = append(extensions, config.VSCodeExtensions...)
@@ -100,18 +130,6 @@ EOF
 	}
 	devcontainer := string(devcontainerBytes) + "\n"
 
-	compose := fmt.Sprintf(`services:
-    %s:
-      build: .
-      tty: true
-      volumes:
-        - ../:%s
-`, config.ServiceName, config.WorkspaceFolder)
-
-	if config.PortMapping != "" {
-		compose += fmt.Sprintf("      ports:\n        - \"%s\"\n", config.PortMapping)
-	}
-
 	return []entity.GeneratedFile{
 		{RelativePath: "Dockerfile", Content: dockerfile},
 		{RelativePath: "devcontainer.json", Content: devcontainer},
@@ -137,7 +155,7 @@ func isAlpineImage(baseImage string) bool {
 	return strings.Contains(strings.ToLower(strings.TrimSpace(baseImage)), "alpine")
 }
 
-func renderBaseSetupBlock(baseImage string) string {
+func renderBaseSetupBlock(baseImage string, locale entity.LocaleConfig) string {
 	if isAlpineImage(baseImage) {
 		return `RUN <<-EOF
 apk add --no-cache \
@@ -167,8 +185,8 @@ apt-get install -y --no-install-recommends \
   curl \
   locales
 rm -rf /var/lib/apt/lists/*
-locale-gen ja_JP.UTF-8
-update-locale LANG=ja_JP.UTF-8 LC_ALL=ja_JP.UTF-8
+locale-gen ` + locale.Lang + `
+update-locale LANG=` + locale.Lang + ` LC_ALL=` + locale.LcAll + `
 EOF`
 }
 

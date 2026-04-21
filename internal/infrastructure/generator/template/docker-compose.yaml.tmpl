@@ -1,0 +1,10 @@
+services:
+    {{.ServiceName}}:
+      build: .
+      tty: true
+      volumes:
+        - ../:{{.WorkspaceFolder}}
+{{- if .PortMapping}}
+      ports:
+        - "{{.PortMapping}}"
+{{- end}}

@@ -7,6 +7,18 @@ BIN_PATH="$ROOT_DIR/e2e/codespacegen"
 IMAGE_CONFIG="$ROOT_DIR/e2e/codespacegen.json"
 SNAPSHOT_DIR="$ROOT_DIR/e2e/snapshots"
 
+UPDATE=false
+for arg in "$@"; do
+	case "$arg" in
+		--update|-update) UPDATE=true ;;
+		*)
+			echo "[e2e] unknown option: $arg"
+			echo "Usage: $0 [--update]"
+			exit 1
+			;;
+	esac
+done
+
 if [[ ! -x "$BIN_PATH" ]]; then
 	echo "[e2e] binary not found: $BIN_PATH"
 	echo "[e2e] run 'make e2e' from repository root"
@@ -41,13 +53,18 @@ for snapshot_case_dir in "$SNAPSHOT_DIR"/.devcontainer-*; do
 			;;
 	esac
 
-	out_dir="$WORK_DIR/.devcontainer-$suffix"
-
-	mkdir -p "$out_dir"
-
 	port_args=()
 	if grep -q "^[[:space:]]*ports:" "$snapshot_case_dir/docker-compose.yaml"; then
 		port_args=("-port" "3000")
+	fi
+
+	if [[ "$UPDATE" == "true" ]]; then
+		out_dir="$snapshot_case_dir"
+		rm -f "$out_dir/Dockerfile" "$out_dir/devcontainer.json" "$out_dir/docker-compose.yaml"
+		echo "[e2e] updating snapshot: $suffix"
+	else
+		out_dir="$WORK_DIR/.devcontainer-$suffix"
+		mkdir -p "$out_dir"
 	fi
 
 	"$BIN_PATH" \
@@ -61,14 +78,21 @@ for snapshot_case_dir in "$SNAPSHOT_DIR"/.devcontainer-*; do
 		"${port_args[@]}" \
 		</dev/null >/dev/null
 
-	for target in Dockerfile devcontainer.json docker-compose.yaml; do
-		if ! diff -u "$snapshot_case_dir/$target" "$out_dir/$target" >/dev/null; then
-			echo "[e2e] mismatch: $suffix/$target"
-			diff -u "$snapshot_case_dir/$target" "$out_dir/$target" || true
-			failures=$((failures + 1))
-		fi
-	done
+	if [[ "$UPDATE" == "false" ]]; then
+		for target in Dockerfile devcontainer.json docker-compose.yaml; do
+			if ! diff -u "$snapshot_case_dir/$target" "$out_dir/$target" >/dev/null; then
+				echo "[e2e] mismatch: $suffix/$target"
+				diff -u "$snapshot_case_dir/$target" "$out_dir/$target" || true
+				failures=$((failures + 1))
+			fi
+		done
+	fi
 done
+
+if [[ "$UPDATE" == "true" ]]; then
+	echo "[e2e] snapshots updated"
+	exit 0
+fi
 
 if [[ $failures -gt 0 ]]; then
 	echo "[e2e] failed with $failures mismatch(es)"

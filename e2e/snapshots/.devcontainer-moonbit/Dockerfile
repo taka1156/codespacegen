@@ -2,9 +2,9 @@ FROM ubuntu:24.04
 
 WORKDIR /workspace
 
-ENV LANG=ja_JP.UTF-8 \
-    LANGUAGE=ja_JP:ja \
-    LC_ALL=ja_JP.UTF-8 \
+ENV LANG=en.UTF-8 \
+    LANGUAGE=en_US:en \
+    LC_ALL=en.UTF-8 \
   TZ=UTC
 
 RUN <<-EOF
@@ -20,8 +20,8 @@ apt-get install -y --no-install-recommends \
   curl \
   locales
 rm -rf /var/lib/apt/lists/*
-locale-gen ja_JP.UTF-8
-update-locale LANG=ja_JP.UTF-8 LC_ALL=ja_JP.UTF-8
+locale-gen en.UTF-8
+update-locale LANG=en.UTF-8 LC_ALL=en.UTF-8
 EOF
 
 RUN git lfs install
@@ -41,7 +41,7 @@ echo "GIT_PS1_SHOWDIRTYSTATE=true" >> ~/.bashrc
 echo "GIT_PS1_SHOWUNTRACKEDFILES=true" >> ~/.bashrc
 echo "GIT_PS1_SHOWUPSTREAM=auto"  >> ~/.bashrc
 git config --system --add safe.directory /workspace
-echo 'export PS1="\[\033[01;32m\]\u@\h\[\033[01;33m\] \w \[\033[01;31m\]\$(__git_ps1 \"(%s)\") \\n+\[\033[01;34m\]\\$ \[\033[00m\]"' >> ~/.bashrc
+echo 'export PS1="\[\033[01;32m\]\u@\h\[\033[01;33m\] \w \[\033[01;31m\]\$(__git_ps1 "(%s)") \\n+\[\033[01;34m\]\\$ \[\033[00m\]"' >> ~/.bashrc
 EOF
 
 RUN curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash

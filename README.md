@@ -45,29 +45,21 @@ By default, files are generated under .devcontainer.
 |---|---|---|
 | `-output` | `.devcontainer` | Output directory |
 | `-name` | *(interactive, required)* | Project name. Prompted every time and mapped to the `name` field in `devcontainer.json` |
-| `-language` | *(interactive, empty on Enter)* | Programming language key. Prompted every time. You can use built-ins (`go/python/node/rust`) or any key defined in `codespacegen.json`. If empty, no language-specific setting is used and `alpine:latest` is selected |
+| `-language` | *(interactive, empty on Enter)* | Programming language key. Prompted every time. You can use built-ins (`go/python/node:biome/node:eslint/node:react/rust`) or any key defined in `codespacegen.json`. If empty, no language-specific setting is used and `alpine:latest` is selected |
 | `-service` | *(interactive, `app` on Enter)* | Docker Compose service name. Prompted every time and reflected in both `devcontainer.json` and `docker-compose.yaml` |
 | `-workspace-folder` | *(interactive, `/workspace` on Enter)* | Workspace path inside the container. Prompted every time |
 | `-timezone` | *(interactive, default from `common.timezone` or `UTC`)* | Timezone inside the container. Prompted every time and reflected in `ENV TZ` and timezone setup in the Dockerfile |
 | `-base-image` | *(language default)* | Explicit Docker base image. Overrides the default derived from `-language` |
-| `-image-config` | `codespacegen.json` | Local path or `https://` URL for base image definitions. Supports top-level `common` defaults plus per-language entries. If only `install` is specified and `image` is omitted, `alpine:latest` is used automatically |
+| `-image-config` | `codespacegen.json` | Local path or `https://` URL for base image definitions. Supports top-level `common` defaults plus per-language entries. `image` is required when `install` is specified; it can be omitted for timezone- or extension-only entries when `common` provides the image |
 | `-port` | *(interactive, no ports on Enter)* | Port mapping. For example, `3000` is normalized to `3000:3000`, and `8080:3000` is also accepted. Prompted every time |
 | `-compose-file` | `docker-compose.yaml` | Compose file name |
 | `-force` | `false` | Overwrite existing files |
 | `-lang` | *(auto-detect)* | Language for CLI messages (`en` or `ja`). Defaults to system locale |
 
-Default base images by language:
-
-- go: golang:1.24-alpine
-- python: python:3.12-alpine
-- node: node:22-alpine
-- rust: rust:1-alpine
-
 Base image definitions are separated into [codespacegen.json](codespacegen.json) at the repository root.
 
-- If the JSON file exists: values are loaded from the file and matching keys override defaults
-- If the JSON file does not exist: built-in CLI defaults are used
-- If `-base-image` is specified: it takes precedence over both JSON and built-in defaults
+- If the JSON file exists: values are loaded from the file
+- If `-base-image` is specified: it takes precedence over the JSON config
 
 The generated `devcontainer.json` always includes:
 
@@ -97,11 +89,12 @@ If `codespacegen.json` is at the repository root, `./codespacegen.schema.json` p
 }
 ```
 
-**Pattern 2: object value for install commands, timezone, and VS Code extensions (`alpine:latest` is used automatically when `image` is omitted)**
+**Pattern 2: object value for install commands, timezone, and VS Code extensions (`image` is required when `install` is specified)**
 
 ```json
 {
 	"moonbit": {
+		"image": "ubuntu:24.04",
 		"install": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
 		"timezone": "UTC",
 		"vscodeExtensions": ["moonbit.moonbit-lang"]
@@ -113,19 +106,6 @@ The generated Dockerfile adds the following `RUN` step.
 
 ```dockerfile
 RUN curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
-```
-
-**Pattern 2 variant: specify both image and install command**
-
-```json
-{
-	"moonbit": {
-		"image": "ubuntu:24.04",
-		"install": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
-		"timezone": "UTC",
-		"vscodeExtensions": ["moonbit.moonbit-lang"]
-	}
-}
 ```
 
 **Pattern 3: shared defaults with `common`**
