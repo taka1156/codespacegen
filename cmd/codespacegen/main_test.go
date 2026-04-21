@@ -11,6 +11,15 @@ import (
 	"codespacegen/internal/domain/entity"
 )
 
+// ─── version ──────────────────────────────────────────────────────────────────
+
+// デフォルト値は "dev"（ldflags でビルド時に上書きされる）。
+func TestVersion_DefaultIsDev(t *testing.T) {
+	if version != "dev" {
+		t.Fatalf("expected default version to be \"dev\", got: %s", version)
+	}
+}
+
 // ─── resolveTimezone ───────────────────────────────────────────────────────────
 
 func TestResolveTimezone_UsesDefaultWhenEmpty(t *testing.T) {

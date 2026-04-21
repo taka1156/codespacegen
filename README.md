@@ -55,6 +55,7 @@ By default, files are generated under .devcontainer.
 | `-compose-file` | `docker-compose.yaml` | Compose file name |
 | `-force` | `false` | Overwrite existing files |
 | `-lang` | *(auto-detect)* | Language for CLI messages (`en` or `ja`). Defaults to system locale |
+| `-v` | — | Print version and exit |
 
 Base image definitions are separated into [codespacegen.json](codespacegen.json) at the repository root.
 

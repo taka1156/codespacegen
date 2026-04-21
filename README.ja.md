@@ -55,6 +55,7 @@ go run ./cmd/codespacegen
 | `-compose-file` | `docker-compose.yaml` | Composeファイル名 |
 | `-force` | `false` | 既存ファイルを上書き |
 | `-lang` | *(自動検出)* | CLI メッセージの言語 (`en` or `ja`)。未指定の場合はシステムロケールを使用 |
+| `-v` | — | バージョンを出力して終了 |
 
 ベースイメージ定義はリポジトリルートの [codespacegen.json](codespacegen.json) に分離しています。
 
