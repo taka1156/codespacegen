@@ -143,7 +143,7 @@ func resolveProjectName(explicitProjectName string) (string, error) {
 				}
 				return line, nil
 			}
-			return "", fmt.Errorf("failed to read project name: %w", err)
+			return "", fmt.Errorf("%s: %w", i18n.T("error_failed_to_read_project_name"), err)
 		}
 
 		line = strings.TrimSpace(line)
@@ -186,7 +186,7 @@ func resolveLanguage(explicitLanguage string) (string, error) {
 	defaultLanguage := strings.TrimSpace(explicitLanguage)
 	value, err := promptWithDefault(i18n.T("prompt_language"), defaultLanguage)
 	if err != nil {
-		return "", fmt.Errorf("failed to read language: %w", err)
+		return "", fmt.Errorf("%s: %w", i18n.T("error_failed_to_read_language"), err)
 	}
 	return strings.ToLower(strings.TrimSpace(value)), nil
 }
@@ -198,7 +198,7 @@ func resolveWorkspaceFolder(explicitWorkspaceFolder string) (string, error) {
 	}
 	value, err := promptWithDefault(i18n.T("prompt_workspace_folder", map[string]interface{}{"Default": defaultWorkspaceFolder}), defaultWorkspaceFolder)
 	if err != nil {
-		return "", fmt.Errorf("failed to read workspace folder: %w", err)
+		return "", fmt.Errorf("%s: %w", i18n.T("error_failed_to_read_workspace_folder"), err)
 	}
 	return strings.TrimSpace(value), nil
 }
@@ -214,7 +214,7 @@ func resolveTimezone(explicitTimezone string, configTimezone string) (string, er
 
 	value, err := promptWithDefault(i18n.T("prompt_timezone", map[string]interface{}{"Default": defaultTimezone}), defaultTimezone)
 	if err != nil {
-		return "", fmt.Errorf("failed to read timezone: %w", err)
+		return "", fmt.Errorf("%s: %w", i18n.T("error_failed_to_read_timezone"), err)
 	}
 
 	return strings.TrimSpace(value), nil
@@ -227,7 +227,7 @@ func resolveServiceName(explicitServiceName string) (string, error) {
 	}
 	value, err := promptWithDefault(i18n.T("prompt_service_name", map[string]interface{}{"Default": defaultServiceName}), defaultServiceName)
 	if err != nil {
-		return "", fmt.Errorf("failed to read service name: %w", err)
+		return "", fmt.Errorf("%s: %w", i18n.T("error_failed_to_read_service_name"), err)
 	}
 	return strings.TrimSpace(value), nil
 }
@@ -253,7 +253,7 @@ func resolvePortMapping(explicitPort string) (string, error) {
 				}
 				return normalizePortMapping(line)
 			}
-			return "", fmt.Errorf("failed to read port input: %w", err)
+			return "", fmt.Errorf("%s: %w", i18n.T("error_failed_to_read_port_input"), err)
 		}
 
 		line = strings.TrimSpace(line)
@@ -282,7 +282,7 @@ func normalizePortMapping(value string) (string, error) {
 		return v, nil
 	}
 
-	return "", fmt.Errorf("invalid port mapping: %s", value)
+	return "", errors.New(i18n.T("error_invalid_port_mapping", map[string]interface{}{"Value": value}))
 }
 
 type jsonEntry struct {
@@ -310,11 +310,11 @@ func resolveBaseImage(language string, explicitBaseImage string, imageConfig str
 	key := strings.ToLower(strings.TrimSpace(language))
 	entry, ok := entries[key]
 	if !ok {
-		return jsonEntry{}, fmt.Errorf("unsupported language: %s", language)
+		return jsonEntry{}, errors.New(i18n.T("error_unsupported_language", map[string]interface{}{"Language": language}))
 	}
 
 	if entry.Image == "" {
-		return jsonEntry{}, fmt.Errorf("image is required for language %q: set \"image\" in the config", language)
+		return jsonEntry{}, errors.New(i18n.T("error_image_required_for_language", map[string]interface{}{"Language": language}))
 	}
 
 	return entry, nil
@@ -330,7 +330,7 @@ func loadLanguageImages(source string) (map[string]jsonEntry, error) {
 
 	var overrides map[string]json.RawMessage
 	if err := json.Unmarshal(raw, &overrides); err != nil {
-		return nil, fmt.Errorf("failed to parse base image config: %w", err)
+		return nil, fmt.Errorf("%s: %w", i18n.T("error_failed_to_parse_base_image_config"), err)
 	}
 
 	common, err := parseCommonEntry(overrides)
@@ -345,7 +345,7 @@ func loadLanguageImages(source string) (map[string]jsonEntry, error) {
 		}
 		entry, err := parseLanguageEntry(v)
 		if err != nil {
-			return nil, fmt.Errorf("invalid entry for %q: %w", k, err)
+			return nil, fmt.Errorf("%s: %w", i18n.T("error_invalid_entry_for_key", map[string]interface{}{"Key": k}), err)
 		}
 
 		images[normalizedKey] = mergeLanguageEntries(common, entry)
@@ -362,7 +362,7 @@ func parseCommonEntry(overrides map[string]json.RawMessage) (jsonEntry, error) {
 
 		entry, err := parseLanguageEntry(v)
 		if err != nil {
-			return jsonEntry{}, fmt.Errorf("invalid entry for %q: %w", k, err)
+			return jsonEntry{}, fmt.Errorf("%s: %w", i18n.T("error_invalid_entry_for_key", map[string]interface{}{"Key": k}), err)
 		}
 		return entry, nil
 	}
@@ -419,7 +419,7 @@ func parseLanguageEntry(raw json.RawMessage) (jsonEntry, error) {
 	}
 
 	if err := json.Unmarshal(raw, &setting); err != nil {
-		return jsonEntry{}, fmt.Errorf("must be a string or {\"image\",\"install\",\"timezone\",\"locale\",\"vscodeExtensions\"} object: %w", err)
+		return jsonEntry{}, fmt.Errorf("%s: %w", i18n.T("error_must_be_string_or_object"), err)
 	}
 
 	image := strings.TrimSpace(setting.Image)
@@ -438,7 +438,7 @@ func parseLanguageEntry(raw json.RawMessage) (jsonEntry, error) {
 		}
 	}
 	if image == "" && install != "" {
-		return jsonEntry{}, fmt.Errorf("image is required when install command is provided\n(This is because the installation command is highly dependent on the container image.)")
+		return jsonEntry{}, errors.New(i18n.T("error_image_required_when_install"))
 	}
 
 	return jsonEntry{Image: image, Install: install, Locale: locale, Timezone: timezone, VSCodeExtensions: vscodeExtensions}, nil
@@ -449,21 +449,21 @@ func fetchBaseImageConfig(source string) ([]byte, error) {
 		client := &http.Client{Timeout: 10 * time.Second}
 		resp, err := client.Get(source) //nolint:noctx
 		if err != nil {
-			return nil, fmt.Errorf("failed to fetch base image config from URL: %w", err)
+			return nil, fmt.Errorf("%s: %w", i18n.T("error_failed_to_fetch_base_image_config_url"), err)
 		}
 		defer resp.Body.Close()
 		if resp.StatusCode != http.StatusOK {
-			return nil, fmt.Errorf("base image config URL returned status %d", resp.StatusCode)
+			return nil, errors.New(i18n.T("error_base_image_config_url_status", map[string]interface{}{"StatusCode": resp.StatusCode}))
 		}
 		raw, err := io.ReadAll(io.LimitReader(resp.Body, 1<<20))
 		if err != nil {
-			return nil, fmt.Errorf("failed to read base image config response: %w", err)
+			return nil, fmt.Errorf("%s: %w", i18n.T("error_failed_to_read_base_image_config_response"), err)
 		}
 		return raw, nil
 	}
 
 	if strings.HasPrefix(source, "http://") {
-		return nil, fmt.Errorf("http:// is not allowed for -image-config; use https://")
+		return nil, errors.New(i18n.T("error_http_not_allowed_for_image_config"))
 	}
 
 	raw, err := os.ReadFile(source)
@@ -471,7 +471,7 @@ func fetchBaseImageConfig(source string) ([]byte, error) {
 		if errors.Is(err, os.ErrNotExist) {
 			return nil, nil
 		}
-		return nil, fmt.Errorf("failed to read base image config: %w", err)
+		return nil, fmt.Errorf("%s: %w", i18n.T("error_failed_to_read_base_image_config"), err)
 	}
 	return raw, nil
 }
