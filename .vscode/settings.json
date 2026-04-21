@@ -1,12 +1,30 @@
 {
     "cSpell.words": [
+        "binutils",
+        "CEINTL",
         "codespacegen",
+        "dbaeumer",
+        "dpkg",
+        "errorlens",
+        "esbenp",
         "GOARCH",
+        "jawandarajbir",
         "ldflags",
+        "libc",
+        "localtime",
         "moonbit",
+        "noctx",
+        "nolint",
+        "noninteractive",
+        "SHOWDIRTYSTATE",
+        "SHOWUNTRACKEDFILES",
+        "SHOWUPSTREAM",
         "softprops",
+        "tmpl",
         "trimpath",
         "tzdata",
-        "usecase"
+        "usecase",
+        "Zerotaskx",
+        "zoneinfo"
     ]
 }
