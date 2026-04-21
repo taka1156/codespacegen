@@ -35,6 +35,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -45,19 +47,8 @@ jobs:
         env:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
-          CGO_ENABLED: 0
-        run: |
-          set -eu
-          mkdir -p dist tmp
-          if [ "${{ matrix.archive }}" = "exe" ]; then
-            out="dist/codespacegen_${GOOS}_${GOARCH}.exe"
-            go build -trimpath -ldflags="-s -w" -o "$out" ./cmd/codespacegen
-          else
-            bin="tmp/codespacegen"
-            go build -trimpath -ldflags="-s -w" -o "$bin" ./cmd/codespacegen
-            tar -C tmp -czf "dist/codespacegen_${GOOS}_${GOARCH}.tar.gz" codespacegen
-            rm -f "$bin"
-          fi
+          ARCHIVE: ${{ matrix.archive }}
+        run: bash scripts/build.sh
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
