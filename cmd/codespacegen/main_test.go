@@ -210,8 +210,8 @@ func TestResolveBaseImage_UnsupportedLanguageReturnsError(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error for unsupported language")
 	}
-	if !strings.Contains(err.Error(), "unsupported language") {
-		t.Fatalf("expected 'unsupported language' in error, got: %v", err)
+	if !strings.Contains(err.Error(), "unknownlang") {
+		t.Fatalf("expected language key 'unknownlang' in error, got: %v", err)
 	}
 }
 
