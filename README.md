@@ -45,7 +45,7 @@ By default, files are generated under .devcontainer.
 |---|---|---|
 | `-output` | `.devcontainer` | Output directory |
 | `-name` | *(interactive, required)* | Project name. Prompted every time and mapped to the `name` field in `devcontainer.json` |
-| `-language` | *(interactive, empty on Enter)* | Programming language key. Prompted every time. You can use built-ins (`go/python/node:biome/node:eslint/node:react/rust`) or any key defined in `codespacegen.json`. If empty, no language-specific setting is used and `alpine:latest` is selected |
+| `-language` | *(interactive, empty on Enter)* | Programming language key. Prompted every time. Any key defined in `codespacegen.json` (or the file specified by `-image-config`) can be used. If empty, no language-specific setting is used and `alpine:latest` is selected |
 | `-service` | *(interactive, `app` on Enter)* | Docker Compose service name. Prompted every time and reflected in both `devcontainer.json` and `docker-compose.yaml` |
 | `-workspace-folder` | *(interactive, `/workspace` on Enter)* | Workspace path inside the container. Prompted every time |
 | `-timezone` | *(interactive, default from `common.timezone` or `UTC`)* | Timezone inside the container. Prompted every time and reflected in `ENV TZ` and timezone setup in the Dockerfile |
@@ -89,7 +89,7 @@ If `codespacegen.json` is at the repository root, `./codespacegen.schema.json` p
 }
 ```
 
-**Pattern 2: object value for install commands, timezone, and VS Code extensions (`image` is required when `install` is specified)**
+**Pattern 2: object value for install commands, timezone, locale, and VS Code extensions (`image` is required when `install` is specified)**
 
 ```json
 {
@@ -97,6 +97,11 @@ If `codespacegen.json` is at the repository root, `./codespacegen.schema.json` p
 		"image": "ubuntu:24.04",
 		"install": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
 		"timezone": "UTC",
+		"locale": {
+			"lang": "ja_JP.UTF-8",
+			"language": "ja_JP:ja",
+			"lcAll": "ja_JP.UTF-8"
+		},
 		"vscodeExtensions": ["moonbit.moonbit-lang"]
 	}
 }
@@ -114,6 +119,11 @@ RUN curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
 {
 	"common": {
 		"timezone": "Asia/Tokyo",
+		"locale": {
+			"lang": "ja_JP.UTF-8",
+			"language": "ja_JP:ja",
+			"lcAll": "ja_JP.UTF-8"
+		},
 		"vscodeExtensions": [
 			"MS-CEINTL.vscode-language-pack-ja",
 			"streetsidesoftware.code-spell-checker"
@@ -130,6 +140,7 @@ Merge behavior:
 
 - `common` is applied first, then language-specific values override/append
 - `vscodeExtensions` are merged in order and de-duplicated
+- `locale` is treated as a whole: if the language entry defines `lang`, its full `locale` object takes precedence; otherwise `common.locale` is used
 - If timezone is not set in flags or config, `UTC` is used
 
 Patterns 1, 2, and 3 can be mixed in the same file.
