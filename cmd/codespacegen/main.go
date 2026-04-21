@@ -297,10 +297,10 @@ func resolveBaseImage(language string, explicitBaseImage string, imageConfig str
 	}
 
 	if strings.TrimSpace(language) == "" {
-		return "alpine:latest", "", "", nil, nil
+		return entity.DefaultImage, "", "", nil, nil
 	}
 
-	entries, err := loadLanguageBaseImages(imageConfig)
+	entries, err := loadLanguageImages(imageConfig)
 	if err != nil {
 		return "", "", "", nil, err
 	}
@@ -311,28 +311,19 @@ func resolveBaseImage(language string, explicitBaseImage string, imageConfig str
 		return "", "", "", nil, fmt.Errorf("unsupported language: %s", language)
 	}
 
+	if entry.Image == "" {
+		return "", "", "", nil, fmt.Errorf("image is required for language %q: set \"image\" in the config", language)
+	}
+
 	return entry.Image, entry.Install, entry.Timezone, entry.VSCodeExtensions, nil
 }
 
-func loadLanguageBaseImages(source string) (map[string]languageEntry, error) {
-	defaults := map[string]languageEntry{
-		"go":     {Image: "golang:1.24-alpine"},
-		"python": {Image: "python:3.12-alpine"},
-		"node":   {Image: "node:22-alpine"},
-		"rust":   {Image: "rust:1-alpine"},
-	}
-
-	resolved := map[string]languageEntry{}
-	for k, v := range defaults {
-		resolved[k] = v
-	}
+func loadLanguageImages(source string) (map[string]languageEntry, error) {
+	images := make(map[string]languageEntry)
 
 	raw, err := fetchBaseImageConfig(source)
 	if err != nil {
 		return nil, err
-	}
-	if raw == nil {
-		return resolved, nil
 	}
 
 	var overrides map[string]json.RawMessage
@@ -345,10 +336,6 @@ func loadLanguageBaseImages(source string) (map[string]languageEntry, error) {
 		return nil, err
 	}
 
-	for k, v := range resolved {
-		resolved[k] = mergeLanguageEntries(common, v)
-	}
-
 	for k, v := range overrides {
 		normalizedKey := strings.ToLower(strings.TrimSpace(k))
 		if normalizedKey == "" || normalizedKey == "common" || normalizedKey == "$schema" {
@@ -359,11 +346,10 @@ func loadLanguageBaseImages(source string) (map[string]languageEntry, error) {
 			return nil, fmt.Errorf("invalid entry for %q: %w", k, err)
 		}
 
-		base := resolved[normalizedKey]
-		resolved[normalizedKey] = mergeLanguageEntries(base, entry)
+		images[normalizedKey] = mergeLanguageEntries(common, entry)
 	}
 
-	return resolved, nil
+	return images, nil
 }
 
 func parseCommonEntry(overrides map[string]json.RawMessage) (languageEntry, error) {
@@ -391,10 +377,6 @@ func mergeLanguageEntries(base languageEntry, override languageEntry) languageEn
 
 	merged.VSCodeExtensions = append(merged.VSCodeExtensions, base.VSCodeExtensions...)
 	merged.VSCodeExtensions = append(merged.VSCodeExtensions, override.VSCodeExtensions...)
-
-	if merged.Image == "" && merged.Install != "" {
-		merged.Image = "alpine:latest"
-	}
 
 	return merged
 }
@@ -426,7 +408,7 @@ func parseLanguageEntry(raw json.RawMessage) (languageEntry, error) {
 		return languageEntry{}, fmt.Errorf("must be a string or {\"image\",\"install\",\"timezone\",\"vscodeExtensions\"} object: %w", err)
 	}
 
-	img := strings.TrimSpace(obj.Image)
+	image := strings.TrimSpace(obj.Image)
 	install := strings.TrimSpace(obj.Install)
 	timezone := strings.TrimSpace(obj.Timezone)
 	vscodeExtensions := make([]string, 0, len(obj.VSCodeExtensions))
@@ -436,11 +418,11 @@ func parseLanguageEntry(raw json.RawMessage) (languageEntry, error) {
 			vscodeExtensions = append(vscodeExtensions, trimmed)
 		}
 	}
-	if img == "" && install != "" {
-		img = "alpine:latest"
+	if image == "" && install != "" {
+		return languageEntry{}, fmt.Errorf("image is required when install command is provided\n(This is because the installation command is highly dependent on the container image.)")
 	}
 
-	return languageEntry{Image: img, Install: install, Timezone: timezone, VSCodeExtensions: vscodeExtensions}, nil
+	return languageEntry{Image: image, Install: install, Timezone: timezone, VSCodeExtensions: vscodeExtensions}, nil
 }
 
 func fetchBaseImageConfig(source string) ([]byte, error) {

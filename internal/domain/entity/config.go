@@ -1,5 +1,8 @@
 package entity
 
+// This file defines the CodespaceConfig struct and related constants.
+const DefaultImage = "alpine:latest"
+
 // CodespaceConfig holds values used to generate devcontainer artifacts.
 const DefaultTimezone = "UTC"
 

@@ -13,7 +13,7 @@ func TestDefaultTemplateGenerator_Generate_UsesApkForAlpineImage(t *testing.T) {
 		ContainerName:   "test",
 		ServiceName:     "app",
 		WorkspaceFolder: "/workspace",
-		BaseImage:       "alpine:latest",
+		BaseImage:       entity.DefaultImage,
 		ComposeFileName: "docker-compose.yaml",
 	}
 
@@ -117,7 +117,7 @@ func TestDefaultTemplateGenerator_Generate_EmbedsVSCodeExtensions(t *testing.T) 
 		ContainerName:    "test",
 		ServiceName:      "app",
 		WorkspaceFolder:  "/workspace",
-		BaseImage:        "alpine:latest",
+		BaseImage:        entity.DefaultImage,
 		ComposeFileName:  "docker-compose.yaml",
 		VSCodeExtensions: []string{"MS-CEINTL.vscode-language-pack-ja", "golang.Go", "MS-CEINTL.vscode-language-pack-ja"},
 	}
@@ -148,7 +148,7 @@ func TestDefaultTemplateGenerator_Generate_DevcontainerKeyOrder(t *testing.T) {
 		ContainerName:   "sample",
 		ServiceName:     "app",
 		WorkspaceFolder: "/workspace",
-		BaseImage:       "alpine:latest",
+		BaseImage:       entity.DefaultImage,
 		ComposeFileName: "docker-compose.yaml",
 	}
 
