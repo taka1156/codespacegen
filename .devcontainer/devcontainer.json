@@ -8,16 +8,29 @@
             "extensions": [
                 "MS-CEINTL.vscode-language-pack-ja",
                 "golang.go",
+                "mkhl.shfmt",
                 "streetsidesoftware.code-spell-checker",
                 "username.errorlens"
             ],
             "settings": {
                 "terminal.integrated.cwd": "${containerWorkspaceFolder}",
                 "editor.formatOnSave": true,
-                "[go]": {
-                    "editor.defaultFormatter": "golang.go"
-                },
                 "files.insertFinalNewline": true,
+                "files.trimTrailingWhitespace": true,
+                "editor.insertSpaces": true,
+                "editor.tabSize": 2,
+                "editor.detectIndentation": false,
+                "[go]": {
+                    "editor.defaultFormatter": "golang.go",
+                    "editor.insertSpaces": false,
+                    "editor.tabSize": 4,
+                    "editor.detectIndentation": false
+                },
+                "[shellscript]": {
+                    "editor.defaultFormatter": "mkhl.shfmt",
+                    "editor.tabSize": 2,
+                    "editor.insertSpaces": true
+                },
                 "errorLens.enabledDiagnosticLevels": [
                     "error",
                     "warning"

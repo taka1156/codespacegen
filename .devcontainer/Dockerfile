@@ -9,7 +9,7 @@ ENV LANG=ja_JP.UTF-8 \
 
 RUN <<-EOF
 apt update
-apt install -y locales tzdata git vim curl
+apt install -y locales tzdata git vim curl shfmt
 apt clean
 EOF
 
