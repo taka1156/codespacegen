@@ -78,13 +78,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	resolvedBaseImage, resolvedInstall, resolvedConfigTimezone, resolvedExtensions, err := resolveBaseImage(resolvedLanguage, *baseImage, *imageConfig)
+	resolvedEntry, err := resolveBaseImage(resolvedLanguage, *baseImage, *imageConfig)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
 
-	resolvedTimezone, err := resolveTimezone(*timezone, resolvedConfigTimezone)
+	resolvedTimezone, err := resolveTimezone(*timezone, resolvedEntry.Timezone)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
@@ -94,12 +94,13 @@ func main() {
 		ContainerName:    resolvedProjectName,
 		ServiceName:      resolvedServiceName,
 		WorkspaceFolder:  resolvedWorkspaceFolder,
-		BaseImage:        resolvedBaseImage,
+		BaseImage:        resolvedEntry.Image,
+		Locale:           resolvedEntry.Locale,
 		Timezone:         resolvedTimezone,
 		ComposeFileName:  *composeFile,
 		PortMapping:      resolvedPort,
-		InstallCommand:   resolvedInstall,
-		VSCodeExtensions: resolvedExtensions,
+		InstallCommand:   resolvedEntry.Install,
+		VSCodeExtensions: resolvedEntry.VSCodeExtensions,
 	}
 
 	generatorImpl := generator.NewDefaultTemplateGenerator()
@@ -284,42 +285,43 @@ func normalizePortMapping(value string) (string, error) {
 	return "", fmt.Errorf("invalid port mapping: %s", value)
 }
 
-type languageEntry struct {
+type jsonEntry struct {
 	Image            string
 	Install          string
+	Locale           entity.LocaleConfig
 	Timezone         string
 	VSCodeExtensions []string
 }
 
-func resolveBaseImage(language string, explicitBaseImage string, imageConfig string) (string, string, string, []string, error) {
+func resolveBaseImage(language string, explicitBaseImage string, imageConfig string) (jsonEntry, error) {
 	if explicitBaseImage != "" {
-		return explicitBaseImage, "", "", nil, nil
+		return jsonEntry{Image: explicitBaseImage}, nil
 	}
 
 	if strings.TrimSpace(language) == "" {
-		return entity.DefaultImage, "", "", nil, nil
+		return jsonEntry{Image: entity.DefaultImage}, nil
 	}
 
 	entries, err := loadLanguageImages(imageConfig)
 	if err != nil {
-		return "", "", "", nil, err
+		return jsonEntry{}, err
 	}
 
 	key := strings.ToLower(strings.TrimSpace(language))
 	entry, ok := entries[key]
 	if !ok {
-		return "", "", "", nil, fmt.Errorf("unsupported language: %s", language)
+		return jsonEntry{}, fmt.Errorf("unsupported language: %s", language)
 	}
 
 	if entry.Image == "" {
-		return "", "", "", nil, fmt.Errorf("image is required for language %q: set \"image\" in the config", language)
+		return jsonEntry{}, fmt.Errorf("image is required for language %q: set \"image\" in the config", language)
 	}
 
-	return entry.Image, entry.Install, entry.Timezone, entry.VSCodeExtensions, nil
+	return entry, nil
 }
 
-func loadLanguageImages(source string) (map[string]languageEntry, error) {
-	images := make(map[string]languageEntry)
+func loadLanguageImages(source string) (map[string]jsonEntry, error) {
+	images := make(map[string]jsonEntry)
 
 	raw, err := fetchBaseImageConfig(source)
 	if err != nil {
@@ -352,7 +354,7 @@ func loadLanguageImages(source string) (map[string]languageEntry, error) {
 	return images, nil
 }
 
-func parseCommonEntry(overrides map[string]json.RawMessage) (languageEntry, error) {
+func parseCommonEntry(overrides map[string]json.RawMessage) (jsonEntry, error) {
 	for k, v := range overrides {
 		if strings.ToLower(strings.TrimSpace(k)) != "common" {
 			continue
@@ -360,19 +362,25 @@ func parseCommonEntry(overrides map[string]json.RawMessage) (languageEntry, erro
 
 		entry, err := parseLanguageEntry(v)
 		if err != nil {
-			return languageEntry{}, fmt.Errorf("invalid entry for %q: %w", k, err)
+			return jsonEntry{}, fmt.Errorf("invalid entry for %q: %w", k, err)
 		}
 		return entry, nil
 	}
 
-	return languageEntry{}, nil
+	return jsonEntry{}, nil
 }
 
-func mergeLanguageEntries(base languageEntry, override languageEntry) languageEntry {
-	merged := languageEntry{
+func mergeLanguageEntries(base jsonEntry, override jsonEntry) jsonEntry {
+	locale := override.Locale
+	if locale.Lang == "" {
+		locale = base.Locale
+	}
+
+	merged := jsonEntry{
 		Image:    firstNonEmpty(override.Image, base.Image),
 		Install:  firstNonEmpty(override.Install, base.Install),
 		Timezone: firstNonEmpty(override.Timezone, base.Timezone),
+		Locale:   locale,
 	}
 
 	merged.VSCodeExtensions = append(merged.VSCodeExtensions, base.VSCodeExtensions...)
@@ -392,37 +400,48 @@ func firstNonEmpty(values ...string) string {
 	return ""
 }
 
-func parseLanguageEntry(raw json.RawMessage) (languageEntry, error) {
+func parseLanguageEntry(raw json.RawMessage) (jsonEntry, error) {
 	var s string
 	if err := json.Unmarshal(raw, &s); err == nil {
-		return languageEntry{Image: strings.TrimSpace(s)}, nil
+		return jsonEntry{Image: strings.TrimSpace(s)}, nil
 	}
 
-	var obj struct {
-		Image            string   `json:"image"`
-		Install          string   `json:"install"`
-		Timezone         string   `json:"timezone"`
+	var setting struct {
+		Image    string `json:"image"`
+		Install  string `json:"install"`
+		Timezone string `json:"timezone"`
+		Locale   struct {
+			Lang     string `json:"lang"`
+			Language string `json:"language"`
+			LcAll    string `json:"lcAll"`
+		} `json:"locale"`
 		VSCodeExtensions []string `json:"vscodeExtensions"`
 	}
-	if err := json.Unmarshal(raw, &obj); err != nil {
-		return languageEntry{}, fmt.Errorf("must be a string or {\"image\",\"install\",\"timezone\",\"vscodeExtensions\"} object: %w", err)
+
+	if err := json.Unmarshal(raw, &setting); err != nil {
+		return jsonEntry{}, fmt.Errorf("must be a string or {\"image\",\"install\",\"timezone\",\"locale\",\"vscodeExtensions\"} object: %w", err)
 	}
 
-	image := strings.TrimSpace(obj.Image)
-	install := strings.TrimSpace(obj.Install)
-	timezone := strings.TrimSpace(obj.Timezone)
-	vscodeExtensions := make([]string, 0, len(obj.VSCodeExtensions))
-	for _, ext := range obj.VSCodeExtensions {
+	image := strings.TrimSpace(setting.Image)
+	install := strings.TrimSpace(setting.Install)
+	timezone := strings.TrimSpace(setting.Timezone)
+	locale := entity.LocaleConfig{
+		Lang:     strings.TrimSpace(setting.Locale.Lang),
+		Language: strings.TrimSpace(setting.Locale.Language),
+		LcAll:    strings.TrimSpace(setting.Locale.LcAll),
+	}
+	vscodeExtensions := make([]string, 0, len(setting.VSCodeExtensions))
+	for _, ext := range setting.VSCodeExtensions {
 		trimmed := strings.TrimSpace(ext)
 		if trimmed != "" {
 			vscodeExtensions = append(vscodeExtensions, trimmed)
 		}
 	}
 	if image == "" && install != "" {
-		return languageEntry{}, fmt.Errorf("image is required when install command is provided\n(This is because the installation command is highly dependent on the container image.)")
+		return jsonEntry{}, fmt.Errorf("image is required when install command is provided\n(This is because the installation command is highly dependent on the container image.)")
 	}
 
-	return languageEntry{Image: image, Install: install, Timezone: timezone, VSCodeExtensions: vscodeExtensions}, nil
+	return jsonEntry{Image: image, Install: install, Locale: locale, Timezone: timezone, VSCodeExtensions: vscodeExtensions}, nil
 }
 
 func fetchBaseImageConfig(source string) ([]byte, error) {

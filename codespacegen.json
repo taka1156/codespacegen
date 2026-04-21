@@ -2,6 +2,11 @@
     "$schema": "https://raw.githubusercontent.com/taka1156/codespacegen/refs/heads/master/codespacegen.schema.json",
     "common": {
         "timezone": "Asia/Tokyo",
+        "locale": {
+            "lang": "ja_JP.UTF-8",
+            "language": "ja_JP:ja",
+            "lcAll": "ja_JP.UTF-8"
+        },
         "vscodeExtensions": [
             "MS-CEINTL.vscode-language-pack-ja",
             "GitHub.copilot",
