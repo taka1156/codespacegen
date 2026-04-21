@@ -1,6 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/taka1156/codespacegen/refs/heads/master/codespacegen.schema.json",
     "common": {
+        "image": "ubuntu:24.04",
         "timezone": "Asia/Tokyo",
         "vscodeExtensions": [
             "MS-CEINTL.vscode-language-pack-ja",
@@ -61,6 +62,13 @@
         "timezone": "UTC",
         "vscodeExtensions": [
             "moonbit.moonbit-lang"
+        ]
+    },
+    "gcc": {
+        "install": "apt install -y gcc make git binutils libc6-dev",
+        "timezone": "UTC",
+        "vscodeExtensions": [
+            "ms-vscode.cpptools"
         ]
     }
 }
