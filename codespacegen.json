@@ -60,5 +60,12 @@
         "vscodeExtensions": [
             "moonbit.moonbit-lang"
         ]
+    },
+    "gcc": {
+        "image": "ubuntu:24.04",
+        "install": "apt install -y gcc make git binutils libc6-dev",
+        "vscodeExtensions": [
+            "ms-vscode.cpptools"
+        ]
     }
 }
