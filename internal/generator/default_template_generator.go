@@ -14,6 +14,11 @@ import (
 //go:embed template/Dockerfile.tmpl template/docker-compose.yaml.tmpl
 var templateFiles embed.FS
 
+var (
+	dockerfileTmpl = template.Must(template.ParseFS(templateFiles, "template/Dockerfile.tmpl"))
+	composeTmpl    = template.Must(template.ParseFS(templateFiles, "template/docker-compose.yaml.tmpl"))
+)
+
 type dockerfileData struct {
 	BaseImage       string
 	WorkspaceFolder string
@@ -31,6 +36,15 @@ type composeData struct {
 }
 
 type DefaultTemplateGenerator struct{}
+
+type baseImageStrategy interface {
+	renderBaseSetup(locale entity.LocaleConfig) string
+	renderTimezoneSetup(timezone string) string
+}
+
+type alpineStrategy struct{}
+
+type debianLikeStrategy struct{}
 
 type devcontainerJSON struct {
 	Name            string                     `json:"name"`
@@ -54,28 +68,47 @@ func NewDefaultTemplateGenerator() *DefaultTemplateGenerator {
 }
 
 func (g *DefaultTemplateGenerator) Generate(config entity.CodespaceConfig) ([]entity.GeneratedFile, error) {
+	dockerfile, err := g.renderDockerfile(config)
+	if err != nil {
+		return nil, err
+	}
+
+	compose, err := g.renderCompose(config)
+	if err != nil {
+		return nil, err
+	}
+
+	devcontainer, err := g.renderDevcontainer(config)
+	if err != nil {
+		return nil, err
+	}
+
+	return []entity.GeneratedFile{
+		{RelativePath: "Dockerfile", Content: dockerfile},
+		{RelativePath: "devcontainer.json", Content: devcontainer},
+		{RelativePath: config.ComposeFileName, Content: compose},
+	}, nil
+}
+
+func (g *DefaultTemplateGenerator) renderDockerfile(config entity.CodespaceConfig) (string, error) {
 	locale := config.Locale
 	if locale.Lang == "" {
 		locale = entity.DefaultLocale
 	}
+	strategy := resolveBaseImageStrategy(config.BaseImage)
+	baseSetup := strategy.renderBaseSetup(locale)
 
-	baseSetup := renderBaseSetupBlock(config.BaseImage, locale)
 	timezone := strings.TrimSpace(config.Timezone)
 	if timezone == "" {
 		timezone = entity.DefaultTimezone
 	}
-	timezoneSetup := renderTimezoneSetupBlock(config.BaseImage, timezone)
+	timezoneSetup := strategy.renderTimezoneSetup(timezone)
 
 	installBlock := ""
 	if config.InstallCommand != "" {
 		installBlock = fmt.Sprintf("RUN %s\n\n", config.InstallCommand)
 	}
 
-	// Dockerfile
-	dockerfileTmpl, err := template.ParseFS(templateFiles, "template/Dockerfile.tmpl")
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse Dockerfile template: %w", err)
-	}
 	var dockerfileBuf bytes.Buffer
 	if err := dockerfileTmpl.Execute(&dockerfileBuf, dockerfileData{
 		BaseImage:       config.BaseImage,
@@ -86,25 +119,26 @@ func (g *DefaultTemplateGenerator) Generate(config entity.CodespaceConfig) ([]en
 		TimezoneSetup:   timezoneSetup,
 		InstallBlock:    installBlock,
 	}); err != nil {
-		return nil, fmt.Errorf("failed to render Dockerfile: %w", err)
+		return "", fmt.Errorf("failed to render Dockerfile: %w", err)
 	}
-	dockerfile := dockerfileBuf.String()
 
-	// docker-compose
-	composeTmpl, err := template.ParseFS(templateFiles, "template/docker-compose.yaml.tmpl")
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse docker-compose template: %w", err)
-	}
+	return dockerfileBuf.String(), nil
+}
+
+func (g *DefaultTemplateGenerator) renderCompose(config entity.CodespaceConfig) (string, error) {
 	var composeBuf bytes.Buffer
 	if err := composeTmpl.Execute(&composeBuf, composeData{
 		ServiceName:     config.ServiceName,
 		WorkspaceFolder: config.WorkspaceFolder,
 		PortMapping:     config.PortMapping,
 	}); err != nil {
-		return nil, fmt.Errorf("failed to render docker-compose: %w", err)
+		return "", fmt.Errorf("failed to render docker-compose: %w", err)
 	}
-	compose := composeBuf.String()
 
+	return composeBuf.String(), nil
+}
+
+func (g *DefaultTemplateGenerator) renderDevcontainer(config entity.CodespaceConfig) (string, error) {
 	extensions := []string{"GitHub.copilot", "GitHub.copilot-chat"}
 	extensions = append(extensions, config.VSCodeExtensions...)
 	extensions = uniqueStringsPreserveOrder(extensions)
@@ -126,15 +160,18 @@ func (g *DefaultTemplateGenerator) Generate(config entity.CodespaceConfig) ([]en
 
 	devcontainerBytes, err := json.MarshalIndent(devcontainerObj, "", "  ")
 	if err != nil {
-		return nil, fmt.Errorf("failed to render devcontainer.json: %w", err)
+		return "", fmt.Errorf("failed to render devcontainer.json: %w", err)
 	}
-	devcontainer := string(devcontainerBytes) + "\n"
 
-	return []entity.GeneratedFile{
-		{RelativePath: "Dockerfile", Content: dockerfile},
-		{RelativePath: "devcontainer.json", Content: devcontainer},
-		{RelativePath: config.ComposeFileName, Content: compose},
-	}, nil
+	return string(devcontainerBytes) + "\n", nil
+}
+
+func resolveBaseImageStrategy(baseImage string) baseImageStrategy {
+	if isAlpineImage(baseImage) {
+		return alpineStrategy{}
+	}
+
+	return debianLikeStrategy{}
 }
 
 func uniqueStringsPreserveOrder(values []string) []string {
@@ -155,9 +192,8 @@ func isAlpineImage(baseImage string) bool {
 	return strings.Contains(strings.ToLower(strings.TrimSpace(baseImage)), "alpine")
 }
 
-func renderBaseSetupBlock(baseImage string, locale entity.LocaleConfig) string {
-	if isAlpineImage(baseImage) {
-		return `RUN <<-EOF
+func (alpineStrategy) renderBaseSetup(_ entity.LocaleConfig) string {
+	return `RUN <<-EOF
 apk add --no-cache \
   bash \
   bash-completion \
@@ -170,8 +206,9 @@ apk add --no-cache \
   musl-locales \
   musl-locales-lang
 EOF`
-	}
+}
 
+func (debianLikeStrategy) renderBaseSetup(locale entity.LocaleConfig) string {
 	return `RUN <<-EOF
 apt-get update
 apt-get install -y --no-install-recommends \
@@ -190,14 +227,14 @@ update-locale LANG=` + locale.Lang + ` LC_ALL=` + locale.LcAll + `
 EOF`
 }
 
-func renderTimezoneSetupBlock(baseImage string, timezone string) string {
-	if isAlpineImage(baseImage) {
-		return `RUN <<-EOF
+func (alpineStrategy) renderTimezoneSetup(timezone string) string {
+	return `RUN <<-EOF
 ln -sf /usr/share/zoneinfo/` + timezone + ` /etc/localtime
 echo "` + timezone + `" > /etc/timezone
 EOF`
-	}
+}
 
+func (debianLikeStrategy) renderTimezoneSetup(timezone string) string {
 	return `RUN <<-EOF
 ln -fs /usr/share/zoneinfo/` + timezone + ` /etc/localtime
 dpkg-reconfigure -f noninteractive tzdata

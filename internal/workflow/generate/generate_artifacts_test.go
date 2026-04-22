@@ -1,4 +1,4 @@
-package usecase
+package generate
 
 import (
 	"errors"
@@ -27,11 +27,11 @@ type fakeWriter struct {
 	err   error
 }
 
-func (w *fakeWriter) Write(relativePath string, content string, overwrite bool) error {
+func (w *fakeWriter) Write(path string, content string, overwrite bool) error {
 	if w.err != nil {
 		return w.err
 	}
-	w.calls = append(w.calls, writeCall{path: relativePath, content: content, overwrite: overwrite})
+	w.calls = append(w.calls, writeCall{path: path, content: content, overwrite: overwrite})
 	return nil
 }
 
@@ -51,14 +51,14 @@ func TestGenerateCodespaceArtifacts_Execute_WritesAllFiles(t *testing.T) {
 	writer := &fakeWriter{}
 	uc := NewGenerateCodespaceArtifacts(gen, writer)
 
-	if err := uc.Execute(cfg, true); err != nil {
+	if err := uc.Execute(cfg, true, ".devcontainer"); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
 	if len(writer.calls) != 2 {
 		t.Fatalf("expected 2 writes, got %d", len(writer.calls))
 	}
-	if writer.calls[0].path != "Dockerfile" {
+	if writer.calls[0].path != ".devcontainer/Dockerfile" {
 		t.Fatalf("unexpected first path: %s", writer.calls[0].path)
 	}
 	if !writer.calls[0].overwrite {
@@ -79,7 +79,7 @@ func TestGenerateCodespaceArtifacts_Execute_ReturnsWriteError(t *testing.T) {
 	writer := &fakeWriter{err: errors.New("write failed")}
 	uc := NewGenerateCodespaceArtifacts(gen, writer)
 
-	err := uc.Execute(cfg, false)
+	err := uc.Execute(cfg, false, ".devcontainer")
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
