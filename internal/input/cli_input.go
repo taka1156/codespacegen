@@ -1,4 +1,4 @@
-package config
+package input
 
 import (
 	"codespacegen/internal/domain/entity"

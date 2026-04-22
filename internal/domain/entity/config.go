@@ -3,6 +3,13 @@ package entity
 // This file defines the CodespaceConfig struct and related constants.
 const DefaultImage = "alpine:latest"
 
+// DefaultSetting holds the resolved default values used across the application.
+type DefaultSetting struct {
+	Timezone string
+	Image    string
+	Version  string
+}
+
 // CodespaceConfig holds values used to generate devcontainer artifacts.
 const DefaultTimezone = "UTC"
 

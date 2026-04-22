@@ -4,23 +4,22 @@ import (
 	"encoding/json"
 
 	"codespacegen/internal/domain/entity"
-	"codespacegen/internal/resolve"
 )
 
 type ResolveCodespaceConfig struct {
-	codeSpaceConfigResolver resolve.CodeSpaceConfigResolver
+	codeSpaceConfigResolver ConfigResolver
 }
 
 func NewResolveCodespaceConfig(
-	codeSpaceConfigResolver resolve.CodeSpaceConfigResolver,
+	codeSpaceConfigResolver ConfigResolver,
 ) *ResolveCodespaceConfig {
 	return &ResolveCodespaceConfig{
 		codeSpaceConfigResolver: codeSpaceConfigResolver,
 	}
 }
 
-func (rcc *ResolveCodespaceConfig) Resolve(cliConfig *entity.CliConfig, overrides map[string]json.RawMessage, defaultTimezone string, defaultImage string) (*entity.CodespaceConfig, error) {
-	resolvedValues, err := rcc.resolveCoreValues(cliConfig)
+func (rcc *ResolveCodespaceConfig) Resolve(cliConfig entity.CliConfig, overrides map[string]json.RawMessage, defaultTimezone string, defaultImage string) (*entity.CodespaceConfig, error) {
+	resolvedValues, err := rcc.resolveCoreValues(&cliConfig)
 	if err != nil {
 		return nil, err
 	}

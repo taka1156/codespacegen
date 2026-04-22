@@ -3,7 +3,6 @@ package collect
 import (
 	"encoding/json"
 
-	"codespacegen/internal/config"
 	"codespacegen/internal/domain/entity"
 )
 
@@ -14,9 +13,9 @@ type CollectInputs struct {
 }
 
 type CollectedInputs struct {
-	CliConfig     *entity.CliConfig
+	CliConfig     entity.CliConfig
 	JsonConfig    map[string]json.RawMessage
-	DefaultConfig config.DefaultSetting
+	DefaultConfig entity.DefaultSetting
 }
 
 func NewCollectInputs(
@@ -31,7 +30,7 @@ func NewCollectInputs(
 	}
 }
 
-func (ri *CollectInputs) Collect() (*CollectedInputs, error) {
+func (ri *CollectInputs) CollectConfig() (*CollectedInputs, error) {
 	cliConfig := ri.cliInput.GetCliInput()
 	jsonConfig, err := ri.jsonInput.LoadLanguageImages(cliConfig.ImageConfigValue())
 	if err != nil {
@@ -40,7 +39,7 @@ func (ri *CollectInputs) Collect() (*CollectedInputs, error) {
 	ds := ri.defaultConfig.GetDefaultSetting()
 
 	return &CollectedInputs{
-		CliConfig:     &cliConfig,
+		CliConfig:     cliConfig,
 		JsonConfig:    jsonConfig,
 		DefaultConfig: ds,
 	}, nil

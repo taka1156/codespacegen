@@ -2,7 +2,7 @@ package assemble
 
 import "codespacegen/internal/domain/entity"
 
-func (rcc *ResolveCodespaceConfig) buildCodespaceConfig(cliConfig *entity.CliConfig, coreValues resolvedCoreValues, resolvedEntry entity.JsonEntry, resolvedTimezone string) *entity.CodespaceConfig {
+func (rcc *ResolveCodespaceConfig) buildCodespaceConfig(cliConfig entity.CliConfig, coreValues resolvedCoreValues, resolvedEntry entity.JsonEntry, resolvedTimezone string) *entity.CodespaceConfig {
 	return &entity.CodespaceConfig{
 		ContainerName:    coreValues.ProjectName,
 		ServiceName:      coreValues.ServiceName,

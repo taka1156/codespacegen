@@ -1,7 +1,6 @@
 package collect
 
 import (
-	"codespacegen/internal/config"
 	"codespacegen/internal/domain/entity"
 	"encoding/json"
 )
@@ -15,5 +14,5 @@ type ImageConfigLoader interface {
 }
 
 type DefaultSettingProvider interface {
-	GetDefaultSetting() config.DefaultSetting
+	GetDefaultSetting() entity.DefaultSetting
 }

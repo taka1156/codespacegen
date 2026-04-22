@@ -2,7 +2,6 @@ package workflow
 
 import (
 	"codespacegen/internal/domain/service"
-	"codespacegen/internal/resolve"
 	"codespacegen/internal/workflow/assemble"
 	"codespacegen/internal/workflow/collect"
 	"codespacegen/internal/workflow/generate"
@@ -21,7 +20,7 @@ func NewCollectInputs(
 type ResolveCodespaceConfig = assemble.ResolveCodespaceConfig
 
 func NewResolveCodespaceConfig(
-	codeSpaceConfigResolver resolve.CodeSpaceConfigResolver,
+	codeSpaceConfigResolver assemble.ConfigResolver,
 ) *ResolveCodespaceConfig {
 	return assemble.NewResolveCodespaceConfig(codeSpaceConfigResolver)
 }

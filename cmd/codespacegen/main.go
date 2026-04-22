@@ -5,19 +5,19 @@ import (
 	"os"
 	"path/filepath"
 
-	"codespacegen/internal/config"
 	"codespacegen/internal/generator"
 	"codespacegen/internal/generator/filewriter"
 	"codespacegen/internal/i18n"
+	"codespacegen/internal/input"
 	"codespacegen/internal/workflow"
 
 	"codespacegen/internal/resolve"
 )
 
 type InputConfig struct {
-	clientInput   *config.CliInput
-	jsonInput     *config.JsonInput
-	defaultConfig *config.DefaultConfig
+	clientInput   *input.CliInput
+	jsonInput     *input.JsonInput
+	defaultConfig *input.DefaultConfig
 }
 
 type Resolvers struct {
@@ -25,7 +25,7 @@ type Resolvers struct {
 }
 
 type WorkflowCases struct {
-	collectInputs         *workflow.CollectInputs
+	inputInputs           *workflow.CollectInputs
 	resolveCodespace      *workflow.ResolveCodespaceConfig
 	generateCodeArtifacts *workflow.GenerateCodespaceArtifacts
 }
@@ -43,9 +43,9 @@ func main() {
 
 func newApp() *App {
 	ic := InputConfig{
-		clientInput:   config.NewCliInput(),
-		jsonInput:     config.NewJsonInput(),
-		defaultConfig: config.NewDefaultConfig(),
+		clientInput:   input.NewCliInput(),
+		jsonInput:     input.NewJsonInput(),
+		defaultConfig: input.NewDefaultConfig(),
 	}
 
 	rs := Resolvers{
@@ -56,8 +56,8 @@ func newApp() *App {
 	writer := filewriter.NewLocalFileWriter()
 
 	flows := WorkflowCases{
-		collectInputs:         workflow.NewCollectInputs(ic.clientInput, ic.jsonInput, ic.defaultConfig),
-		resolveCodespace:      workflow.NewResolveCodespaceConfig(*rs.codeSpaceConfigResolver),
+		inputInputs:           workflow.NewCollectInputs(ic.clientInput, ic.jsonInput, ic.defaultConfig),
+		resolveCodespace:      workflow.NewResolveCodespaceConfig(rs.codeSpaceConfigResolver),
 		generateCodeArtifacts: workflow.NewGenerateCodespaceArtifacts(generatorImpl, writer),
 	}
 
@@ -65,10 +65,11 @@ func newApp() *App {
 }
 
 func (a *App) Run() error {
-	inputs, err := a.flows.collectInputs.Collect()
+	inputs, err := a.flows.inputInputs.CollectConfig()
 	if err != nil {
 		return err
 	}
+
 	cliConfig := inputs.CliConfig
 
 	if cliConfig.ShowVersionValue() {
