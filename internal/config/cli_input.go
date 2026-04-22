@@ -25,7 +25,7 @@ func (ci *CliInput) GetCliInput() entity.CliConfig {
 	cliConfig.ImageConfig = flag.String("image-config", "codespacegen.json", "local path or https:// URL to base image config JSON")
 	cliConfig.Port = flag.String("port", "", "port mapping (e.g. 3000 or 3000:3000)")
 	cliConfig.ComposeFile = flag.String("compose-file", "docker-compose.yaml", "docker compose file name")
-	cliConfig.Overwrite = flag.Bool("force", false, "overwrite existing files")
+	cliConfig.EnableOverwriteFile = flag.Bool("force", false, "overwrite existing files")
 	cliConfig.Lang = flag.String("lang", "", "language for CLI messages (en/ja, default: auto-detect)")
 	cliConfig.ShowVersion = flag.Bool("v", false, "print version and exit")
 

@@ -1,7 +1,5 @@
 package entity
 
-import "regexp"
-
 // This file defines the CodespaceConfig struct and related constants.
 const DefaultImage = "alpine:latest"
 
@@ -10,33 +8,20 @@ const DefaultTimezone = "UTC"
 
 const DefaultVersion = "dev"
 
-type PortMappingPatterns struct {
-	PortOnly    *regexp.Regexp
-	PortMapping *regexp.Regexp
-}
-
-var DefaultPortMappingPatterns = PortMappingPatterns{
-	PortOnly:    regexp.MustCompile(`^\d+$`),
-	PortMapping: regexp.MustCompile(`^\d+:\d+$`),
-}
-
-
-
-
 type CliConfig struct {
-	OutputDir       *string
-	ContainerName   *string
-	ServiceName     *string
-	Language        *string
-	WorkspaceFolder *string
-	BaseImage       *string
-	Timezone        *string
-	ImageConfig     *string
-	Port            *string
-	ComposeFile     *string
-	Overwrite       *bool
-	Lang            *string
-	ShowVersion     *bool
+	OutputDir           *string
+	ContainerName       *string
+	ServiceName         *string
+	Language            *string
+	WorkspaceFolder     *string
+	BaseImage           *string
+	Timezone            *string
+	ImageConfig         *string
+	Port                *string
+	ComposeFile         *string
+	EnableOverwriteFile *bool
+	Lang                *string
+	ShowVersion         *bool
 }
 
 type LocaleConfig struct {

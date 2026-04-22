@@ -12,7 +12,6 @@ import (
 )
 
 var (
-	version            = "dev"
 	portOnlyPattern    = regexp.MustCompile(`^\d+$`)
 	portMappingPattern = regexp.MustCompile(`^\d+:\d+$`)
 )

@@ -3,10 +3,9 @@ package config
 import "codespacegen/internal/domain/entity"
 
 type DefaultSetting struct {
-	Timezone            string
-	Image               string
-	Version             string
-	PortMappingPatterns entity.PortMappingPatterns
+	Timezone string
+	Image    string
+	Version  string
 }
 
 type DefaultConfig struct {
@@ -21,7 +20,6 @@ func (dc *DefaultConfig) GetDefaultSetting() DefaultSetting {
 	ds.Image = entity.DefaultImage
 	ds.Timezone = entity.DefaultTimezone
 	ds.Version = entity.DefaultVersion
-	ds.PortMappingPatterns = entity.DefaultPortMappingPatterns
 
 	return ds
 }
