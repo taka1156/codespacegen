@@ -25,13 +25,13 @@ func NewResolveCodespaceConfig(
 	return assemble.NewResolveCodespaceConfig(codeSpaceConfigResolver)
 }
 
-type FileWriter = generate.FileWriter
+type FileWriter = service.FileWriter
 
 type GenerateCodespaceArtifacts = generate.GenerateCodespaceArtifacts
 
 func NewGenerateCodespaceArtifacts(
 	generator service.TemplateGenerator,
-	writer FileWriter,
+	writer service.FileWriter,
 ) *GenerateCodespaceArtifacts {
 	return generate.NewGenerateCodespaceArtifacts(generator, writer)
 }

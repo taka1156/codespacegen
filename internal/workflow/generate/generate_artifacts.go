@@ -10,12 +10,12 @@ import (
 
 type GenerateCodespaceArtifacts struct {
 	generator service.TemplateGenerator
-	writer    FileWriter
+	writer    service.FileWriter
 }
 
 func NewGenerateCodespaceArtifacts(
 	generator service.TemplateGenerator,
-	writer FileWriter,
+	writer service.FileWriter,
 ) *GenerateCodespaceArtifacts {
 	return &GenerateCodespaceArtifacts{
 		generator: generator,
