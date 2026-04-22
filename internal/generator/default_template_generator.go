@@ -47,6 +47,7 @@ type alpineStrategy struct{}
 type debianLikeStrategy struct{}
 
 type devcontainerJSON struct {
+	Schema          string                     `json:"$schema"`
 	Name            string                     `json:"name"`
 	Service         string                     `json:"service"`
 	WorkspaceFolder string                     `json:"workspaceFolder"`
@@ -144,6 +145,7 @@ func (g *DefaultTemplateGenerator) renderDevcontainer(config entity.CodespaceCon
 	extensions = uniqueStringsPreserveOrder(extensions)
 
 	devcontainerObj := devcontainerJSON{
+		Schema:          config.Schema,
 		Name:            config.ContainerName,
 		Service:         config.ServiceName,
 		WorkspaceFolder: config.WorkspaceFolder,

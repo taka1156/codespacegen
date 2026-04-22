@@ -62,30 +62,28 @@ func (a *App) Run() error {
 		return err
 	}
 
-	cliConfig := inputs.CliConfig
-
-	if cliConfig.ShowVersionValue() {
+	if inputs.CliConfig.ShowVersionValue() {
 		fmt.Println(inputs.DefaultConfig.Version)
 		return nil
 	}
 
-	if cliConfig.LangValue() != "" {
-		i18n.SetLang(cliConfig.LangValue())
+	if inputs.CliConfig.LangValue() != "" {
+		i18n.SetLang(inputs.CliConfig.LangValue())
 	}
 
-	codespaceConfig, err := a.flows.resolveCodespace.Resolve(cliConfig, inputs.JsonConfig, inputs.DefaultConfig.Timezone, inputs.DefaultConfig.Image)
+	codespaceConfig, err := a.flows.resolveCodespace.Resolve(inputs.CliConfig, inputs.DefaultConfig, inputs.JsonConfig, inputs.DefaultConfig.Timezone, inputs.DefaultConfig.Image)
 	if err != nil {
 		return err
 	}
 
-	err = a.flows.generateCodeArtifacts.Execute(*codespaceConfig, cliConfig.EnableOverwriteFileValue(), cliConfig.OutputDirValue())
+	err = a.flows.generateCodeArtifacts.Execute(*codespaceConfig, inputs.CliConfig.EnableOverwriteFileValue(), inputs.CliConfig.OutputDirValue())
 	if err != nil {
 		return err
 	}
 
-	resolvedOutput, err := filepath.Abs(cliConfig.OutputDirValue())
+	resolvedOutput, err := filepath.Abs(inputs.CliConfig.OutputDirValue())
 	if err != nil {
-		resolvedOutput = cliConfig.OutputDirValue()
+		resolvedOutput = inputs.CliConfig.OutputDirValue()
 	}
 
 	fmt.Println(i18n.T("msg_generated_files", map[string]interface{}{"OutputDir": resolvedOutput}))
