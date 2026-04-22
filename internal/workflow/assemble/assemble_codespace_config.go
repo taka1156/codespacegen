@@ -1,4 +1,4 @@
-package workflow
+package assemble
 
 import (
 	"encoding/json"
@@ -7,28 +7,25 @@ import (
 	"codespacegen/internal/resolve"
 )
 
-type ResolveConfig struct {
-	mergeLanguageResolver   resolve.MergeLanguageResolver
+type ResolveCodespaceConfig struct {
 	codeSpaceConfigResolver resolve.CodeSpaceConfigResolver
 }
 
-func NewResolveConfig(
-	mergeLanguageResolver resolve.MergeLanguageResolver,
+func NewResolveCodespaceConfig(
 	codeSpaceConfigResolver resolve.CodeSpaceConfigResolver,
-) *ResolveConfig {
-	return &ResolveConfig{
-		mergeLanguageResolver:   mergeLanguageResolver,
+) *ResolveCodespaceConfig {
+	return &ResolveCodespaceConfig{
 		codeSpaceConfigResolver: codeSpaceConfigResolver,
 	}
 }
 
-func (rc *ResolveConfig) Resolve(cliConfig *entity.CliConfig, jsonEntries map[string]entity.JsonEntry, overrides map[string]json.RawMessage) (*entity.CodespaceConfig, error) {
+func (rc *ResolveCodespaceConfig) Resolve(cliConfig *entity.CliConfig, overrides map[string]json.RawMessage) (*entity.CodespaceConfig, error) {
 	resolvedValues, err := rc.resolveCoreValues(cliConfig)
 	if err != nil {
 		return nil, err
 	}
 
-	resolvedEntry, err := rc.resolveEntry(resolvedValues.Language, cliConfig, jsonEntries, overrides)
+	resolvedEntry, err := rc.resolveEntry(resolvedValues.Language, cliConfig, overrides)
 	if err != nil {
 		return nil, err
 	}

@@ -1,4 +1,4 @@
-package workflow
+package input
 
 import (
 	"encoding/json"

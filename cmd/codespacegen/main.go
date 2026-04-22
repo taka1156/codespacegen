@@ -21,13 +21,12 @@ type InputConfig struct {
 }
 
 type Resolvers struct {
-	mergeLanguage           *resolve.MergeLanguageResolver
 	codeSpaceConfigResolver *resolve.CodeSpaceConfigResolver
 }
 
 type WorkflowCases struct {
 	resolveInput          *workflow.ResolveInput
-	resolveConfig         *workflow.ResolveConfig
+	resolveCodespace      *workflow.ResolveCodespaceConfig
 	generateCodeArtifacts *workflow.GenerateCodespaceArtifacts
 }
 
@@ -40,7 +39,6 @@ func main() {
 	}
 
 	rs := Resolvers{
-		mergeLanguage:           resolve.NewMergeLanguageResolver(),
 		codeSpaceConfigResolver: resolve.NewCodeSpaceConfigResolver(),
 	}
 
@@ -49,7 +47,7 @@ func main() {
 
 	flows := WorkflowCases{
 		resolveInput:          workflow.NewResolveInput(*ic.clientInput, *ic.jsonInput, *ic.defaultConfig),
-		resolveConfig:         workflow.NewResolveConfig(*rs.mergeLanguage, *rs.codeSpaceConfigResolver),
+		resolveCodespace:      workflow.NewResolveCodespaceConfig(*rs.codeSpaceConfigResolver),
 		generateCodeArtifacts: workflow.NewGenerateCodespaceArtifacts(generatorImpl, writer),
 	}
 
@@ -67,7 +65,7 @@ func main() {
 		i18n.SetLang(*cliConfig.Lang)
 	}
 
-	codespaceConfig, err := flows.resolveConfig.Resolve(cliConfig, jsonConfig, overrides)
+	codespaceConfig, err := flows.resolveCodespace.Resolve(cliConfig, jsonConfig, overrides)
 	if err != nil {
 		os.Exit(1)
 	}

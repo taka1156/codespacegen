@@ -1,4 +1,4 @@
-package workflow
+package generate
 
 import (
 	"codespacegen/internal/domain/entity"
