@@ -11,27 +11,27 @@ type resolvedCoreValues struct {
 }
 
 func (acc *AssembleCodespaceConfig) resolveCoreValues(cliConfig *entity.CliConfig) (resolvedCoreValues, error) {
-	resolvedProjectName, err := acc.codeSpaceConfigResolver.ResolveProjectName(cliConfig.ContainerNameValue())
+	resolvedProjectName, err := acc.CodespaceConfigResolver.ResolveProjectName(cliConfig.ContainerNameValue())
 	if err != nil {
 		return resolvedCoreValues{}, err
 	}
 
-	resolvedLanguage, err := acc.codeSpaceConfigResolver.ResolveLanguage(cliConfig.LanguageValue())
+	resolvedLanguage, err := acc.CodespaceConfigResolver.ResolveLanguage(cliConfig.LanguageValue())
 	if err != nil {
 		return resolvedCoreValues{}, err
 	}
 
-	resolvedWorkspaceFolder, err := acc.codeSpaceConfigResolver.ResolveWorkspaceFolder(cliConfig.WorkspaceFolderValue())
+	resolvedWorkspaceFolder, err := acc.CodespaceConfigResolver.ResolveWorkspaceFolder(cliConfig.WorkspaceFolderValue())
 	if err != nil {
 		return resolvedCoreValues{}, err
 	}
 
-	resolvedServiceName, err := acc.codeSpaceConfigResolver.ResolveServiceName(cliConfig.ServiceNameValue())
+	resolvedServiceName, err := acc.CodespaceConfigResolver.ResolveServiceName(cliConfig.ServiceNameValue())
 	if err != nil {
 		return resolvedCoreValues{}, err
 	}
 
-	resolvedPort, err := acc.codeSpaceConfigResolver.ResolvePortMapping(cliConfig.PortValue())
+	resolvedPort, err := acc.CodespaceConfigResolver.ResolvePortMapping(cliConfig.PortValue())
 	if err != nil {
 		return resolvedCoreValues{}, err
 	}

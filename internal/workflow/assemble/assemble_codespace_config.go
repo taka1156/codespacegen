@@ -7,14 +7,14 @@ import (
 )
 
 type AssembleCodespaceConfig struct {
-	codeSpaceConfigResolver ConfigResolver
+	CodespaceConfigResolver ConfigResolver
 }
 
 func NewAssembleCodespaceConfig(
-	codeSpaceConfigResolver ConfigResolver,
+	CodespaceConfigResolver ConfigResolver,
 ) *AssembleCodespaceConfig {
 	return &AssembleCodespaceConfig{
-		codeSpaceConfigResolver: codeSpaceConfigResolver,
+		CodespaceConfigResolver: CodespaceConfigResolver,
 	}
 }
 
@@ -29,7 +29,7 @@ func (acc *AssembleCodespaceConfig) Resolve(cliConfig entity.CliConfig, defaultS
 		return nil, err
 	}
 
-	resolvedTimezone, err := acc.codeSpaceConfigResolver.ResolveTimezone(cliConfig.TimezoneValue(), resolvedEntry.Timezone, defaultTimezone)
+	resolvedTimezone, err := acc.CodespaceConfigResolver.ResolveTimezone(cliConfig.TimezoneValue(), resolvedEntry.Timezone, defaultTimezone)
 	if err != nil {
 		return nil, err
 	}
