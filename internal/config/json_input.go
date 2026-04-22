@@ -1,7 +1,6 @@
 package config
 
 import (
-	"codespacegen/internal/domain/entity"
 	"codespacegen/internal/i18n"
 	"encoding/json"
 	"errors"
@@ -20,20 +19,19 @@ func NewJsonInput() *JsonInput {
 	return &JsonInput{}
 }
 
-func (ji *JsonInput) LoadLanguageImages(source string) (map[string]entity.JsonEntry, map[string]json.RawMessage, error) {
-	images := make(map[string]entity.JsonEntry)
+func (ji *JsonInput) LoadLanguageImages(source string) (map[string]json.RawMessage, error) {
 
 	rawJson, err := fetchBaseImageConfig(source)
 	if err != nil {
-		return images, nil, err
+		return nil, err
 	}
 
-	var overrides map[string]json.RawMessage
-	if err := json.Unmarshal(rawJson, &overrides); err != nil {
-		return images, overrides, fmt.Errorf("%s: %w", i18n.T("error_failed_to_parse_base_image_config"), err)
+	var jsonConfig map[string]json.RawMessage
+	if err := json.Unmarshal(rawJson, &jsonConfig); err != nil {
+		return nil, fmt.Errorf("%s: %w", i18n.T("error_failed_to_parse_base_image_config"), err)
 	}
 
-	return images, overrides, nil
+	return jsonConfig, nil
 }
 
 func fetchBaseImageConfig(source string) ([]byte, error) {

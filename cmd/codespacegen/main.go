@@ -51,7 +51,7 @@ func main() {
 		generateCodeArtifacts: workflow.NewGenerateCodespaceArtifacts(generatorImpl, writer),
 	}
 
-	cliConfig, jsonConfig, overrides, defaultConfig, err := flows.resolveInput.Input()
+	cliConfig, jsonConfig, defaultConfig, err := flows.resolveInput.Input()
 	if err != nil {
 		os.Exit(1)
 	}
@@ -65,7 +65,7 @@ func main() {
 		i18n.SetLang(*cliConfig.Lang)
 	}
 
-	codespaceConfig, err := flows.resolveCodespace.Resolve(cliConfig, jsonConfig, overrides)
+	codespaceConfig, err := flows.resolveCodespace.Resolve(cliConfig, jsonConfig)
 	if err != nil {
 		os.Exit(1)
 	}

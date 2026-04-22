@@ -25,13 +25,13 @@ func NewResolveInput(
 	}
 }
 
-func (ri *ResolveInput) Input() (*entity.CliConfig, map[string]entity.JsonEntry, map[string]json.RawMessage, config.DefaultSetting, error) {
+func (ri *ResolveInput) Input() (*entity.CliConfig, map[string]json.RawMessage, config.DefaultSetting, error) {
 	cliConfig := ri.cliInput.GetCliInput()
-	jsonConfig, overrides, err := ri.jsonInput.LoadLanguageImages(*cliConfig.ImageConfig)
+	jsonConfig, err := ri.jsonInput.LoadLanguageImages(*cliConfig.ImageConfig)
 	if err != nil {
-		return nil, nil, nil, config.DefaultSetting{}, err
+		return nil, nil, config.DefaultSetting{}, err
 	}
 	ds := ri.defaultConfig.GetDefaultSetting()
 
-	return &cliConfig, jsonConfig, overrides, ds, nil
+	return &cliConfig, jsonConfig, ds, nil
 }
