@@ -7,13 +7,17 @@ import (
 	"strings"
 )
 
-func (cscr *CodeSpaceConfigResolver) ResolveBaseImage(language string, explicitBaseImage string, imageConfig string, jsonEntries map[string]entity.JsonEntry) (entity.JsonEntry, error) {
+func (cscr *CodeSpaceConfigResolver) ResolveBaseImage(language string, explicitBaseImage string, imageConfig string, jsonEntries map[string]entity.JsonEntry, defaultImage string) (entity.JsonEntry, error) {
 	if explicitBaseImage != "" {
 		return entity.JsonEntry{Image: explicitBaseImage}, nil
 	}
 
 	if strings.TrimSpace(language) == "" {
-		return entity.JsonEntry{Image: entity.DefaultImage}, nil
+		image := strings.TrimSpace(defaultImage)
+		if image == "" {
+			image = entity.DefaultImage
+		}
+		return entity.JsonEntry{Image: image}, nil
 	}
 
 	key := strings.ToLower(strings.TrimSpace(language))

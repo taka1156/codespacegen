@@ -7,11 +7,16 @@ import (
 	"codespacegen/internal/domain/entity"
 )
 
-
 type CollectInputs struct {
 	cliInput      CLIInputProvider
 	jsonInput     ImageConfigLoader
 	defaultConfig DefaultSettingProvider
+}
+
+type CollectedInputs struct {
+	CliConfig     *entity.CliConfig
+	JsonConfig    map[string]json.RawMessage
+	DefaultConfig config.DefaultSetting
 }
 
 func NewCollectInputs(
@@ -26,13 +31,17 @@ func NewCollectInputs(
 	}
 }
 
-func (ri *CollectInputs) Collect() (*entity.CliConfig, map[string]json.RawMessage, config.DefaultSetting, error) {
+func (ri *CollectInputs) Collect() (*CollectedInputs, error) {
 	cliConfig := ri.cliInput.GetCliInput()
-	jsonConfig, err := ri.jsonInput.LoadLanguageImages(*cliConfig.ImageConfig)
+	jsonConfig, err := ri.jsonInput.LoadLanguageImages(cliConfig.ImageConfigValue())
 	if err != nil {
-		return nil, nil, config.DefaultSetting{}, err
+		return nil, err
 	}
 	ds := ri.defaultConfig.GetDefaultSetting()
 
-	return &cliConfig, jsonConfig, ds, nil
+	return &CollectedInputs{
+		CliConfig:     &cliConfig,
+		JsonConfig:    jsonConfig,
+		DefaultConfig: ds,
+	}, nil
 }

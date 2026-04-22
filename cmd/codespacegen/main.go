@@ -30,8 +30,18 @@ type WorkflowCases struct {
 	generateCodeArtifacts *workflow.GenerateCodespaceArtifacts
 }
 
-func main() {
+type App struct {
+	flows WorkflowCases
+}
 
+func main() {
+	app := newApp()
+	if err := app.Run(); err != nil {
+		os.Exit(1)
+	}
+}
+
+func newApp() *App {
 	ic := InputConfig{
 		clientInput:   config.NewCliInput(),
 		jsonInput:     config.NewJsonInput(),
@@ -51,34 +61,41 @@ func main() {
 		generateCodeArtifacts: workflow.NewGenerateCodespaceArtifacts(generatorImpl, writer),
 	}
 
-	cliConfig, jsonConfig, defaultConfig, err := flows.collectInputs.Collect()
+	return &App{flows: flows}
+}
+
+func (a *App) Run() error {
+	inputs, err := a.flows.collectInputs.Collect()
 	if err != nil {
-		os.Exit(1)
+		return err
+	}
+	cliConfig := inputs.CliConfig
+
+	if cliConfig.ShowVersionValue() {
+		fmt.Println(inputs.DefaultConfig.Version)
+		return nil
 	}
 
-	if *cliConfig.ShowVersion {
-		fmt.Println(defaultConfig.Version)
-		os.Exit(0)
+	if cliConfig.LangValue() != "" {
+		i18n.SetLang(cliConfig.LangValue())
 	}
 
-	if *cliConfig.Lang != "" {
-		i18n.SetLang(*cliConfig.Lang)
-	}
-
-	codespaceConfig, err := flows.resolveCodespace.Resolve(cliConfig, jsonConfig)
+	codespaceConfig, err := a.flows.resolveCodespace.Resolve(cliConfig, inputs.JsonConfig, inputs.DefaultConfig.Timezone, inputs.DefaultConfig.Image)
 	if err != nil {
-		os.Exit(1)
+		return err
 	}
 
-	err = flows.generateCodeArtifacts.Execute(*codespaceConfig, *cliConfig.EnableOverwriteFile, *cliConfig.OutputDir)
+	err = a.flows.generateCodeArtifacts.Execute(*codespaceConfig, cliConfig.EnableOverwriteFileValue(), cliConfig.OutputDirValue())
 	if err != nil {
-		os.Exit(1)
+		return err
 	}
 
-	resolvedOutput, err := filepath.Abs(*cliConfig.OutputDir)
+	resolvedOutput, err := filepath.Abs(cliConfig.OutputDirValue())
 	if err != nil {
-		resolvedOutput = *cliConfig.OutputDir
+		resolvedOutput = cliConfig.OutputDirValue()
 	}
 
 	fmt.Println(i18n.T("msg_generated_files", map[string]interface{}{"OutputDir": resolvedOutput}))
+
+	return nil
 }

@@ -24,6 +24,74 @@ type CliConfig struct {
 	ShowVersion         *bool
 }
 
+func (c CliConfig) OutputDirValue() string {
+	return stringValue(c.OutputDir)
+}
+
+func (c CliConfig) ContainerNameValue() string {
+	return stringValue(c.ContainerName)
+}
+
+func (c CliConfig) ServiceNameValue() string {
+	return stringValue(c.ServiceName)
+}
+
+func (c CliConfig) LanguageValue() string {
+	return stringValue(c.Language)
+}
+
+func (c CliConfig) WorkspaceFolderValue() string {
+	return stringValue(c.WorkspaceFolder)
+}
+
+func (c CliConfig) BaseImageValue() string {
+	return stringValue(c.BaseImage)
+}
+
+func (c CliConfig) TimezoneValue() string {
+	return stringValue(c.Timezone)
+}
+
+func (c CliConfig) ImageConfigValue() string {
+	return stringValue(c.ImageConfig)
+}
+
+func (c CliConfig) PortValue() string {
+	return stringValue(c.Port)
+}
+
+func (c CliConfig) ComposeFileValue() string {
+	return stringValue(c.ComposeFile)
+}
+
+func (c CliConfig) EnableOverwriteFileValue() bool {
+	return boolValue(c.EnableOverwriteFile)
+}
+
+func (c CliConfig) LangValue() string {
+	return stringValue(c.Lang)
+}
+
+func (c CliConfig) ShowVersionValue() bool {
+	return boolValue(c.ShowVersion)
+}
+
+func stringValue(v *string) string {
+	if v == nil {
+		return ""
+	}
+
+	return *v
+}
+
+func boolValue(v *bool) bool {
+	if v == nil {
+		return false
+	}
+
+	return *v
+}
+
 type LocaleConfig struct {
 	Lang     string
 	Language string

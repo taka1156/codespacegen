@@ -1,6 +1,9 @@
 package resolve
 
 import (
+	"bufio"
+	"os"
+
 	"codespacegen/internal/domain/entity"
 	"codespacegen/internal/i18n"
 	"fmt"
@@ -8,15 +11,18 @@ import (
 )
 
 type CodeSpaceConfigResolver struct {
+	reader *bufio.Reader
 }
 
 func NewCodeSpaceConfigResolver() *CodeSpaceConfigResolver {
-	return &CodeSpaceConfigResolver{}
+	return &CodeSpaceConfigResolver{
+		reader: bufio.NewReader(os.Stdin),
+	}
 }
 
 func (cscr *CodeSpaceConfigResolver) ResolveLanguage(explicitLanguage string) (string, error) {
 	defaultLanguage := strings.TrimSpace(explicitLanguage)
-	value, err := promptWithDefault(i18n.T("prompt_language"), defaultLanguage)
+	value, err := promptWithDefault(cscr.reader, i18n.T("prompt_language"), defaultLanguage)
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", i18n.T("error_failed_to_read_language"), err)
 	}
@@ -28,23 +34,26 @@ func (cscr *CodeSpaceConfigResolver) ResolveWorkspaceFolder(explicitWorkspaceFol
 	if defaultWorkspaceFolder == "" {
 		defaultWorkspaceFolder = "/workspace"
 	}
-	value, err := promptWithDefault(i18n.T("prompt_workspace_folder", map[string]interface{}{"Default": defaultWorkspaceFolder}), defaultWorkspaceFolder)
+	value, err := promptWithDefault(cscr.reader, i18n.T("prompt_workspace_folder", map[string]interface{}{"Default": defaultWorkspaceFolder}), defaultWorkspaceFolder)
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", i18n.T("error_failed_to_read_workspace_folder"), err)
 	}
 	return strings.TrimSpace(value), nil
 }
 
-func (cscr *CodeSpaceConfigResolver) ResolveTimezone(explicitTimezone string, configTimezone string) (string, error) {
-	defaultTimezone := strings.TrimSpace(explicitTimezone)
-	if defaultTimezone == "" {
-		defaultTimezone = strings.TrimSpace(configTimezone)
+func (cscr *CodeSpaceConfigResolver) ResolveTimezone(explicitTimezone string, configTimezone string, defaultTimezone string) (string, error) {
+	resolved := strings.TrimSpace(explicitTimezone)
+	if resolved == "" {
+		resolved = strings.TrimSpace(configTimezone)
 	}
-	if defaultTimezone == "" {
-		defaultTimezone = entity.DefaultTimezone
+	if resolved == "" {
+		resolved = strings.TrimSpace(defaultTimezone)
+	}
+	if resolved == "" {
+		resolved = entity.DefaultTimezone
 	}
 
-	value, err := promptWithDefault(i18n.T("prompt_timezone", map[string]interface{}{"Default": defaultTimezone}), defaultTimezone)
+	value, err := promptWithDefault(cscr.reader, i18n.T("prompt_timezone", map[string]interface{}{"Default": resolved}), resolved)
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", i18n.T("error_failed_to_read_timezone"), err)
 	}
@@ -57,7 +66,7 @@ func (cscr *CodeSpaceConfigResolver) ResolveServiceName(explicitServiceName stri
 	if defaultServiceName == "" {
 		defaultServiceName = "app"
 	}
-	value, err := promptWithDefault(i18n.T("prompt_service_name", map[string]interface{}{"Default": defaultServiceName}), defaultServiceName)
+	value, err := promptWithDefault(cscr.reader, i18n.T("prompt_service_name", map[string]interface{}{"Default": defaultServiceName}), defaultServiceName)
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", i18n.T("error_failed_to_read_service_name"), err)
 	}

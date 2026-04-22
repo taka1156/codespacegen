@@ -6,11 +6,11 @@ import (
 	"codespacegen/internal/domain/entity"
 )
 
-func (rc *ResolveCodespaceConfig) resolveEntry(language string, cliConfig *entity.CliConfig, overrides map[string]json.RawMessage) (entity.JsonEntry, error) {
-	mergedImages, err := rc.codeSpaceConfigResolver.MergeLanguageEntries(overrides)
+func (rcc *ResolveCodespaceConfig) resolveEntry(language string, cliConfig *entity.CliConfig, overrides map[string]json.RawMessage, defaultImage string) (entity.JsonEntry, error) {
+	mergedImages, err := rcc.codeSpaceConfigResolver.MergeLanguageEntries(overrides)
 	if err != nil {
 		return entity.JsonEntry{}, err
 	}
 
-	return rc.codeSpaceConfigResolver.ResolveBaseImage(language, *cliConfig.BaseImage, *cliConfig.ImageConfig, mergedImages)
+	return rcc.codeSpaceConfigResolver.ResolveBaseImage(language, cliConfig.BaseImageValue(), cliConfig.ImageConfigValue(), mergedImages, defaultImage)
 }

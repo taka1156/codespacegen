@@ -10,28 +10,28 @@ type resolvedCoreValues struct {
 	Port            string
 }
 
-func (rc *ResolveCodespaceConfig) resolveCoreValues(cliConfig *entity.CliConfig) (resolvedCoreValues, error) {
-	resolvedProjectName, err := rc.codeSpaceConfigResolver.ResolveProjectName(*cliConfig.ContainerName)
+func (rcc *ResolveCodespaceConfig) resolveCoreValues(cliConfig *entity.CliConfig) (resolvedCoreValues, error) {
+	resolvedProjectName, err := rcc.codeSpaceConfigResolver.ResolveProjectName(cliConfig.ContainerNameValue())
 	if err != nil {
 		return resolvedCoreValues{}, err
 	}
 
-	resolvedLanguage, err := rc.codeSpaceConfigResolver.ResolveLanguage(*cliConfig.Language)
+	resolvedLanguage, err := rcc.codeSpaceConfigResolver.ResolveLanguage(cliConfig.LanguageValue())
 	if err != nil {
 		return resolvedCoreValues{}, err
 	}
 
-	resolvedWorkspaceFolder, err := rc.codeSpaceConfigResolver.ResolveWorkspaceFolder(*cliConfig.WorkspaceFolder)
+	resolvedWorkspaceFolder, err := rcc.codeSpaceConfigResolver.ResolveWorkspaceFolder(cliConfig.WorkspaceFolderValue())
 	if err != nil {
 		return resolvedCoreValues{}, err
 	}
 
-	resolvedServiceName, err := rc.codeSpaceConfigResolver.ResolveServiceName(*cliConfig.ServiceName)
+	resolvedServiceName, err := rcc.codeSpaceConfigResolver.ResolveServiceName(cliConfig.ServiceNameValue())
 	if err != nil {
 		return resolvedCoreValues{}, err
 	}
 
-	resolvedPort, err := rc.codeSpaceConfigResolver.ResolvePortMapping(*cliConfig.Port)
+	resolvedPort, err := rcc.codeSpaceConfigResolver.ResolvePortMapping(cliConfig.PortValue())
 	if err != nil {
 		return resolvedCoreValues{}, err
 	}

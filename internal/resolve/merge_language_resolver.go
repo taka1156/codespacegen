@@ -9,6 +9,18 @@ import (
 	"strings"
 )
 
+type parsedLanguageSetting struct {
+	Image    string `json:"image"`
+	Install  string `json:"install"`
+	Timezone string `json:"timezone"`
+	Locale   struct {
+		Lang     string `json:"lang"`
+		Language string `json:"language"`
+		LcAll    string `json:"lcAll"`
+	} `json:"locale"`
+	VSCodeExtensions []string `json:"vscodeExtensions"`
+}
+
 func (cscr *CodeSpaceConfigResolver) MergeLanguageEntries(overrides map[string]json.RawMessage) (map[string]entity.JsonEntry, error) {
 	mergedImages := make(map[string]entity.JsonEntry)
 
@@ -36,22 +48,25 @@ func (cscr *CodeSpaceConfigResolver) MergeLanguageEntries(overrides map[string]j
 }
 
 func mergeLanguageEntries(base entity.JsonEntry, override entity.JsonEntry) entity.JsonEntry {
-	locale := override.Locale
-	if locale.Lang == "" {
-		locale = base.Locale
-	}
-
 	merged := entity.JsonEntry{
 		Image:    firstNonEmpty(override.Image, base.Image),
 		Install:  firstNonEmpty(override.Install, base.Install),
 		Timezone: firstNonEmpty(override.Timezone, base.Timezone),
-		Locale:   locale,
+		Locale:   mergeLocale(base.Locale, override.Locale),
 	}
 
 	merged.VSCodeExtensions = append(merged.VSCodeExtensions, base.VSCodeExtensions...)
 	merged.VSCodeExtensions = append(merged.VSCodeExtensions, override.VSCodeExtensions...)
 
 	return merged
+}
+
+func mergeLocale(base entity.LocaleConfig, override entity.LocaleConfig) entity.LocaleConfig {
+	if strings.TrimSpace(override.Lang) == "" {
+		return base
+	}
+
+	return override
 }
 
 func parseCommonEntry(overrides map[string]json.RawMessage) (entity.JsonEntry, error) {
@@ -76,30 +91,26 @@ func parseLanguageEntry(raw json.RawMessage) (entity.JsonEntry, error) {
 		return entity.JsonEntry{Image: strings.TrimSpace(s)}, nil
 	}
 
-	var setting struct {
-		Image    string `json:"image"`
-		Install  string `json:"install"`
-		Timezone string `json:"timezone"`
-		Locale   struct {
-			Lang     string `json:"lang"`
-			Language string `json:"language"`
-			LcAll    string `json:"lcAll"`
-		} `json:"locale"`
-		VSCodeExtensions []string `json:"vscodeExtensions"`
-	}
-
+	var setting parsedLanguageSetting
 	if err := json.Unmarshal(raw, &setting); err != nil {
 		return entity.JsonEntry{}, fmt.Errorf("%s: %w", i18n.T("error_must_be_string_or_object"), err)
 	}
 
-	image := strings.TrimSpace(setting.Image)
-	install := strings.TrimSpace(setting.Install)
-	timezone := strings.TrimSpace(setting.Timezone)
+	entry := toJsonEntry(setting)
+	if entry.Image == "" && entry.Install != "" {
+		return entity.JsonEntry{}, errors.New(i18n.T("error_image_required_when_install"))
+	}
+
+	return entry, nil
+}
+
+func toJsonEntry(setting parsedLanguageSetting) entity.JsonEntry {
 	locale := entity.LocaleConfig{
 		Lang:     strings.TrimSpace(setting.Locale.Lang),
 		Language: strings.TrimSpace(setting.Locale.Language),
 		LcAll:    strings.TrimSpace(setting.Locale.LcAll),
 	}
+
 	vscodeExtensions := make([]string, 0, len(setting.VSCodeExtensions))
 	for _, ext := range setting.VSCodeExtensions {
 		trimmed := strings.TrimSpace(ext)
@@ -107,9 +118,12 @@ func parseLanguageEntry(raw json.RawMessage) (entity.JsonEntry, error) {
 			vscodeExtensions = append(vscodeExtensions, trimmed)
 		}
 	}
-	if image == "" && install != "" {
-		return entity.JsonEntry{}, errors.New(i18n.T("error_image_required_when_install"))
-	}
 
-	return entity.JsonEntry{Image: image, Install: install, Locale: locale, Timezone: timezone, VSCodeExtensions: vscodeExtensions}, nil
+	return entity.JsonEntry{
+		Image:            strings.TrimSpace(setting.Image),
+		Install:          strings.TrimSpace(setting.Install),
+		Locale:           locale,
+		Timezone:         strings.TrimSpace(setting.Timezone),
+		VSCodeExtensions: vscodeExtensions,
+	}
 }

@@ -1,45 +1,39 @@
 package resolve
 
 import (
-	"bufio"
 	"codespacegen/internal/i18n"
-	"errors"
 	"fmt"
-	"io"
-	"os"
 	"strings"
 )
 
 func (cscr *CodeSpaceConfigResolver) ResolvePortMapping(explicitPort string) (string, error) {
 	defaultPort := strings.TrimSpace(explicitPort)
-	reader := bufio.NewReader(os.Stdin)
-
-	for {
-		printPortPrompt(defaultPort)
-
-		line, err := reader.ReadString('\n')
-		if err != nil {
-			if errors.Is(err, io.EOF) {
-				return resolvePortOnEOF(line, defaultPort)
+	return promptUntilResolved(
+		cscr.reader,
+		defaultPort,
+		func() { printPortPrompt(defaultPort) },
+		i18n.T("error_failed_to_read_port_input"),
+		func(line string, defaultValue string, _ bool) (string, bool, error) {
+			if line == "" {
+				if defaultValue != "" {
+					normalizedDefault, err := normalizePortMapping(defaultValue)
+					if err != nil {
+						return "", true, err
+					}
+					return normalizedDefault, true, nil
+				}
+				return "", true, nil
 			}
-			return "", fmt.Errorf("%s: %w", i18n.T("error_failed_to_read_port_input"), err)
-		}
 
-		line = strings.TrimSpace(line)
-		if line == "" {
-			if defaultPort != "" {
-				return normalizePortMapping(defaultPort)
+			normalized, err := normalizePortMapping(line)
+			if err == nil {
+				return normalized, true, nil
 			}
-			return "", nil
-		}
 
-		normalized, err := normalizePortMapping(line)
-		if err == nil {
-			return normalized, nil
-		}
-
-		fmt.Println(i18n.T("error_invalid_port_format"))
-	}
+			fmt.Println(i18n.T("error_invalid_port_format"))
+			return "", false, nil
+		},
+	)
 }
 
 func printPortPrompt(defaultPort string) {
@@ -49,16 +43,4 @@ func printPortPrompt(defaultPort string) {
 	}
 
 	fmt.Print(i18n.T("prompt_port_with_default", map[string]interface{}{"Default": defaultPort}))
-}
-
-func resolvePortOnEOF(line string, defaultPort string) (string, error) {
-	line = strings.TrimSpace(line)
-	if line == "" {
-		if defaultPort != "" {
-			return normalizePortMapping(defaultPort)
-		}
-		return "", nil
-	}
-
-	return normalizePortMapping(line)
 }

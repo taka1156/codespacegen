@@ -19,21 +19,21 @@ func NewResolveCodespaceConfig(
 	}
 }
 
-func (rc *ResolveCodespaceConfig) Resolve(cliConfig *entity.CliConfig, overrides map[string]json.RawMessage) (*entity.CodespaceConfig, error) {
-	resolvedValues, err := rc.resolveCoreValues(cliConfig)
+func (rcc *ResolveCodespaceConfig) Resolve(cliConfig *entity.CliConfig, overrides map[string]json.RawMessage, defaultTimezone string, defaultImage string) (*entity.CodespaceConfig, error) {
+	resolvedValues, err := rcc.resolveCoreValues(cliConfig)
 	if err != nil {
 		return nil, err
 	}
 
-	resolvedEntry, err := rc.resolveEntry(resolvedValues.Language, cliConfig, overrides)
+	resolvedEntry, err := rcc.resolveEntry(resolvedValues.Language, cliConfig, overrides, defaultImage)
 	if err != nil {
 		return nil, err
 	}
 
-	resolvedTimezone, err := rc.codeSpaceConfigResolver.ResolveTimezone(*cliConfig.Timezone, resolvedEntry.Timezone)
+	resolvedTimezone, err := rcc.codeSpaceConfigResolver.ResolveTimezone(cliConfig.TimezoneValue(), resolvedEntry.Timezone, defaultTimezone)
 	if err != nil {
 		return nil, err
 	}
 
-	return rc.buildCodespaceConfig(cliConfig, resolvedValues, resolvedEntry, resolvedTimezone), nil
+	return rcc.buildCodespaceConfig(cliConfig, resolvedValues, resolvedEntry, resolvedTimezone), nil
 }
