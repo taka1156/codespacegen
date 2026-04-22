@@ -49,7 +49,7 @@ func newApp() *App {
 	}
 
 	rs := Resolvers{
-		codeSpaceConfigResolver: resolve.NewCodeSpaceConfigResolver(),
+		codeSpaceConfigResolver: resolve.NewCodeSpaceConfigResolver(os.Stdin),
 	}
 
 	generatorImpl := generator.NewDefaultTemplateGenerator()

@@ -2,7 +2,7 @@ package resolve
 
 import (
 	"bufio"
-	"os"
+	"io"
 
 	"codespacegen/internal/domain/entity"
 	"codespacegen/internal/i18n"
@@ -14,9 +14,9 @@ type CodeSpaceConfigResolver struct {
 	reader *bufio.Reader
 }
 
-func NewCodeSpaceConfigResolver() *CodeSpaceConfigResolver {
+func NewCodeSpaceConfigResolver(r io.Reader) *CodeSpaceConfigResolver {
 	return &CodeSpaceConfigResolver{
-		reader: bufio.NewReader(os.Stdin),
+		reader: bufio.NewReader(r),
 	}
 }
 
