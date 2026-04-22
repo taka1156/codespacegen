@@ -1,4 +1,4 @@
-package input
+package collect
 
 import (
 	"encoding/json"
@@ -7,25 +7,26 @@ import (
 	"codespacegen/internal/domain/entity"
 )
 
-type ResolveInput struct {
-	cliInput      config.CliInput
-	jsonInput     config.JsonInput
-	defaultConfig config.DefaultConfig
+
+type CollectInputs struct {
+	cliInput      CLIInputProvider
+	jsonInput     ImageConfigLoader
+	defaultConfig DefaultSettingProvider
 }
 
-func NewResolveInput(
-	cliInput config.CliInput,
-	jsonInput config.JsonInput,
-	defaultConfig config.DefaultConfig,
-) *ResolveInput {
-	return &ResolveInput{
+func NewCollectInputs(
+	cliInput CLIInputProvider,
+	jsonInput ImageConfigLoader,
+	defaultConfig DefaultSettingProvider,
+) *CollectInputs {
+	return &CollectInputs{
 		cliInput:      cliInput,
 		jsonInput:     jsonInput,
 		defaultConfig: defaultConfig,
 	}
 }
 
-func (ri *ResolveInput) Input() (*entity.CliConfig, map[string]json.RawMessage, config.DefaultSetting, error) {
+func (ri *CollectInputs) Collect() (*entity.CliConfig, map[string]json.RawMessage, config.DefaultSetting, error) {
 	cliConfig := ri.cliInput.GetCliInput()
 	jsonConfig, err := ri.jsonInput.LoadLanguageImages(*cliConfig.ImageConfig)
 	if err != nil {

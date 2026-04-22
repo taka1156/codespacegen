@@ -1,22 +1,21 @@
 package workflow
 
 import (
-	"codespacegen/internal/config"
 	"codespacegen/internal/domain/service"
 	"codespacegen/internal/resolve"
 	"codespacegen/internal/workflow/assemble"
+	"codespacegen/internal/workflow/collect"
 	"codespacegen/internal/workflow/generate"
-	"codespacegen/internal/workflow/input"
 )
 
-type ResolveInput = input.ResolveInput
+type CollectInputs = collect.CollectInputs
 
-func NewResolveInput(
-	cliInput config.CliInput,
-	jsonInput config.JsonInput,
-	defaultConfig config.DefaultConfig,
-) *ResolveInput {
-	return input.NewResolveInput(cliInput, jsonInput, defaultConfig)
+func NewCollectInputs(
+	cliInput collect.CLIInputProvider,
+	jsonInput collect.ImageConfigLoader,
+	defaultConfig collect.DefaultSettingProvider,
+) *CollectInputs {
+	return collect.NewCollectInputs(cliInput, jsonInput, defaultConfig)
 }
 
 type ResolveCodespaceConfig = assemble.ResolveCodespaceConfig

@@ -25,7 +25,7 @@ type Resolvers struct {
 }
 
 type WorkflowCases struct {
-	resolveInput          *workflow.ResolveInput
+	collectInputs         *workflow.CollectInputs
 	resolveCodespace      *workflow.ResolveCodespaceConfig
 	generateCodeArtifacts *workflow.GenerateCodespaceArtifacts
 }
@@ -46,12 +46,12 @@ func main() {
 	writer := filewriter.NewLocalFileWriter()
 
 	flows := WorkflowCases{
-		resolveInput:          workflow.NewResolveInput(*ic.clientInput, *ic.jsonInput, *ic.defaultConfig),
+		collectInputs:         workflow.NewCollectInputs(ic.clientInput, ic.jsonInput, ic.defaultConfig),
 		resolveCodespace:      workflow.NewResolveCodespaceConfig(*rs.codeSpaceConfigResolver),
 		generateCodeArtifacts: workflow.NewGenerateCodespaceArtifacts(generatorImpl, writer),
 	}
 
-	cliConfig, jsonConfig, defaultConfig, err := flows.resolveInput.Input()
+	cliConfig, jsonConfig, defaultConfig, err := flows.collectInputs.Collect()
 	if err != nil {
 		os.Exit(1)
 	}
