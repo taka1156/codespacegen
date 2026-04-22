@@ -18,7 +18,7 @@ func NewResolveCodespaceConfig(
 	}
 }
 
-func (rcc *ResolveCodespaceConfig) Resolve(cliConfig entity.CliConfig, overrides map[string]json.RawMessage, defaultTimezone string, defaultImage string) (*entity.CodespaceConfig, error) {
+func (rcc *ResolveCodespaceConfig) Resolve(cliConfig entity.CliConfig, defaultSetting entity.DefaultSetting, overrides map[string]json.RawMessage, defaultTimezone string, defaultImage string) (*entity.CodespaceConfig, error) {
 	resolvedValues, err := rcc.resolveCoreValues(&cliConfig)
 	if err != nil {
 		return nil, err
@@ -34,5 +34,5 @@ func (rcc *ResolveCodespaceConfig) Resolve(cliConfig entity.CliConfig, overrides
 		return nil, err
 	}
 
-	return rcc.buildCodespaceConfig(cliConfig, resolvedValues, resolvedEntry, resolvedTimezone), nil
+	return rcc.buildCodespaceConfig(cliConfig, defaultSetting, resolvedValues, resolvedEntry, resolvedTimezone), nil
 }
