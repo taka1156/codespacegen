@@ -1,11 +1,11 @@
 package usecase
 
 import (
-	"fmt"
-
 	"codespacegen/internal/application/port"
 	"codespacegen/internal/domain/entity"
 	"codespacegen/internal/domain/service"
+	"fmt"
+	"path/filepath"
 )
 
 type GenerateCodespaceArtifacts struct {
@@ -23,7 +23,7 @@ func NewGenerateCodespaceArtifacts(
 	}
 }
 
-func (u *GenerateCodespaceArtifacts) Execute(config entity.CodespaceConfig, overwrite bool) error {
+func (u *GenerateCodespaceArtifacts) Execute(config entity.CodespaceConfig, overwrite bool, outputDir string) error {
 	if err := config.Validate(); err != nil {
 		return err
 	}
@@ -34,7 +34,7 @@ func (u *GenerateCodespaceArtifacts) Execute(config entity.CodespaceConfig, over
 	}
 
 	for _, file := range files {
-		if err := u.writer.Write(file.RelativePath, file.Content, overwrite); err != nil {
+		if err := u.writer.Write(filepath.Join(outputDir, file.RelativePath), file.Content, overwrite); err != nil {
 			return fmt.Errorf("failed to write %s: %w", file.RelativePath, err)
 		}
 	}

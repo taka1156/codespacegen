@@ -8,15 +8,14 @@ import (
 )
 
 type LocalFileWriter struct {
-	baseDir string
 }
 
-func NewLocalFileWriter(baseDir string) *LocalFileWriter {
-	return &LocalFileWriter{baseDir: baseDir}
+func NewLocalFileWriter() *LocalFileWriter {
+	return &LocalFileWriter{}
 }
 
 func (w *LocalFileWriter) Write(relativePath string, content string, overwrite bool) error {
-	fullPath := filepath.Join(w.baseDir, relativePath)
+	fullPath := relativePath
 
 	if !overwrite {
 		if _, err := os.Stat(fullPath); err == nil {
