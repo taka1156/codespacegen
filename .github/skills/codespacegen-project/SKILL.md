@@ -57,12 +57,11 @@ Dependencies point inward.
 | インターフェース | 定義場所 | 実装 |
 |---|---|---|
 | `service.TemplateGenerator` | `internal/domain/service` | `generator.DefaultTemplateGenerator` |
-| `generate.FileWriter` | `internal/workflow/generate` | `filewriter.LocalFileWriter` |
-| `collect.CLIInputProvider` | `internal/workflow/collect` | `config.CliInput` |
-| `collect.ImageConfigLoader` | `internal/workflow/collect` | `config.JsonInput` |
-| `collect.DefaultSettingProvider` | `internal/workflow/collect` | `config.DefaultConfig` |
-
-> **注意**: `resolve.CodeSpaceConfigResolver` は現在インターフェースではなく具体構造体。`assemble` 層が直接依存しており、モック置き換えが不可。
+| `service.FileWriter` | `internal/domain/service` | `filewriter.LocalFileWriter` |
+| `collect.CLIInputProvider` | `internal/workflow/collect` | `input.CliInput` |
+| `collect.ImageConfigLoader` | `internal/workflow/collect` | `input.JsonInput` |
+| `collect.DefaultSettingProvider` | `internal/workflow/collect` | `input.DefaultConfig` |
+| `assemble.ConfigResolver` | `internal/workflow/assemble` | `resolve.CodeSpaceConfigResolver` |
 
 ## Configuration Knowledge
 
@@ -100,12 +99,16 @@ Dependencies point inward.
 - Main test files:
   - `internal/workflow/generate/generate_artifacts_test.go` — ファイル書き込みの動作・エラー伝播
   - `internal/generator/default_template_generator_test.go` — テンプレートレンダリング詳細
+  - `internal/workflow/assemble/resolve_codespace_config_test.go` — 設定解決ロジック・エラー伝播
+  - `internal/resolve/resolve_test.go` — インタラクティブ解決・ベースイメージ解決・マージロジック
 - Main unit test responsibilities:
   - use case write behavior and error propagation
   - template rendering details such as package manager selection, timezone setup, extension merging, and key order
+  - codespace config assembly with mocked resolver
+  - interactive prompt resolution and config merge logic
 - **テストが存在しないパッケージ（今後追加が必要）**:
-  - `internal/workflow/assemble/` — 設定解決ロジック全体
-  - `internal/resolve/` — インタラクティブ解決ロジック
+  - `internal/workflow/collect/` — 入力収集ロジック
+  - `internal/input/` — HTTP/ファイル読み込み・バリデーション
 
 ### E2E snapshot tests
 
