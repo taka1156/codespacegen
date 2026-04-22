@@ -49,7 +49,7 @@ func NewApp() *App {
 
 	flows := WorkflowCases{
 		inputInputs:           workflow.NewCollectInputs(ic.clientInput, ic.jsonInput, ic.defaultConfig),
-		resolveCodespace:      workflow.NewResolveCodespaceConfig(rs.codeSpaceConfigResolver),
+		resolveCodespace:      workflow.NewAssembleCodespaceConfig(rs.codeSpaceConfigResolver),
 		generateCodeArtifacts: workflow.NewGenerateCodespaceArtifacts(generatorImpl, writer),
 	}
 

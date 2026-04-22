@@ -2,7 +2,7 @@ package assemble
 
 import "codespacegen/internal/domain/entity"
 
-func (rcc *ResolveCodespaceConfig) buildCodespaceConfig(cliConfig entity.CliConfig, defaultSetting entity.DefaultSetting, coreValues resolvedCoreValues, resolvedEntry entity.JsonEntry, resolvedTimezone string) *entity.CodespaceConfig {
+func (acc *AssembleCodespaceConfig) buildCodespaceConfig(cliConfig entity.CliConfig, defaultSetting entity.DefaultSetting, coreValues resolvedCoreValues, resolvedEntry entity.JsonEntry, resolvedTimezone string) *entity.CodespaceConfig {
 	return &entity.CodespaceConfig{
 		Schema:           defaultSetting.VscSchema,
 		ContainerName:    coreValues.ProjectName,
