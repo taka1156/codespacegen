@@ -31,18 +31,38 @@ description: 'Repository knowledge for the codespacegen project. Use when answer
 ## Architecture
 
 - Domain:
-  - `internal/domain/entity`
-  - `internal/domain/service`
-- Application:
-  - `internal/application/usecase`
-  - `internal/application/port`
-- Infrastructure:
-  - `internal/infrastructure/generator`
-  - `internal/infrastructure/persistence`
+  - `internal/domain/entity` — エンティティ型 (`CodespaceConfig`, `CliConfig`, `JsonEntry`, `GeneratedFile` など)
+  - `internal/domain/service` — `TemplateGenerator` インターフェース
+- Config (入力アダプター):
+  - `internal/config/` — CLI (`CliInput`)、JSON (`JsonInput`)、デフォルト値 (`DefaultConfig`)
+- Resolve (インタラクティブ解決):
+  - `internal/resolve/` — `CodeSpaceConfigResolver` (stdin プロンプト、ベースイメージ解決、マージ)
+- Generator (テンプレート生成・書き込み実装):
+  - `internal/generator/` — `DefaultTemplateGenerator`
+  - `internal/generator/filewriter/` — `LocalFileWriter`
+- Workflow (ユースケース層):
+  - `internal/workflow/workflow.go` — ファサード（型エイリアスのみ）
+  - `internal/workflow/collect/` — 入力収集 (`CollectInputs`)
+  - `internal/workflow/assemble/` — 設定解決・構築 (`ResolveCodespaceConfig`)
+  - `internal/workflow/generate/` — アーティファクト生成 (`GenerateCodespaceArtifacts`)
+- i18n:
+  - `internal/i18n/` — ロケール別メッセージ (`locales/ja.yaml`, `locales/en.yaml`)
 - Entry point:
-  - `cmd/codespacegen`
+  - `cmd/codespacegen/main.go` — DI ルート、`App` 構造体
 
 Dependencies point inward.
+
+## Interface Mapping
+
+| インターフェース | 定義場所 | 実装 |
+|---|---|---|
+| `service.TemplateGenerator` | `internal/domain/service` | `generator.DefaultTemplateGenerator` |
+| `generate.FileWriter` | `internal/workflow/generate` | `filewriter.LocalFileWriter` |
+| `collect.CLIInputProvider` | `internal/workflow/collect` | `config.CliInput` |
+| `collect.ImageConfigLoader` | `internal/workflow/collect` | `config.JsonInput` |
+| `collect.DefaultSettingProvider` | `internal/workflow/collect` | `config.DefaultConfig` |
+
+> **注意**: `resolve.CodeSpaceConfigResolver` は現在インターフェースではなく具体構造体。`assemble` 層が直接依存しており、モック置き換えが不可。
 
 ## Configuration Knowledge
 
@@ -61,7 +81,7 @@ Dependencies point inward.
 
 ## Generation Knowledge
 
-- Template generation happens in `internal/infrastructure/generator/default_template_generator.go`.
+- Template generation happens in `internal/generator/default_template_generator.go`.
 - The generator chooses package setup based on the base image:
   - Alpine-like images use `apk`
   - Non-Alpine images use `apt-get`
@@ -78,13 +98,14 @@ Dependencies point inward.
 - Run all unit tests:
   - `go test ./...`
 - Main test files:
-  - `cmd/codespacegen/main_test.go`
-  - `internal/application/usecase/generate_codespace_test.go`
-  - `internal/infrastructure/generator/default_template_generator_test.go`
+  - `internal/workflow/generate/generate_artifacts_test.go` — ファイル書き込みの動作・エラー伝播
+  - `internal/generator/default_template_generator_test.go` — テンプレートレンダリング詳細
 - Main unit test responsibilities:
-  - CLI resolution and config merge logic
   - use case write behavior and error propagation
   - template rendering details such as package manager selection, timezone setup, extension merging, and key order
+- **テストが存在しないパッケージ（今後追加が必要）**:
+  - `internal/workflow/assemble/` — 設定解決ロジック全体
+  - `internal/resolve/` — インタラクティブ解決ロジック
 
 ### E2E snapshot tests
 
