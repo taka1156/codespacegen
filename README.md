@@ -18,12 +18,21 @@ codespacegen is a CLI that generates the following three files for Codespaces an
 - Domain: rules and models
 	- internal/domain/entity
 	- internal/domain/service
-- Application: use cases
-	- internal/application/usecase
-	- internal/application/port
-- Infrastructure: external I/O implementations
-	- internal/infrastructure/generator
-	- internal/infrastructure/persistence
+- App composition and orchestration
+	- internal/app
+- Input adapters (CLI/JSON/defaults)
+	- internal/input
+- Config resolution (interactive/default merge)
+	- internal/resolve
+- Workflows (use cases)
+	- internal/workflow/collect
+	- internal/workflow/assemble
+	- internal/workflow/generate
+- Artifact generation and file writing
+	- internal/generator
+	- internal/generator/filewriter
+- i18n resources
+	- internal/i18n
 - Entry point: CLI
 	- cmd/codespacegen
 
