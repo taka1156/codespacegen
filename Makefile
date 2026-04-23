@@ -12,7 +12,10 @@ DIST_TARGETS := \
 	darwin/arm64/tar.gz \
 	windows/amd64/exe
 
-.PHONY: run build test clean e2e bin dist
+.PHONY: fmt run build test clean e2e bin dist
+
+fmt:
+	go fmt ./...
 
 run:
 	go run $(CMD) $(RUN_ARGS)

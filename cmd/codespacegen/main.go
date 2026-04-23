@@ -1,8 +1,8 @@
 package main
 
 import (
-	"os"
 	"codespacegen/internal/app"
+	"os"
 )
 
 func main() {

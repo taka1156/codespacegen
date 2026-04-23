@@ -3,17 +3,29 @@ package entity
 // This file defines the CodespaceConfig struct and related constants.
 const DefaultImage = "alpine:latest"
 
+type OsModules struct {
+	AlpineModules     []string
+	DebianLikeModules []string
+}
+
 // DefaultSetting holds the resolved default values used across the application.
 type DefaultSetting struct {
-	Timezone string
-	Image    string
-	Version  string
+	Timezone  string
+	Image     string
+	Version   string
+	VscSchema string
+	OsModules OsModules
 }
 
 // CodespaceConfig holds values used to generate devcontainer artifacts.
 const DefaultTimezone = "UTC"
 
+// DefaultVersion is the default version of the generated configuration,
+// which can be used for future enhancements or versioning of the generated files.
 const DefaultVersion = "dev"
+
+// DefaultVscSchema is the default schema URL for the devcontainer.json file.
+const DefaultVscSchema = "https://raw.githubusercontent.com/microsoft/vscode/main/extensions/configuration-editing/schemas/devContainer.vscode.schema.json"
 
 type CliConfig struct {
 	OutputDir           *string
@@ -83,22 +95,6 @@ func (c CliConfig) ShowVersionValue() bool {
 	return boolValue(c.ShowVersion)
 }
 
-func stringValue(v *string) string {
-	if v == nil {
-		return ""
-	}
-
-	return *v
-}
-
-func boolValue(v *bool) bool {
-	if v == nil {
-		return false
-	}
-
-	return *v
-}
-
 type LocaleConfig struct {
 	Lang     string
 	Language string
@@ -120,6 +116,7 @@ type JsonEntry struct {
 }
 
 type CodespaceConfig struct {
+	Schema           string
 	ContainerName    string
 	ServiceName      string
 	WorkspaceFolder  string
@@ -130,6 +127,7 @@ type CodespaceConfig struct {
 	PortMapping      string
 	InstallCommand   string
 	VSCodeExtensions []string
+	OsModules        OsModules
 }
 
 func (c CodespaceConfig) Validate() error {

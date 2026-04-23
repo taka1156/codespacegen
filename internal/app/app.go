@@ -20,7 +20,7 @@ type InputConfig struct {
 }
 
 type Resolvers struct {
-	codeSpaceConfigResolver *resolve.CodeSpaceConfigResolver
+	CodespaceConfigResolver *resolve.CodespaceConfigResolver
 }
 
 type WorkflowCases struct {
@@ -41,7 +41,7 @@ func NewApp() *App {
 	}
 
 	rs := Resolvers{
-		codeSpaceConfigResolver: resolve.NewCodeSpaceConfigResolver(os.Stdin),
+		CodespaceConfigResolver: resolve.NewCodespaceConfigResolver(os.Stdin),
 	}
 
 	generatorImpl := generator.NewDefaultTemplateGenerator()
@@ -49,7 +49,7 @@ func NewApp() *App {
 
 	flows := WorkflowCases{
 		inputInputs:           workflow.NewCollectInputs(ic.clientInput, ic.jsonInput, ic.defaultConfig),
-		resolveCodespace:      workflow.NewResolveCodespaceConfig(rs.codeSpaceConfigResolver),
+		resolveCodespace:      workflow.NewAssembleCodespaceConfig(rs.CodespaceConfigResolver),
 		generateCodeArtifacts: workflow.NewGenerateCodespaceArtifacts(generatorImpl, writer),
 	}
 
@@ -62,30 +62,28 @@ func (a *App) Run() error {
 		return err
 	}
 
-	cliConfig := inputs.CliConfig
-
-	if cliConfig.ShowVersionValue() {
+	if inputs.CliConfig.ShowVersionValue() {
 		fmt.Println(inputs.DefaultConfig.Version)
 		return nil
 	}
 
-	if cliConfig.LangValue() != "" {
-		i18n.SetLang(cliConfig.LangValue())
+	if inputs.CliConfig.LangValue() != "" {
+		i18n.SetLang(inputs.CliConfig.LangValue())
 	}
 
-	codespaceConfig, err := a.flows.resolveCodespace.Resolve(cliConfig, inputs.JsonConfig, inputs.DefaultConfig.Timezone, inputs.DefaultConfig.Image)
+	codespaceConfig, err := a.flows.resolveCodespace.Resolve(inputs.CliConfig, inputs.DefaultConfig, inputs.JsonConfig, inputs.DefaultConfig.Timezone, inputs.DefaultConfig.Image)
 	if err != nil {
 		return err
 	}
 
-	err = a.flows.generateCodeArtifacts.Execute(*codespaceConfig, cliConfig.EnableOverwriteFileValue(), cliConfig.OutputDirValue())
+	err = a.flows.generateCodeArtifacts.Execute(*codespaceConfig, inputs.CliConfig.EnableOverwriteFileValue(), inputs.CliConfig.OutputDirValue())
 	if err != nil {
 		return err
 	}
 
-	resolvedOutput, err := filepath.Abs(cliConfig.OutputDirValue())
+	resolvedOutput, err := filepath.Abs(inputs.CliConfig.OutputDirValue())
 	if err != nil {
-		resolvedOutput = cliConfig.OutputDirValue()
+		resolvedOutput = inputs.CliConfig.OutputDirValue()
 	}
 
 	fmt.Println(i18n.T("msg_generated_files", map[string]interface{}{"OutputDir": resolvedOutput}))

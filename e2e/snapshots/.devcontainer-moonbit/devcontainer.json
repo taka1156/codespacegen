@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/microsoft/vscode/main/extensions/configuration-editing/schemas/devContainer.vscode.schema.json",
   "name": "sample",
   "service": "app",
   "workspaceFolder": "/workspace",
@@ -9,9 +10,9 @@
         "terminal.integrated.defaultProfile.linux": "bash"
       },
       "extensions": [
+        "MS-CEINTL.vscode-language-pack-ja",
         "GitHub.copilot",
         "GitHub.copilot-chat",
-        "MS-CEINTL.vscode-language-pack-ja",
         "streetsidesoftware.code-spell-checker",
         "username.errorlens",
         "moonbit.moonbit-lang"

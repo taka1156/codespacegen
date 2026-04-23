@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func (cscr *CodeSpaceConfigResolver) ResolvePortMapping(explicitPort string) (string, error) {
+func (cscr *CodespaceConfigResolver) ResolvePortMapping(explicitPort string) (string, error) {
 	defaultPort := strings.TrimSpace(explicitPort)
 	return promptUntilResolved(
 		cscr.reader,

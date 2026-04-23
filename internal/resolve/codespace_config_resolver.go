@@ -10,17 +10,17 @@ import (
 	"strings"
 )
 
-type CodeSpaceConfigResolver struct {
+type CodespaceConfigResolver struct {
 	reader *bufio.Reader
 }
 
-func NewCodeSpaceConfigResolver(r io.Reader) *CodeSpaceConfigResolver {
-	return &CodeSpaceConfigResolver{
+func NewCodespaceConfigResolver(r io.Reader) *CodespaceConfigResolver {
+	return &CodespaceConfigResolver{
 		reader: bufio.NewReader(r),
 	}
 }
 
-func (cscr *CodeSpaceConfigResolver) ResolveLanguage(explicitLanguage string) (string, error) {
+func (cscr *CodespaceConfigResolver) ResolveLanguage(explicitLanguage string) (string, error) {
 	defaultLanguage := strings.TrimSpace(explicitLanguage)
 	value, err := promptWithDefault(cscr.reader, i18n.T("prompt_language"), defaultLanguage)
 	if err != nil {
@@ -29,7 +29,7 @@ func (cscr *CodeSpaceConfigResolver) ResolveLanguage(explicitLanguage string) (s
 	return strings.ToLower(strings.TrimSpace(value)), nil
 }
 
-func (cscr *CodeSpaceConfigResolver) ResolveWorkspaceFolder(explicitWorkspaceFolder string) (string, error) {
+func (cscr *CodespaceConfigResolver) ResolveWorkspaceFolder(explicitWorkspaceFolder string) (string, error) {
 	defaultWorkspaceFolder := strings.TrimSpace(explicitWorkspaceFolder)
 	if defaultWorkspaceFolder == "" {
 		defaultWorkspaceFolder = "/workspace"
@@ -41,7 +41,7 @@ func (cscr *CodeSpaceConfigResolver) ResolveWorkspaceFolder(explicitWorkspaceFol
 	return strings.TrimSpace(value), nil
 }
 
-func (cscr *CodeSpaceConfigResolver) ResolveTimezone(explicitTimezone string, configTimezone string, defaultTimezone string) (string, error) {
+func (cscr *CodespaceConfigResolver) ResolveTimezone(explicitTimezone string, configTimezone string, defaultTimezone string) (string, error) {
 	resolved := strings.TrimSpace(explicitTimezone)
 	if resolved == "" {
 		resolved = strings.TrimSpace(configTimezone)
@@ -61,7 +61,7 @@ func (cscr *CodeSpaceConfigResolver) ResolveTimezone(explicitTimezone string, co
 	return strings.TrimSpace(value), nil
 }
 
-func (cscr *CodeSpaceConfigResolver) ResolveServiceName(explicitServiceName string) (string, error) {
+func (cscr *CodespaceConfigResolver) ResolveServiceName(explicitServiceName string) (string, error) {
 	defaultServiceName := strings.TrimSpace(explicitServiceName)
 	if defaultServiceName == "" {
 		defaultServiceName = "app"

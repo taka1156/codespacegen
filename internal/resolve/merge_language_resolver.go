@@ -21,7 +21,7 @@ type parsedLanguageSetting struct {
 	VSCodeExtensions []string `json:"vscodeExtensions"`
 }
 
-func (cscr *CodeSpaceConfigResolver) MergeLanguageEntries(overrides map[string]json.RawMessage) (map[string]entity.JsonEntry, error) {
+func (cscr *CodespaceConfigResolver) MergeLanguageEntries(overrides map[string]json.RawMessage) (map[string]entity.JsonEntry, error) {
 	mergedImages := make(map[string]entity.JsonEntry)
 
 	common, err := parseCommonEntry(overrides)

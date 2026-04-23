@@ -79,7 +79,7 @@ func strPtr(s string) *string { return &s }
 
 // --- Resolve 正常系 ---
 
-func TestResolveCodespaceConfig_Resolve_BuildsConfigCorrectly(t *testing.T) {
+func TestAssembleCodespaceConfig_Resolve_BuildsConfigCorrectly(t *testing.T) {
 	resolver := defaultFakeResolver()
 	resolver.baseImageEntry = entity.JsonEntry{
 		Image:            "python:3.12",
@@ -94,8 +94,8 @@ func TestResolveCodespaceConfig_Resolve_BuildsConfigCorrectly(t *testing.T) {
 		ComposeFile: strPtr(composeName),
 	}
 
-	rcc := NewResolveCodespaceConfig(resolver)
-	got, err := rcc.Resolve(cliConfig, nil, "UTC", "alpine:latest")
+	rcc := NewAssembleCodespaceConfig(resolver)
+	got, err := rcc.Resolve(cliConfig, entity.DefaultSetting{}, nil, "UTC", "alpine:latest")
 
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -126,12 +126,12 @@ func TestResolveCodespaceConfig_Resolve_BuildsConfigCorrectly(t *testing.T) {
 	}
 }
 
-func TestResolveCodespaceConfig_Resolve_PortMappingIsSet(t *testing.T) {
+func TestAssembleCodespaceConfig_Resolve_PortMappingIsSet(t *testing.T) {
 	resolver := defaultFakeResolver()
 	resolver.portMapping = "3000:3000"
 
-	rcc := NewResolveCodespaceConfig(resolver)
-	got, err := rcc.Resolve(entity.CliConfig{}, nil, "UTC", "alpine:latest")
+	rcc := NewAssembleCodespaceConfig(resolver)
+	got, err := rcc.Resolve(entity.CliConfig{}, entity.DefaultSetting{}, nil, "UTC", "alpine:latest")
 
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -143,96 +143,96 @@ func TestResolveCodespaceConfig_Resolve_PortMappingIsSet(t *testing.T) {
 
 // --- Resolve エラー伝播 ---
 
-func TestResolveCodespaceConfig_Resolve_ErrorFromResolveProjectName(t *testing.T) {
+func TestAssembleCodespaceConfig_Resolve_ErrorFromResolveProjectName(t *testing.T) {
 	resolver := defaultFakeResolver()
 	resolver.errProjectName = errors.New("project name error")
 
-	rcc := NewResolveCodespaceConfig(resolver)
-	_, err := rcc.Resolve(entity.CliConfig{}, nil, "UTC", "alpine:latest")
+	rcc := NewAssembleCodespaceConfig(resolver)
+	_, err := rcc.Resolve(entity.CliConfig{}, entity.DefaultSetting{}, nil, "UTC", "alpine:latest")
 
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
 }
 
-func TestResolveCodespaceConfig_Resolve_ErrorFromResolveLanguage(t *testing.T) {
+func TestAssembleCodespaceConfig_Resolve_ErrorFromResolveLanguage(t *testing.T) {
 	resolver := defaultFakeResolver()
 	resolver.errLanguage = errors.New("language error")
 
-	rcc := NewResolveCodespaceConfig(resolver)
-	_, err := rcc.Resolve(entity.CliConfig{}, nil, "UTC", "alpine:latest")
+	rcc := NewAssembleCodespaceConfig(resolver)
+	_, err := rcc.Resolve(entity.CliConfig{}, entity.DefaultSetting{}, nil, "UTC", "alpine:latest")
 
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
 }
 
-func TestResolveCodespaceConfig_Resolve_ErrorFromResolveWorkspaceFolder(t *testing.T) {
+func TestAssembleCodespaceConfig_Resolve_ErrorFromResolveWorkspaceFolder(t *testing.T) {
 	resolver := defaultFakeResolver()
 	resolver.errWorkspaceFolder = errors.New("workspace folder error")
 
-	rcc := NewResolveCodespaceConfig(resolver)
-	_, err := rcc.Resolve(entity.CliConfig{}, nil, "UTC", "alpine:latest")
+	rcc := NewAssembleCodespaceConfig(resolver)
+	_, err := rcc.Resolve(entity.CliConfig{}, entity.DefaultSetting{}, nil, "UTC", "alpine:latest")
 
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
 }
 
-func TestResolveCodespaceConfig_Resolve_ErrorFromResolveServiceName(t *testing.T) {
+func TestAssembleCodespaceConfig_Resolve_ErrorFromResolveServiceName(t *testing.T) {
 	resolver := defaultFakeResolver()
 	resolver.errServiceName = errors.New("service name error")
 
-	rcc := NewResolveCodespaceConfig(resolver)
-	_, err := rcc.Resolve(entity.CliConfig{}, nil, "UTC", "alpine:latest")
+	rcc := NewAssembleCodespaceConfig(resolver)
+	_, err := rcc.Resolve(entity.CliConfig{}, entity.DefaultSetting{}, nil, "UTC", "alpine:latest")
 
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
 }
 
-func TestResolveCodespaceConfig_Resolve_ErrorFromResolvePortMapping(t *testing.T) {
+func TestAssembleCodespaceConfig_Resolve_ErrorFromResolvePortMapping(t *testing.T) {
 	resolver := defaultFakeResolver()
 	resolver.errPortMapping = errors.New("port mapping error")
 
-	rcc := NewResolveCodespaceConfig(resolver)
-	_, err := rcc.Resolve(entity.CliConfig{}, nil, "UTC", "alpine:latest")
+	rcc := NewAssembleCodespaceConfig(resolver)
+	_, err := rcc.Resolve(entity.CliConfig{}, entity.DefaultSetting{}, nil, "UTC", "alpine:latest")
 
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
 }
 
-func TestResolveCodespaceConfig_Resolve_ErrorFromMergeLanguageEntries(t *testing.T) {
+func TestAssembleCodespaceConfig_Resolve_ErrorFromMergeLanguageEntries(t *testing.T) {
 	resolver := defaultFakeResolver()
 	resolver.errMergeEntries = errors.New("merge error")
 
-	rcc := NewResolveCodespaceConfig(resolver)
-	_, err := rcc.Resolve(entity.CliConfig{}, nil, "UTC", "alpine:latest")
+	rcc := NewAssembleCodespaceConfig(resolver)
+	_, err := rcc.Resolve(entity.CliConfig{}, entity.DefaultSetting{}, nil, "UTC", "alpine:latest")
 
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
 }
 
-func TestResolveCodespaceConfig_Resolve_ErrorFromResolveBaseImage(t *testing.T) {
+func TestAssembleCodespaceConfig_Resolve_ErrorFromResolveBaseImage(t *testing.T) {
 	resolver := defaultFakeResolver()
 	resolver.errBaseImage = errors.New("base image error")
 
-	rcc := NewResolveCodespaceConfig(resolver)
-	_, err := rcc.Resolve(entity.CliConfig{}, nil, "UTC", "alpine:latest")
+	rcc := NewAssembleCodespaceConfig(resolver)
+	_, err := rcc.Resolve(entity.CliConfig{}, entity.DefaultSetting{}, nil, "UTC", "alpine:latest")
 
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
 }
 
-func TestResolveCodespaceConfig_Resolve_ErrorFromResolveTimezone(t *testing.T) {
+func TestAssembleCodespaceConfig_Resolve_ErrorFromResolveTimezone(t *testing.T) {
 	resolver := defaultFakeResolver()
 	resolver.errTimezone = errors.New("timezone error")
 
-	rcc := NewResolveCodespaceConfig(resolver)
-	_, err := rcc.Resolve(entity.CliConfig{}, nil, "UTC", "alpine:latest")
+	rcc := NewAssembleCodespaceConfig(resolver)
+	_, err := rcc.Resolve(entity.CliConfig{}, entity.DefaultSetting{}, nil, "UTC", "alpine:latest")
 
 	if err == nil {
 		t.Fatal("expected error, got nil")
