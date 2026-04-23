@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func (cscr *CodeSpaceConfigResolver) ResolveProjectName(explicitProjectName string) (string, error) {
+func (cscr *CodespaceConfigResolver) ResolveProjectName(explicitProjectName string) (string, error) {
 	defaultProjectName := strings.TrimSpace(explicitProjectName)
 	return promptUntilResolved(
 		cscr.reader,

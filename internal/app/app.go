@@ -20,7 +20,7 @@ type InputConfig struct {
 }
 
 type Resolvers struct {
-	codeSpaceConfigResolver *resolve.CodeSpaceConfigResolver
+	CodespaceConfigResolver *resolve.CodespaceConfigResolver
 }
 
 type WorkflowCases struct {
@@ -41,7 +41,7 @@ func NewApp() *App {
 	}
 
 	rs := Resolvers{
-		codeSpaceConfigResolver: resolve.NewCodeSpaceConfigResolver(os.Stdin),
+		CodespaceConfigResolver: resolve.NewCodespaceConfigResolver(os.Stdin),
 	}
 
 	generatorImpl := generator.NewDefaultTemplateGenerator()
@@ -49,7 +49,7 @@ func NewApp() *App {
 
 	flows := WorkflowCases{
 		inputInputs:           workflow.NewCollectInputs(ic.clientInput, ic.jsonInput, ic.defaultConfig),
-		resolveCodespace:      workflow.NewResolveCodespaceConfig(rs.codeSpaceConfigResolver),
+		resolveCodespace:      workflow.NewAssembleCodespaceConfig(rs.CodespaceConfigResolver),
 		generateCodeArtifacts: workflow.NewGenerateCodespaceArtifacts(generatorImpl, writer),
 	}
 

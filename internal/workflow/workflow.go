@@ -17,12 +17,12 @@ func NewCollectInputs(
 	return collect.NewCollectInputs(cliInput, jsonInput, defaultConfig)
 }
 
-type ResolveCodespaceConfig = assemble.ResolveCodespaceConfig
+type AssembleCodespaceConfig = assemble.AssembleCodespaceConfig
 
-func NewResolveCodespaceConfig(
-	codeSpaceConfigResolver assemble.ConfigResolver,
-) *ResolveCodespaceConfig {
-	return assemble.NewResolveCodespaceConfig(codeSpaceConfigResolver)
+func NewAssembleCodespaceConfig(
+	CodespaceConfigResolver assemble.ConfigResolver,
+) *AssembleCodespaceConfig {
+	return assemble.NewAssembleCodespaceConfig(CodespaceConfigResolver)
 }
 
 type FileWriter = service.FileWriter

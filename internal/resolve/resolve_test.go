@@ -9,8 +9,8 @@ import (
 )
 
 // newResolver は strings.NewReader を使って入力を注入したリゾルバを返す。
-func newResolver(input string) *CodeSpaceConfigResolver {
-	return NewCodeSpaceConfigResolver(strings.NewReader(input))
+func newResolver(input string) *CodespaceConfigResolver {
+	return NewCodespaceConfigResolver(strings.NewReader(input))
 }
 
 // --- ResolveLanguage ---

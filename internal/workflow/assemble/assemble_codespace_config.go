@@ -6,33 +6,33 @@ import (
 	"codespacegen/internal/domain/entity"
 )
 
-type ResolveCodespaceConfig struct {
-	codeSpaceConfigResolver ConfigResolver
+type AssembleCodespaceConfig struct {
+	CodespaceConfigResolver ConfigResolver
 }
 
-func NewResolveCodespaceConfig(
-	codeSpaceConfigResolver ConfigResolver,
-) *ResolveCodespaceConfig {
-	return &ResolveCodespaceConfig{
-		codeSpaceConfigResolver: codeSpaceConfigResolver,
+func NewAssembleCodespaceConfig(
+	CodespaceConfigResolver ConfigResolver,
+) *AssembleCodespaceConfig {
+	return &AssembleCodespaceConfig{
+		CodespaceConfigResolver: CodespaceConfigResolver,
 	}
 }
 
-func (rcc *ResolveCodespaceConfig) Resolve(cliConfig entity.CliConfig, defaultSetting entity.DefaultSetting, overrides map[string]json.RawMessage, defaultTimezone string, defaultImage string) (*entity.CodespaceConfig, error) {
-	resolvedValues, err := rcc.resolveCoreValues(&cliConfig)
+func (acc *AssembleCodespaceConfig) Resolve(cliConfig entity.CliConfig, defaultSetting entity.DefaultSetting, overrides map[string]json.RawMessage, defaultTimezone string, defaultImage string) (*entity.CodespaceConfig, error) {
+	resolvedValues, err := acc.resolveCoreValues(&cliConfig)
 	if err != nil {
 		return nil, err
 	}
 
-	resolvedEntry, err := rcc.resolveEntry(resolvedValues.Language, cliConfig, overrides, defaultImage)
+	resolvedEntry, err := acc.resolveEntry(resolvedValues.Language, cliConfig, overrides, defaultImage)
 	if err != nil {
 		return nil, err
 	}
 
-	resolvedTimezone, err := rcc.codeSpaceConfigResolver.ResolveTimezone(cliConfig.TimezoneValue(), resolvedEntry.Timezone, defaultTimezone)
+	resolvedTimezone, err := acc.CodespaceConfigResolver.ResolveTimezone(cliConfig.TimezoneValue(), resolvedEntry.Timezone, defaultTimezone)
 	if err != nil {
 		return nil, err
 	}
 
-	return rcc.buildCodespaceConfig(cliConfig, defaultSetting, resolvedValues, resolvedEntry, resolvedTimezone), nil
+	return acc.buildCodespaceConfig(cliConfig, defaultSetting, resolvedValues, resolvedEntry, resolvedTimezone), nil
 }
