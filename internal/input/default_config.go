@@ -5,11 +5,6 @@ import (
 	"slices"
 )
 
-const defaultImage = "alpine:latest"
-const defaultTimezone = "UTC"
-const defaultVersion = "dev"
-const defaultVscSchema = "https://raw.githubusercontent.com/microsoft/vscode/main/extensions/configuration-editing/schemas/devContainer.vscode.schema.json"
-
 var commonModules = []string{
 	"bash",
 	"bash-completion",
@@ -39,10 +34,10 @@ func NewDefaultConfig() *DefaultConfig {
 
 func (dc *DefaultConfig) GetDefaultSetting() entity.DefaultSetting {
 	return entity.DefaultSetting{
-		Image:     defaultImage,
-		Timezone:  defaultTimezone,
-		Version:   defaultVersion,
-		VscSchema: defaultVscSchema,
+		Image:     entity.DefaultImage,
+		Timezone:  entity.DefaultTimezone,
+		Version:   entity.DefaultVersion,
+		VscSchema: entity.DefaultVscSchema,
 		OsModules: entity.OsModules{
 			AlpineModules:     defaultAlpineModules,
 			DebianLikeModules: defaultDebianLikeModules,
