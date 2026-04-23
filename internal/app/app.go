@@ -71,7 +71,7 @@ func (a *App) Run() error {
 		i18n.SetLang(inputs.CliConfig.LangValue())
 	}
 
-	codespaceConfig, err := a.flows.resolveCodespace.Resolve(inputs.CliConfig, inputs.DefaultConfig, inputs.JsonConfig, inputs.DefaultConfig.Timezone, inputs.DefaultConfig.Image)
+	codespaceConfig, err := a.flows.resolveCodespace.Resolve(inputs.CliConfig, inputs.DefaultConfig, inputs.JsonConfig)
 	if err != nil {
 		return err
 	}
