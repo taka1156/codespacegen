@@ -18,21 +18,21 @@ func NewAssembleCodespaceConfig(
 	}
 }
 
-func (acc *AssembleCodespaceConfig) Resolve(cliConfig entity.CliConfig, defaultSetting entity.DefaultSetting, overrides map[string]json.RawMessage, defaultTimezone string, defaultImage string) (*entity.CodespaceConfig, error) {
-	resolvedValues, err := acc.resolveCoreValues(&cliConfig)
+func (acc *AssembleCodespaceConfig) Resolve(ClientConfig entity.ClientConfig, defaultSetting entity.DefaultSetting, overrides map[string]json.RawMessage, defaultTimezone string, defaultImage string) (*entity.CodespaceConfig, error) {
+	resolvedValues, err := acc.resolveCoreValues(&ClientConfig)
 	if err != nil {
 		return nil, err
 	}
 
-	resolvedEntry, err := acc.resolveEntry(resolvedValues.Language, cliConfig, overrides, defaultImage)
+	resolvedEntry, err := acc.resolveEntry(resolvedValues.Language, ClientConfig, overrides, defaultImage)
 	if err != nil {
 		return nil, err
 	}
 
-	resolvedTimezone, err := acc.CodespaceConfigResolver.ResolveTimezone(cliConfig.TimezoneValue(), resolvedEntry.Timezone, defaultTimezone)
+	resolvedTimezone, err := acc.CodespaceConfigResolver.ResolveTimezone(ClientConfig.TimezoneValue(), resolvedEntry.Timezone, defaultTimezone)
 	if err != nil {
 		return nil, err
 	}
 
-	return acc.buildCodespaceConfig(cliConfig, defaultSetting, resolvedValues, resolvedEntry, resolvedTimezone), nil
+	return acc.buildCodespaceConfig(ClientConfig, defaultSetting, resolvedValues, resolvedEntry, resolvedTimezone), nil
 }

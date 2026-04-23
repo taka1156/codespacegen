@@ -10,11 +10,11 @@ import (
 
 // --- フェイク実装 ---
 
-type fakeCLIInput struct {
-	config entity.CliConfig
+type fakeClientInput struct {
+	config entity.ClientConfig
 }
 
-func (f *fakeCLIInput) GetCliInput() entity.CliConfig {
+func (f *fakeClientInput) GetInput() entity.ClientConfig {
 	return f.config
 }
 
@@ -39,7 +39,7 @@ func (f *fakeDefaultSettingProvider) GetDefaultSetting() entity.DefaultSetting {
 
 func TestCollectInputs_CollectConfig_ReturnsCollectedInputs(t *testing.T) {
 	imageConfig := "https://example.com/config.json"
-	cliConfig := entity.CliConfig{ImageConfig: &imageConfig}
+	clientConfig := entity.ClientConfig{ImageConfig: &imageConfig}
 
 	jsonResult := map[string]json.RawMessage{
 		"python": json.RawMessage(`"python:3.12"`),
@@ -51,7 +51,7 @@ func TestCollectInputs_CollectConfig_ReturnsCollectedInputs(t *testing.T) {
 	}
 
 	ci := NewCollectInputs(
-		&fakeCLIInput{config: cliConfig},
+		&fakeClientInput{config: clientConfig},
 		&fakeImageConfigLoader{result: jsonResult},
 		&fakeDefaultSettingProvider{setting: defaultSetting},
 	)
@@ -61,8 +61,8 @@ func TestCollectInputs_CollectConfig_ReturnsCollectedInputs(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if got.CliConfig.ImageConfigValue() != imageConfig {
-		t.Errorf("CliConfig.ImageConfig: got %q, want %q", got.CliConfig.ImageConfigValue(), imageConfig)
+	if got.ClientConfig.ImageConfigValue() != imageConfig {
+		t.Errorf("ClientConfig.ImageConfig: got %q, want %q", got.ClientConfig.ImageConfigValue(), imageConfig)
 	}
 	if len(got.JsonConfig) != 1 {
 		t.Errorf("JsonConfig length: got %d, want 1", len(got.JsonConfig))
@@ -80,7 +80,7 @@ func TestCollectInputs_CollectConfig_ReturnsCollectedInputs(t *testing.T) {
 
 func TestCollectInputs_CollectConfig_PassesImageConfigToLoader(t *testing.T) {
 	imageConfig := "https://example.com/my-config.json"
-	cliConfig := entity.CliConfig{ImageConfig: &imageConfig}
+	ClientConfig := entity.ClientConfig{ImageConfig: &imageConfig}
 
 	var capturedSource string
 	loader := &captureImageConfigLoader{
@@ -89,7 +89,7 @@ func TestCollectInputs_CollectConfig_PassesImageConfigToLoader(t *testing.T) {
 	}
 
 	ci := NewCollectInputs(
-		&fakeCLIInput{config: cliConfig},
+		&fakeClientInput{config: ClientConfig},
 		loader,
 		&fakeDefaultSettingProvider{},
 	)
@@ -105,7 +105,7 @@ func TestCollectInputs_CollectConfig_PassesImageConfigToLoader(t *testing.T) {
 
 func TestCollectInputs_CollectConfig_ReturnsErrorFromImageConfigLoader(t *testing.T) {
 	ci := NewCollectInputs(
-		&fakeCLIInput{},
+		&fakeClientInput{},
 		&fakeImageConfigLoader{err: errors.New("load failed")},
 		&fakeDefaultSettingProvider{},
 	)
@@ -118,7 +118,7 @@ func TestCollectInputs_CollectConfig_ReturnsErrorFromImageConfigLoader(t *testin
 
 func TestCollectInputs_CollectConfig_EmptyJsonConfigWhenNoImageConfigSet(t *testing.T) {
 	ci := NewCollectInputs(
-		&fakeCLIInput{},
+		&fakeClientInput{},
 		&fakeImageConfigLoader{result: map[string]json.RawMessage{}},
 		&fakeDefaultSettingProvider{setting: entity.DefaultSetting{Timezone: "UTC"}},
 	)
