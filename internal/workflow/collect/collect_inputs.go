@@ -13,7 +13,7 @@ type CollectInputs struct {
 }
 
 type CollectedInputs struct {
-	ClientConfig     entity.ClientConfig
+	ClientConfig  entity.ClientConfig
 	JsonConfig    map[string]json.RawMessage
 	DefaultConfig entity.DefaultSetting
 }
@@ -39,7 +39,7 @@ func (ri *CollectInputs) CollectConfig() (*CollectedInputs, error) {
 	ds := ri.defaultConfig.GetDefaultSetting()
 
 	return &CollectedInputs{
-		ClientConfig:     ClientConfig,
+		ClientConfig:  ClientConfig,
 		JsonConfig:    jsonConfig,
 		DefaultConfig: ds,
 	}, nil
