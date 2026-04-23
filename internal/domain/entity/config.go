@@ -4,8 +4,6 @@ const DefaultImage = "alpine:latest"
 
 const DefaultTimezone = "UTC"
 
-const DefaultVersion = "dev"
-
 const DefaultVscSchema = "https://raw.githubusercontent.com/microsoft/vscode/main/extensions/configuration-editing/schemas/devContainer.vscode.schema.json"
 
 type OsModules struct {
@@ -21,7 +19,7 @@ type DefaultSetting struct {
 	OsModules OsModules
 }
 
-type CliConfig struct {
+type ClientConfig struct {
 	OutputDir           *string
 	ContainerName       *string
 	ServiceName         *string
@@ -37,55 +35,55 @@ type CliConfig struct {
 	ShowVersion         *bool
 }
 
-func (c CliConfig) OutputDirValue() string {
+func (c ClientConfig) OutputDirValue() string {
 	return stringValue(c.OutputDir)
 }
 
-func (c CliConfig) ContainerNameValue() string {
+func (c ClientConfig) ContainerNameValue() string {
 	return stringValue(c.ContainerName)
 }
 
-func (c CliConfig) ServiceNameValue() string {
+func (c ClientConfig) ServiceNameValue() string {
 	return stringValue(c.ServiceName)
 }
 
-func (c CliConfig) LanguageValue() string {
+func (c ClientConfig) LanguageValue() string {
 	return stringValue(c.Language)
 }
 
-func (c CliConfig) WorkspaceFolderValue() string {
+func (c ClientConfig) WorkspaceFolderValue() string {
 	return stringValue(c.WorkspaceFolder)
 }
 
-func (c CliConfig) BaseImageValue() string {
+func (c ClientConfig) BaseImageValue() string {
 	return stringValue(c.BaseImage)
 }
 
-func (c CliConfig) TimezoneValue() string {
+func (c ClientConfig) TimezoneValue() string {
 	return stringValue(c.Timezone)
 }
 
-func (c CliConfig) ImageConfigValue() string {
+func (c ClientConfig) ImageConfigValue() string {
 	return stringValue(c.ImageConfig)
 }
 
-func (c CliConfig) PortValue() string {
+func (c ClientConfig) PortValue() string {
 	return stringValue(c.Port)
 }
 
-func (c CliConfig) ComposeFileValue() string {
+func (c ClientConfig) ComposeFileValue() string {
 	return stringValue(c.ComposeFile)
 }
 
-func (c CliConfig) EnableOverwriteFileValue() bool {
+func (c ClientConfig) EnableOverwriteFileValue() bool {
 	return boolValue(c.EnableOverwriteFile)
 }
 
-func (c CliConfig) LangValue() string {
+func (c ClientConfig) LangValue() string {
 	return stringValue(c.Lang)
 }
 
-func (c CliConfig) ShowVersionValue() bool {
+func (c ClientConfig) ShowVersionValue() bool {
 	return boolValue(c.ShowVersion)
 }
 

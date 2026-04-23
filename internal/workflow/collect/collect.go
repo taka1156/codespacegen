@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 )
 
-type CLIInputProvider interface {
-	GetCliInput() entity.CliConfig
+type ClientInputProvider interface {
+	GetInput() entity.ClientConfig
 }
 
 type ImageConfigLoader interface {
