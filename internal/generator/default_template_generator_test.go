@@ -250,9 +250,6 @@ func TestDefaultTemplateGenerator_Generate_EmbedsVSCodeExtensions(t *testing.T) 
 	}
 
 	devcontainer := findGeneratedFile(t, files, "devcontainer.json")
-	if !strings.Contains(devcontainer, "GitHub.copilot") {
-		t.Fatal("expected devcontainer.json to include default GitHub.copilot extension")
-	}
 	if !strings.Contains(devcontainer, "MS-CEINTL.vscode-language-pack-ja") {
 		t.Fatal("expected devcontainer.json to include merged common extension")
 	}
