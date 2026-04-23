@@ -10,9 +10,9 @@
         "terminal.integrated.defaultProfile.linux": "bash"
       },
       "extensions": [
+        "MS-CEINTL.vscode-language-pack-ja",
         "GitHub.copilot",
         "GitHub.copilot-chat",
-        "MS-CEINTL.vscode-language-pack-ja",
         "streetsidesoftware.code-spell-checker",
         "username.errorlens",
         "ms-python.python"
