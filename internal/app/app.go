@@ -14,7 +14,7 @@ import (
 )
 
 type InputConfig struct {
-	clientInput   *input.CliInput
+	clientInput   *input.ClientInput
 	jsonInput     *input.JsonInput
 	defaultConfig *input.DefaultConfig
 }
@@ -35,7 +35,7 @@ type App struct {
 
 func NewApp() *App {
 	ic := InputConfig{
-		clientInput:   input.NewCliInput(),
+		clientInput:   input.NewClientInput(),
 		jsonInput:     input.NewJsonInput(),
 		defaultConfig: input.NewDefaultConfig(),
 	}
@@ -62,28 +62,28 @@ func (a *App) Run() error {
 		return err
 	}
 
-	if inputs.CliConfig.ShowVersionValue() {
+	if inputs.ClientConfig.ShowVersionValue() {
 		fmt.Println(inputs.DefaultConfig.Version)
 		return nil
 	}
 
-	if inputs.CliConfig.LangValue() != "" {
-		i18n.SetLang(inputs.CliConfig.LangValue())
+	if inputs.ClientConfig.LangValue() != "" {
+		i18n.SetLang(inputs.ClientConfig.LangValue())
 	}
 
-	codespaceConfig, err := a.flows.resolveCodespace.Resolve(inputs.CliConfig, inputs.DefaultConfig, inputs.JsonConfig)
+	codespaceConfig, err := a.flows.resolveCodespace.Resolve(inputs.ClientConfig, inputs.DefaultConfig, inputs.JsonConfig)
 	if err != nil {
 		return err
 	}
 
-	err = a.flows.generateCodeArtifacts.Execute(*codespaceConfig, inputs.CliConfig.EnableOverwriteFileValue(), inputs.CliConfig.OutputDirValue())
+	err = a.flows.generateCodeArtifacts.Execute(*codespaceConfig, inputs.ClientConfig.EnableOverwriteFileValue(), inputs.ClientConfig.OutputDirValue())
 	if err != nil {
 		return err
 	}
 
-	resolvedOutput, err := filepath.Abs(inputs.CliConfig.OutputDirValue())
+	resolvedOutput, err := filepath.Abs(inputs.ClientConfig.OutputDirValue())
 	if err != nil {
-		resolvedOutput = inputs.CliConfig.OutputDirValue()
+		resolvedOutput = inputs.ClientConfig.OutputDirValue()
 	}
 
 	fmt.Println(i18n.T("msg_generated_files", map[string]interface{}{"OutputDir": resolvedOutput}))

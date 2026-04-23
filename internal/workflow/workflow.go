@@ -10,7 +10,7 @@ import (
 type CollectInputs = collect.CollectInputs
 
 func NewCollectInputs(
-	cliInput collect.CLIInputProvider,
+	cliInput collect.ClientInputProvider,
 	jsonInput collect.ImageConfigLoader,
 	defaultConfig collect.DefaultSettingProvider,
 ) *CollectInputs {
