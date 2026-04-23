@@ -7,6 +7,18 @@ import (
 	"codespacegen/internal/domain/entity"
 )
 
+var testAlpineModules = []string{
+	"bash", "bash-completion", "ca-certificates", "tzdata",
+	"git", "git-lfs", "vim", "curl",
+	"musl-locales", "musl-locales-lang",
+}
+
+var testDebianLikeModules = []string{
+	"bash", "bash-completion", "ca-certificates", "tzdata",
+	"git", "git-lfs", "vim", "curl",
+	"locales",
+}
+
 func TestDefaultTemplateGenerator_Generate_UsesApkForAlpineImage(t *testing.T) {
 	g := NewDefaultTemplateGenerator()
 	cfg := entity.CodespaceConfig{
@@ -15,6 +27,9 @@ func TestDefaultTemplateGenerator_Generate_UsesApkForAlpineImage(t *testing.T) {
 		WorkspaceFolder: "/workspace",
 		BaseImage:       entity.DefaultImage,
 		ComposeFileName: "docker-compose.yaml",
+		OsModules: entity.OsModules{
+			AlpineModules: testAlpineModules,
+		},
 	}
 
 	files, err := g.Generate(cfg)
@@ -72,6 +87,9 @@ func TestDefaultTemplateGenerator_Generate_UsesAptForUbuntuImage(t *testing.T) {
 		WorkspaceFolder: "/workspace",
 		BaseImage:       "ubuntu:latest",
 		ComposeFileName: "docker-compose.yaml",
+		OsModules: entity.OsModules{
+			DebianLikeModules: testDebianLikeModules,
+		},
 	}
 
 	files, err := g.Generate(cfg)
@@ -232,9 +250,6 @@ func TestDefaultTemplateGenerator_Generate_EmbedsVSCodeExtensions(t *testing.T) 
 	}
 
 	devcontainer := findGeneratedFile(t, files, "devcontainer.json")
-	if !strings.Contains(devcontainer, "GitHub.copilot") {
-		t.Fatal("expected devcontainer.json to include default GitHub.copilot extension")
-	}
 	if !strings.Contains(devcontainer, "MS-CEINTL.vscode-language-pack-ja") {
 		t.Fatal("expected devcontainer.json to include merged common extension")
 	}

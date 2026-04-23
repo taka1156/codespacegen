@@ -3,12 +3,18 @@ package entity
 // This file defines the CodespaceConfig struct and related constants.
 const DefaultImage = "alpine:latest"
 
+type OsModules struct {
+	AlpineModules     []string
+	DebianLikeModules []string
+}
+
 // DefaultSetting holds the resolved default values used across the application.
 type DefaultSetting struct {
 	Timezone  string
 	Image     string
 	Version   string
 	VscSchema string
+	OsModules OsModules
 }
 
 // CodespaceConfig holds values used to generate devcontainer artifacts.
@@ -121,6 +127,7 @@ type CodespaceConfig struct {
 	PortMapping      string
 	InstallCommand   string
 	VSCodeExtensions []string
+	OsModules        OsModules
 }
 
 func (c CodespaceConfig) Validate() error {
