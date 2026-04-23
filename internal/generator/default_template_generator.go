@@ -38,7 +38,7 @@ type composeData struct {
 type DefaultTemplateGenerator struct{}
 
 type baseImageStrategy interface {
-	renderBaseSetup(locale entity.LocaleConfig) string
+	renderBaseSetup(locale entity.LocaleConfig, osModules entity.OsModules) string
 	renderTimezoneSetup(timezone string) string
 }
 
@@ -97,7 +97,7 @@ func (g *DefaultTemplateGenerator) renderDockerfile(config entity.CodespaceConfi
 		locale = entity.DefaultLocale
 	}
 	strategy := resolveBaseImageStrategy(config.BaseImage)
-	baseSetup := strategy.renderBaseSetup(locale)
+	baseSetup := strategy.renderBaseSetup(locale, config.OsModules)
 
 	timezone := strings.TrimSpace(config.Timezone)
 	if timezone == "" {
@@ -194,35 +194,18 @@ func isAlpineImage(baseImage string) bool {
 	return strings.Contains(strings.ToLower(strings.TrimSpace(baseImage)), "alpine")
 }
 
-func (alpineStrategy) renderBaseSetup(_ entity.LocaleConfig) string {
+func (alpineStrategy) renderBaseSetup(_ entity.LocaleConfig, osModules entity.OsModules) string {
 	return `RUN <<-EOF
 apk add --no-cache \
-  bash \
-  bash-completion \
-  ca-certificates \
-  tzdata \
-  git \
-  git-lfs \
-  vim \
-  curl \
-  musl-locales \
-  musl-locales-lang
+  ` + strings.Join(osModules.AlpineModules, " \\\n  ") + `
 EOF`
 }
 
-func (debianLikeStrategy) renderBaseSetup(locale entity.LocaleConfig) string {
+func (debianLikeStrategy) renderBaseSetup(locale entity.LocaleConfig, osModules entity.OsModules) string {
 	return `RUN <<-EOF
 apt-get update
 apt-get install -y --no-install-recommends \
-  bash \
-  bash-completion \
-  ca-certificates \
-  tzdata \
-  git \
-  git-lfs \
-  vim \
-  curl \
-  locales
+  ` + strings.Join(osModules.DebianLikeModules, " \\\n  ") + `
 rm -rf /var/lib/apt/lists/*
 locale-gen ` + locale.Lang + `
 update-locale LANG=` + locale.Lang + ` LC_ALL=` + locale.LcAll + `

@@ -15,5 +15,6 @@ func (acc *AssembleCodespaceConfig) buildCodespaceConfig(cliConfig entity.CliCon
 		PortMapping:      coreValues.Port,
 		InstallCommand:   resolvedEntry.Install,
 		VSCodeExtensions: resolvedEntry.VSCodeExtensions,
+		OsModules:        defaultSetting.OsModules,
 	}
 }
