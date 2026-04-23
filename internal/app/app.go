@@ -33,6 +33,8 @@ type App struct {
 	flows WorkflowCases
 }
 
+var Version = "dev"
+
 func NewApp() *App {
 	ic := InputConfig{
 		clientInput:   input.NewClientInput(),
@@ -63,7 +65,7 @@ func (a *App) Run() error {
 	}
 
 	if inputs.ClientConfig.ShowVersionValue() {
-		fmt.Println(inputs.DefaultConfig.Version)
+		fmt.Println(Version)
 		return nil
 	}
 

@@ -3,7 +3,7 @@ E2E_TEST_DIR := ./e2e
 CMD := ./cmd/codespacegen
 BIN_DIR := ./bin
 VERSION := $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
-LDFLAGS := -X main.version=$(VERSION)
+LDFLAGS := -X codespacegen/internal/app.Version=$(VERSION)
 
 DIST_TARGETS := \
 	linux/amd64/tar.gz \
@@ -12,7 +12,7 @@ DIST_TARGETS := \
 	darwin/arm64/tar.gz \
 	windows/amd64/exe
 
-.PHONY: fmt run build test clean e2e bin dist
+.PHONY: fmt run build test clean e2e bin exec dist
 
 fmt:
 	go fmt ./...
@@ -22,6 +22,7 @@ run:
 
 build:
 	mkdir -p $(BIN_DIR)
+	rm -r $(BIN_DIR)/${BINARY} || true
 	go build -ldflags="$(LDFLAGS)" -o $(BIN_DIR)/$(BINARY) $(CMD)
 
 test:
@@ -36,6 +37,8 @@ e2e:
 bin:
 	mkdir -p $(BIN_DIR)
 	go build -ldflags="$(LDFLAGS)" -o $(BIN_DIR)/$(BINARY) $(CMD)
+
+exec:
 	$(BIN_DIR)/codespacegen -output $(BIN_DIR)/.devcontainer
 
 dist:
