@@ -140,7 +140,7 @@ func (g *DefaultTemplateGenerator) renderCompose(config entity.CodespaceConfig) 
 }
 
 func (g *DefaultTemplateGenerator) renderDevcontainer(config entity.CodespaceConfig) (string, error) {
-	extensions := []string{"GitHub.copilot", "GitHub.copilot-chat"}
+	extensions := []string{}
 	extensions = append(extensions, config.VSCodeExtensions...)
 	extensions = uniqueStringsPreserveOrder(extensions)
 
