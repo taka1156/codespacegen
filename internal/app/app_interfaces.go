@@ -12,7 +12,7 @@ type inputCollector interface {
 }
 
 type configAssembler interface {
-	Resolve(ClientConfig entity.ClientConfig, defaultSetting entity.DefaultSetting, overrides map[string]json.RawMessage, defaultTimezone string, defaultImage string) (*entity.CodespaceConfig, error)
+	Resolve(clientConfig entity.ClientConfig, defaultSetting entity.DefaultSetting, jsonConfig map[string]json.RawMessage) (*entity.CodespaceConfig, error)
 }
 
 type artifactExecutor interface {

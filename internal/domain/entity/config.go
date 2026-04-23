@@ -1,14 +1,18 @@
 package entity
 
-// This file defines the CodespaceConfig struct and related constants.
 const DefaultImage = "alpine:latest"
+
+const DefaultTimezone = "UTC"
+
+const DefaultVersion = "dev"
+
+const DefaultVscSchema = "https://raw.githubusercontent.com/microsoft/vscode/main/extensions/configuration-editing/schemas/devContainer.vscode.schema.json"
 
 type OsModules struct {
 	AlpineModules     []string
 	DebianLikeModules []string
 }
 
-// DefaultSetting holds the resolved default values used across the application.
 type DefaultSetting struct {
 	Timezone  string
 	Image     string
@@ -16,16 +20,6 @@ type DefaultSetting struct {
 	VscSchema string
 	OsModules OsModules
 }
-
-// CodespaceConfig holds values used to generate devcontainer artifacts.
-const DefaultTimezone = "UTC"
-
-// DefaultVersion is the default version of the generated configuration,
-// which can be used for future enhancements or versioning of the generated files.
-const DefaultVersion = "dev"
-
-// DefaultVscSchema is the default schema URL for the devcontainer.json file.
-const DefaultVscSchema = "https://raw.githubusercontent.com/microsoft/vscode/main/extensions/configuration-editing/schemas/devContainer.vscode.schema.json"
 
 type ClientConfig struct {
 	OutputDir           *string
