@@ -23,10 +23,10 @@ VERSION=$(git describe --tags --always 2>/dev/null || echo "dev")
 
 if [ "${ARCHIVE}" = "exe" ]; then
 	out="dist/codespacegen_${GOOS}_${GOARCH}.exe"
-	go build -trimpath -ldflags="-s -w -X main.version=${VERSION}" -o "${out}" ./cmd/codespacegen
+	go build -trimpath -ldflags="-s -w -X codespacegen/internal/app.Version=${VERSION}" -o "${out}" ./cmd/codespacegen
 else
 	bin="tmp/codespacegen"
-	go build -trimpath -ldflags="-s -w -X main.version=${VERSION}" -o "${bin}" ./cmd/codespacegen
+	go build -trimpath -ldflags="-s -w -X codespacegen/internal/app.Version=${VERSION}" -o "${bin}" ./cmd/codespacegen
 	tar -C tmp -czf "dist/codespacegen_${GOOS}_${GOARCH}.tar.gz" codespacegen
 	rm -f "${bin}"
 fi
