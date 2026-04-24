@@ -13,6 +13,32 @@ Codespace 向けに以下 3 ファイルを生成する CLI です。
 - devcontainer.json
 - docker-compose.yaml
 
+
+## インストール（curl）
+
+最新リリースを自動でダウンロードし、`/usr/local/bin` に配置します。
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/taka1156/codespacegen/master/scripts/install.sh | bash
+```
+
+インストール先を変更する場合:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/taka1156/codespacegen/master/scripts/install.sh | INSTALL_DIR=$HOME/.local/bin bash
+```
+
+## リリース（GitHub Actions）
+
+生成される主なアセット:
+
+- `codespacegen_linux_amd64.tar.gz`
+- `codespacegen_linux_arm64.tar.gz`
+- `codespacegen_darwin_amd64.tar.gz`
+- `codespacegen_darwin_arm64.tar.gz`
+- `codespacegen_windows_amd64.exe`
+- `checksums.txt`
+
 ## アーキテクチャ
 
 - Domain: ルールとモデル
@@ -71,10 +97,6 @@ go run ./cmd/codespacegen
 - JSON が存在する場合: ファイルの値を読み込んで使用
 - `-base-image` を指定した場合: JSON の設定より優先
 
-生成される `devcontainer.json` には、常に次の拡張機能が含まれます。
-
-- `GitHub.copilot`
-- `GitHub.copilot-chat`
 
 加えて、`codespacegen.json` の `common.vscodeExtensions` と言語別 `vscodeExtensions` が追記されます。
 
@@ -207,36 +229,4 @@ services:
 
 ```bash
 go test ./...
-```
-
-## リリース（GitHub Actions）
-
-タグを push すると、GitHub Actions がクロスビルドを実行し、成果物を GitHub Releases に添付します。
-
-```bash
-git tag v0.1.0
-git push origin v0.1.0
-```
-
-生成される主なアセット:
-
-- `codespacegen_linux_amd64.tar.gz`
-- `codespacegen_linux_arm64.tar.gz`
-- `codespacegen_darwin_amd64.tar.gz`
-- `codespacegen_darwin_arm64.tar.gz`
-- `codespacegen_windows_amd64.exe`
-- `checksums.txt`
-
-## インストール（curl）
-
-最新リリースを自動でダウンロードし、`/usr/local/bin` に配置します。
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/taka1156/codespacegen/master/scripts/install.sh | bash
-```
-
-インストール先を変更する場合:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/taka1156/codespacegen/master/scripts/install.sh | INSTALL_DIR=$HOME/.local/bin bash
 ```
