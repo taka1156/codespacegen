@@ -1,0 +1,30 @@
+name: default
+default: true
+items:
+  - name: type
+    group: page1
+    label: "Select the type of change that you're committing:"
+    type: list
+    options:
+      - value: feat
+        key: "feat:      A new feature"
+      - value: fix
+        key: "fix:       A bug fix"
+      - value: docs
+        key: "docs:      Documentation only changes"
+      - value: style
+        key: "style:     Changes that do not affect the meaning of the code"
+      - value: refactor
+        key: "refactor:  A code change that neither fixes a bug nor adds a feature"
+      - value: test
+        key: "test:      Adding missing or correcting existing tests"
+      - value: chore
+        key: "chore:     Changes to the build process or auxiliary tools and libraries"
+  - name: subject
+    group: page2
+    label: "Subject. Write a short and imperative summary of the code change:"
+    type: string
+    required: true
+    trim: true
+    max_length: 128
+format: "{{.type}}: {{.subject}}"

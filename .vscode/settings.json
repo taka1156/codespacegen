@@ -3,6 +3,7 @@
     "binutils",
     "CEINTL",
     "codespacegen",
+    "commitlint",
     "cscr",
     "dbaeumer",
     "dpkg",
