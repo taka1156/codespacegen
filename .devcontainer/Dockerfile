@@ -29,10 +29,7 @@ RUN curl -fsSL \
 RUN curl -fsSL \
   https://github.com/conventionalcommit/commitlint/releases/download/v0.12.0/commitlint_v0.12.0_linux_amd64.tar.gz \
   | tar -xz -C /usr/local/bin commitlint \
-  && chmod +x /usr/local/bin/commitlint \
-  && commitlint init
-
-RUN 
+  && chmod +x /usr/local/bin/commitlint
 
 RUN <<-EOF
 curl -o ~/.git-prompt.sh https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh
