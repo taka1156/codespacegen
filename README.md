@@ -13,6 +13,31 @@ codespacegen is a CLI that generates the following three files for Codespaces an
 - devcontainer.json
 - docker-compose.yaml
 
+## Install with curl
+
+The latest release is downloaded automatically and installed into `/usr/local/bin`.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/taka1156/codespacegen/master/scripts/install.sh | bash
+```
+
+To change the install destination:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/taka1156/codespacegen/master/scripts/install.sh | INSTALL_DIR=$HOME/.local/bin bash
+```
+
+## Release with GitHub Actions
+
+Main generated assets:
+
+- `codespacegen_linux_amd64.tar.gz`
+- `codespacegen_linux_arm64.tar.gz`
+- `codespacegen_darwin_amd64.tar.gz`
+- `codespacegen_darwin_arm64.tar.gz`
+- `codespacegen_windows_amd64.exe`
+- `checksums.txt`
+
 ## Architecture
 
 - Domain: rules and models
@@ -70,11 +95,6 @@ Base image definitions are separated into [codespacegen.json](codespacegen.json)
 
 - If the JSON file exists: values are loaded from the file
 - If `-base-image` is specified: it takes precedence over the JSON config
-
-The generated `devcontainer.json` always includes:
-
-- `GitHub.copilot`
-- `GitHub.copilot-chat`
 
 In addition, extension IDs from `codespacegen.json` (`common.vscodeExtensions` and per-language `vscodeExtensions`) are appended.
 
@@ -207,36 +227,4 @@ services:
 
 ```bash
 go test ./...
-```
-
-## Release with GitHub Actions
-
-When you push a tag, GitHub Actions cross-builds binaries and uploads them to GitHub Releases.
-
-```bash
-git tag v0.1.0
-git push origin v0.1.0
-```
-
-Main generated assets:
-
-- `codespacegen_linux_amd64.tar.gz`
-- `codespacegen_linux_arm64.tar.gz`
-- `codespacegen_darwin_amd64.tar.gz`
-- `codespacegen_darwin_arm64.tar.gz`
-- `codespacegen_windows_amd64.exe`
-- `checksums.txt`
-
-## Install with curl
-
-The latest release is downloaded automatically and installed into `/usr/local/bin`.
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/taka1156/codespacegen/master/scripts/install.sh | bash
-```
-
-To change the install destination:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/taka1156/codespacegen/master/scripts/install.sh | INSTALL_DIR=$HOME/.local/bin bash
 ```
