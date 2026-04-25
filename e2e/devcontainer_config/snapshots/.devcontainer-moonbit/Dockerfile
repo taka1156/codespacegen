@@ -1,14 +1,15 @@
-FROM python:3.12-alpine
+FROM ubuntu:24.04
 
 WORKDIR /workspace
 
 ENV LANG=en.UTF-8 \
     LANGUAGE=en_US:en \
     LC_ALL=en.UTF-8 \
-  TZ=Australia/Darwin
+  TZ=UTC
 
 RUN <<-EOF
-apk add --no-cache \
+apt-get update
+apt-get install -y --no-install-recommends \
   bash \
   bash-completion \
   ca-certificates \
@@ -17,15 +18,17 @@ apk add --no-cache \
   git-lfs \
   vim \
   curl \
-  musl-locales \
-  musl-locales-lang
+  locales
+rm -rf /var/lib/apt/lists/*
+locale-gen en.UTF-8
+update-locale LANG=en.UTF-8 LC_ALL=en.UTF-8
 EOF
 
 RUN git lfs install
 
 RUN <<-EOF
-ln -sf /usr/share/zoneinfo/Australia/Darwin /etc/localtime
-echo "Australia/Darwin" > /etc/timezone
+ln -fs /usr/share/zoneinfo/UTC /etc/localtime
+dpkg-reconfigure -f noninteractive tzdata
 EOF
 
 RUN <<-EOF
@@ -38,7 +41,9 @@ echo "GIT_PS1_SHOWDIRTYSTATE=true" >> ~/.bashrc
 echo "GIT_PS1_SHOWUNTRACKEDFILES=true" >> ~/.bashrc
 echo "GIT_PS1_SHOWUPSTREAM=auto"  >> ~/.bashrc
 git config --system --add safe.directory /workspace
-echo 'export PS1="\[\033[01;32m\]\u@\h\[\033[01;33m\] \w \[\033[01;31m\]\$(__git_ps1 "(%s)") \\n+\[\033[01;34m\]\\$ \[\033[00m\]"' >> ~/.bashrc
+echo 'export PS1="\[\033[01;32m\]\u@\h\[\033[01;33m\] \w \[\033[01;31m\]\$(__git_ps1 \"(%s)\") \\n+\[\033[01;34m\]\\$ \[\033[00m\]"' >> ~/.bashrc
 EOF
+
+RUN curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
 
 CMD ["bash"]

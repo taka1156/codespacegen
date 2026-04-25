@@ -41,5 +41,6 @@ func (dc *DefaultConfig) GetDefaultSetting() entity.DefaultSetting {
 			AlpineModules:     defaultAlpineModules,
 			DebianLikeModules: defaultDebianLikeModules,
 		},
+		SettingJsonFileName: entity.DefaultTemplateJsonPath,
 	}
 }

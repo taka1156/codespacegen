@@ -1,21 +1,20 @@
-
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-BIN_PATH="$ROOT_DIR/e2e/codespacegen"
-IMAGE_CONFIG="$ROOT_DIR/e2e/codespacegen.json"
-SNAPSHOT_DIR="$ROOT_DIR/e2e/snapshots"
+ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+BIN_PATH="$ROOT_DIR/e2e/devcontainer_config/codespacegen"
+IMAGE_CONFIG="$ROOT_DIR/e2e/devcontainer_config/codespacegen.json"
+SNAPSHOT_DIR="$ROOT_DIR/e2e/devcontainer_config/snapshots"
 
 UPDATE=false
 for arg in "$@"; do
 	case "$arg" in
-		--update|-update) UPDATE=true ;;
-		*)
-			echo "[e2e] unknown option: $arg"
-			echo "Usage: $0 [--update]"
-			exit 1
-			;;
+	--update | -update) UPDATE=true ;;
+	*)
+		echo "[e2e] unknown option: $arg"
+		echo "Usage: $0 [--update]"
+		exit 1
+		;;
 	esac
 done
 
@@ -39,18 +38,18 @@ for snapshot_case_dir in "$SNAPSHOT_DIR"/.devcontainer-*; do
 	suffix="${snapshot_case_dir##*.devcontainer-}"
 
 	case "$suffix" in
-		go) lang="go" ;;
-		python) lang="python" ;;
-		rust) lang="rust" ;;
-		moonbit) lang="moonbit" ;;
-		biome) lang="node:biome" ;;
-		eslint) lang="node:eslint" ;;
-		react) lang="node:react" ;;
-		*)
-			echo "[e2e] unsupported snapshot case: $suffix"
-			failures=$((failures + 1))
-			continue
-			;;
+	go) lang="go" ;;
+	python) lang="python" ;;
+	rust) lang="rust" ;;
+	moonbit) lang="moonbit" ;;
+	biome) lang="node:biome" ;;
+	eslint) lang="node:eslint" ;;
+	react) lang="node:react" ;;
+	*)
+		echo "[e2e] unsupported snapshot case: $suffix"
+		failures=$((failures + 1))
+		continue
+		;;
 	esac
 
 	port_args=()

@@ -1,11 +1,11 @@
-FROM node:22-alpine
+FROM python:3.12-alpine
 
 WORKDIR /workspace
 
 ENV LANG=en.UTF-8 \
     LANGUAGE=en_US:en \
     LC_ALL=en.UTF-8 \
-  TZ=Asia/Tokyo
+  TZ=Australia/Darwin
 
 RUN <<-EOF
 apk add --no-cache \
@@ -24,8 +24,8 @@ EOF
 RUN git lfs install
 
 RUN <<-EOF
-ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
-echo "Asia/Tokyo" > /etc/timezone
+ln -sf /usr/share/zoneinfo/Australia/Darwin /etc/localtime
+echo "Australia/Darwin" > /etc/timezone
 EOF
 
 RUN <<-EOF
@@ -38,7 +38,7 @@ echo "GIT_PS1_SHOWDIRTYSTATE=true" >> ~/.bashrc
 echo "GIT_PS1_SHOWUNTRACKEDFILES=true" >> ~/.bashrc
 echo "GIT_PS1_SHOWUPSTREAM=auto"  >> ~/.bashrc
 git config --system --add safe.directory /workspace
-echo 'export PS1="\[\033[01;32m\]\u@\h\[\033[01;33m\] \w \[\033[01;31m\]\$(__git_ps1 "(%s)") \\n+\[\033[01;34m\]\\$ \[\033[00m\]"' >> ~/.bashrc
+echo 'export PS1="\[\033[01;32m\]\u@\h\[\033[01;33m\] \w \[\033[01;31m\]\$(__git_ps1 \"(%s)\") \\n+\[\033[01;34m\]\\$ \[\033[00m\]"' >> ~/.bashrc
 EOF
 
 CMD ["bash"]
