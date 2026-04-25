@@ -2,7 +2,10 @@ package input
 
 import (
 	"codespacegen/internal/domain/entity"
+	"codespacegen/internal/utils"
 	"flag"
+	"fmt"
+	"os"
 )
 
 type ClientInput struct {
@@ -12,24 +15,54 @@ func NewClientInput() *ClientInput {
 	return &ClientInput{}
 }
 
-func (ci *ClientInput) GetInput() entity.ClientConfig {
+func (ci *ClientInput) GetInput(args []string) entity.ClientConfig {
 	ClientConfig := entity.ClientConfig{}
 
-	ClientConfig.OutputDir = flag.String("output", ".devcontainer", "output directory for generated files")
-	ClientConfig.ContainerName = flag.String("name", "", "project name (required, mapped to devcontainer name)")
-	ClientConfig.ServiceName = flag.String("service", "", "docker compose service name")
-	ClientConfig.Language = flag.String("language", "", "programming language (go/python/node/rust or image-config keys)")
-	ClientConfig.WorkspaceFolder = flag.String("workspace-folder", "/workspace", "workspace folder inside container")
-	ClientConfig.BaseImage = flag.String("base-image", "", "base Docker image (overrides -language default)")
-	ClientConfig.Timezone = flag.String("timezone", "", "timezone inside container (default: image-config timezone or UTC)")
-	ClientConfig.ImageConfig = flag.String("image-config", "codespacegen.json", "local path or https:// URL to base image config JSON")
-	ClientConfig.Port = flag.String("port", "", "port mapping (e.g. 3000 or 3000:3000)")
-	ClientConfig.ComposeFile = flag.String("compose-file", "docker-compose.yaml", "docker compose file name")
-	ClientConfig.EnableOverwriteFile = flag.Bool("force", false, "overwrite existing files")
-	ClientConfig.Lang = flag.String("lang", "", "language for CLI messages (en/ja, default: auto-detect)")
-	ClientConfig.ShowVersion = flag.Bool("v", false, "print version and exit")
+	       // 引数が2つ以上あり、2番目が"init"ならinitコマンドとして扱う
+	       if len(args) > 1 && args[1] == "init" {
+		       initCmd := flag.NewFlagSet("init", flag.ExitOnError)
+		       outputDir := initCmd.String("output", ".devcontainer", "output directory for generated files")
+		       initCmd.Usage = func() {
+			       fmt.Fprintf(os.Stderr, "Usage: %s init [options]\n\n", os.Args[0])
+			       fmt.Fprintf(os.Stderr, "Initialize setting JSON\n")
+			       initCmd.PrintDefaults()
+		       }
+		       _ = initCmd.Parse(args[2:])
+		       ClientConfig.OutputDir = outputDir
+		       ClientConfig.Initialize = utils.Ptr(true)
+		       return ClientConfig
+	       }
 
-	flag.Parse()
+	// 通常コマンド用のフラグセット
+	fs := flag.NewFlagSet("root", flag.ExitOnError)
+	fs.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage: %s [command] [options]\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Commands:\n")
+		fmt.Fprintf(os.Stderr, "  init\tInitialize setting JSON\n\n")
+		fmt.Fprintf(os.Stderr, "Options:\n")
+		fs.PrintDefaults()
+	}
+
+	ClientConfig.OutputDir = fs.String("output", ".devcontainer", "output directory for generated files")
+	ClientConfig.ContainerName = fs.String("name", "", "project name (required, mapped to devcontainer name)")
+	ClientConfig.ServiceName = fs.String("service", "", "docker compose service name")
+	ClientConfig.Language = fs.String("language", "", "programming language (go/python/node/rust or image-config keys)")
+	ClientConfig.WorkspaceFolder = fs.String("workspace-folder", "/workspace", "workspace folder inside container")
+	ClientConfig.BaseImage = fs.String("base-image", "", "base Docker image (overrides -language default)")
+	ClientConfig.Timezone = fs.String("timezone", "", "timezone inside container (default: image-config timezone or UTC)")
+	ClientConfig.ImageConfig = fs.String("image-config", "codespacegen.json", "local path or https:// URL to base image config JSON")
+	ClientConfig.Port = fs.String("port", "", "port mapping (e.g. 3000 or 3000:3000)")
+	ClientConfig.ComposeFile = fs.String("compose-file", "docker-compose.yaml", "docker compose file name")
+	ClientConfig.EnableOverwriteFile = fs.Bool("force", false, "overwrite existing files")
+	ClientConfig.Lang = fs.String("lang", "", "language for CLI messages (en/ja, default: auto-detect)")
+	ClientConfig.ShowVersion = fs.Bool("v", false, "print version and exit")
+
+	// args[1:]をパース（コマンド名を除く）
+	if len(args) > 1 {
+		_ = fs.Parse(args[1:])
+	} else {
+		_ = fs.Parse(args)
+	}
 
 	return ClientConfig
 }

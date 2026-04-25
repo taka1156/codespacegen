@@ -5,6 +5,7 @@ import (
 	"codespacegen/internal/workflow/assemble"
 	"codespacegen/internal/workflow/collect"
 	"codespacegen/internal/workflow/generate"
+	"codespacegen/internal/workflow/initialize"
 )
 
 type CollectInputs = collect.CollectInputs
@@ -25,13 +26,19 @@ func NewAssembleCodespaceConfig(
 	return assemble.NewAssembleCodespaceConfig(CodespaceConfigResolver)
 }
 
-type FileWriter = service.FileWriter
+type FileWriter = service.LocalFileWriter
 
 type GenerateCodespaceArtifacts = generate.GenerateCodespaceArtifacts
 
 func NewGenerateCodespaceArtifacts(
-	generator service.TemplateGenerator,
-	writer service.FileWriter,
+	codespaceGenerator service.CodespaceGenerator,
+	writer service.LocalFileWriter,
 ) *GenerateCodespaceArtifacts {
-	return generate.NewGenerateCodespaceArtifacts(generator, writer)
+	return generate.NewGenerateCodespaceArtifacts(codespaceGenerator, writer)
+}
+
+type InitializeSettingJson = initialize.InitializeSettingJson
+
+func NewInitializeSettingJson(settingTemplateGenerator service.SettingTemplateGenerator, workdirProvider service.WorkdirProvider, writer service.LocalFileWriter) *InitializeSettingJson {
+	return initialize.NewInitializeSettingJson(settingTemplateGenerator, workdirProvider, writer)
 }

@@ -1,2 +1,4 @@
 bin/**/*
-e2e/codespacegen
+e2e/**/codespacegen
+coverage.out
+dist/**/*

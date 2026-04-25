@@ -6,7 +6,7 @@ import (
 )
 
 type ClientInputProvider interface {
-	GetInput() entity.ClientConfig
+	GetInput(args []string) entity.ClientConfig
 }
 
 type ImageConfigLoader interface {

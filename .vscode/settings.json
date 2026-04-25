@@ -1,9 +1,11 @@
 {
   "cSpell.words": [
     "binutils",
+    "biomejs",
     "CEINTL",
     "codespacegen",
     "commitlint",
+    "coverprofile",
     "cscr",
     "dbaeumer",
     "dpkg",
@@ -17,6 +19,7 @@
     "localtime",
     "mkhl",
     "moonbit",
+    "myapp",
     "myproject",
     "noctx",
     "nolint",
@@ -26,11 +29,14 @@
     "SHOWUNTRACKEDFILES",
     "SHOWUPSTREAM",
     "softprops",
+    "stretchr",
     "tmpl",
+    "topbar",
     "trimpath",
     "tzdata",
     "unknownlang",
     "usecase",
+    "workdirprovider",
     "Zerotaskx",
     "zoneinfo"
   ]
