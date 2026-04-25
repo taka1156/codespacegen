@@ -1,0 +1,72 @@
+{
+  "$schema": "https://raw.githubusercontent.com/codespacegen/codespacegen/main/codespacegen.schema.json",
+  "common": {
+    "locale": {
+      "lang": "ja_JP.UTF-8",
+      "language": "ja_JP:ja",
+      "lcAll": "ja_JP.UTF-8"
+    },
+    "timezone": "Asia/Tokyo",
+    "vscodeExtensions": [
+      "MS-CEINTL.vscode-language-pack-ja",
+      "GitHub.copilot",
+      "GitHub.copilot-chat",
+      "streetsidesoftware.code-spell-checker",
+      "username.errorlens"
+    ]
+  },
+  "go": {
+    "image": "golang:1.24-alpine",
+    "vscodeExtensions": [
+      "golang.GO"
+    ]
+  },
+  "python": {
+    "image": "python:3.12-alpine",
+    "vscodeExtensions": [
+      "ms-python.python"
+    ]
+  },
+  "node:biome": {
+    "image": "node:24-alpine",
+    "vscodeExtensions": [
+      "biomejs.biome"
+    ]
+  },
+  "node:eslint": {
+    "image": "node:24-alpine",
+    "vscodeExtensions": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode"
+    ]
+  },
+  "node:react": {
+    "image": "node:24-alpine",
+    "vscodeExtensions": [
+      "jawandarajbir.react-vscode-extension-pack",
+      "dbaeumer.vscode-eslint",
+      "stylelint.vscode-stylelint",
+      "esbenp.prettier-vscode"
+    ]
+  },
+  "rust": {
+    "image": "rust:1.72-alpine",
+    "vscodeExtensions": [
+      "Zerotaskx.rust-extension-pack"
+    ]
+  },
+  "moonbit": {
+    "image": "ubuntu:24.04",
+    "install": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
+    "vscodeExtensions": [
+      "moonbit.moonbit-lang"
+    ]
+  },
+  "gcc": {
+    "image": "ubuntu:24.04",
+    "install": "apt install -y gcc make git binutils libc6-dev",
+    "vscodeExtensions": [
+      "ms-vscode.cpptools"
+    ]
+  }
+}

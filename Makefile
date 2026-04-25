@@ -34,9 +34,15 @@ test-cover:
 
 e2e:
 	# UPD=--update is updating snapshots mode.
-	rm -r $(E2E_TEST_DIR)/${BINARY} || true
-	go build -ldflags="$(LDFLAGS)" -o $(E2E_TEST_DIR)/${BINARY} $(CMD)
-	bash $(E2E_TEST_DIR)/e2e.sh $(UPD)
+	go build -ldflags="$(LDFLAGS)" -o $(BIN_DIR)/$(BINARY) $(CMD)
+	mkdir -p $(E2E_TEST_DIR)/devcontainer_config
+	mkdir -p $(E2E_TEST_DIR)/codespacegen_config
+	cp $(BIN_DIR)/$(BINARY) $(E2E_TEST_DIR)/devcontainer_config/$(BINARY)
+	cp $(BIN_DIR)/$(BINARY) $(E2E_TEST_DIR)/codespacegen_config/$(BINARY)
+	bash $(E2E_TEST_DIR)/devcontainer_config/devcontainer_config.test.sh $(UPD)
+	bash $(E2E_TEST_DIR)/codespacegen_config/codespacegen_config.test.sh $(UPD)
+	rm -f $(E2E_TEST_DIR)/devcontainer_config/$(BINARY)
+	rm -f $(E2E_TEST_DIR)/codespacegen_config/$(BINARY)
 
 bin:
 	mkdir -p $(BIN_DIR)
