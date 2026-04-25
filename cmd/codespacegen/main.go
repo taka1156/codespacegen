@@ -7,9 +7,9 @@ import (
 )
 
 func main() {
-	       app := app.NewApp()
-	       if err := app.Run(); err != nil {
-		       fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		       os.Exit(1)
-	       }
+	app := app.NewApp()
+	if err := app.Run(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
 }

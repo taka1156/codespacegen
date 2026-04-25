@@ -5,24 +5,24 @@ import (
 )
 
 func (acc *AssembleCodespaceConfig) buildCodespaceConfig(ClientConfig entity.ClientConfig, defaultSetting entity.DefaultSetting, coreValues resolvedCoreValues, resolvedEntry entity.JsonEntry, resolvedTimezone string) *entity.CodespaceConfig {
-	       var locale entity.LocaleConfig
-	       if resolvedEntry.Locale != nil {
-		       locale = *resolvedEntry.Locale
-	       } else {
-		       locale = entity.DefaultLocale
-	       }
-	       return &entity.CodespaceConfig{
-		       Schema:           defaultSetting.VscSchema,
-		       ContainerName:    coreValues.ProjectName,
-		       ServiceName:      coreValues.ServiceName,
-		       WorkspaceFolder:  coreValues.WorkspaceFolder,
-		       BaseImage:        resolvedEntry.Image,
-		       Locale:           locale,
-		       Timezone:         resolvedTimezone,
-		       ComposeFileName:  ClientConfig.ComposeFileValue(),
-		       PortMapping:      coreValues.Port,
-		       InstallCommand:   resolvedEntry.Install,
-		       VSCodeExtensions: resolvedEntry.VSCodeExtensions,
-		       OsModules:        defaultSetting.OsModules,
-	       }
+	var locale entity.LocaleConfig
+	if resolvedEntry.Locale != nil {
+		locale = *resolvedEntry.Locale
+	} else {
+		locale = entity.DefaultLocale
+	}
+	return &entity.CodespaceConfig{
+		Schema:           defaultSetting.VscSchema,
+		ContainerName:    coreValues.ProjectName,
+		ServiceName:      coreValues.ServiceName,
+		WorkspaceFolder:  coreValues.WorkspaceFolder,
+		BaseImage:        resolvedEntry.Image,
+		Locale:           locale,
+		Timezone:         resolvedTimezone,
+		ComposeFileName:  ClientConfig.ComposeFileValue(),
+		PortMapping:      coreValues.Port,
+		InstallCommand:   resolvedEntry.Install,
+		VSCodeExtensions: resolvedEntry.VSCodeExtensions,
+		OsModules:        defaultSetting.OsModules,
+	}
 }
