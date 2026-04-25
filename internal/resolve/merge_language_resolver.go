@@ -3,6 +3,7 @@ package resolve
 import (
 	"codespacegen/internal/domain/entity"
 	"codespacegen/internal/i18n"
+	"codespacegen/internal/utils"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -48,11 +49,22 @@ func (cscr *CodespaceConfigResolver) MergeLanguageEntries(overrides map[string]j
 }
 
 func mergeLanguageEntries(base entity.JsonEntry, override entity.JsonEntry) entity.JsonEntry {
+	var baseLocale, overrideLocale entity.LocaleConfig
+	if base.Locale != nil {
+		baseLocale = *base.Locale
+	} else {
+		baseLocale = entity.DefaultLocale
+	}
+	if override.Locale != nil {
+		overrideLocale = *override.Locale
+	} else {
+		overrideLocale = entity.DefaultLocale
+	}
 	merged := entity.JsonEntry{
 		Image:    firstNonEmpty(override.Image, base.Image),
 		Install:  firstNonEmpty(override.Install, base.Install),
 		Timezone: firstNonEmpty(override.Timezone, base.Timezone),
-		Locale:   mergeLocale(base.Locale, override.Locale),
+		Locale:   utils.Ptr(mergeLocale(baseLocale, overrideLocale)),
 	}
 
 	merged.VSCodeExtensions = append(merged.VSCodeExtensions, base.VSCodeExtensions...)
@@ -122,7 +134,7 @@ func toJsonEntry(setting parsedLanguageSetting) entity.JsonEntry {
 	return entity.JsonEntry{
 		Image:            strings.TrimSpace(setting.Image),
 		Install:          strings.TrimSpace(setting.Install),
-		Locale:           locale,
+		Locale:           utils.Ptr(locale),
 		Timezone:         strings.TrimSpace(setting.Timezone),
 		VSCodeExtensions: vscodeExtensions,
 	}
