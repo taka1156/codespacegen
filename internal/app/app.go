@@ -65,7 +65,10 @@ func NewApp() *App {
 }
 
 func (a *App) Run() error {
-	inputs, err := a.flows.inputCollector.CollectConfig()
+
+	var args = os.Args
+
+	inputs, err := a.flows.inputCollector.CollectConfig(args)
 	if err != nil {
 		return err
 	}
@@ -75,9 +78,14 @@ func (a *App) Run() error {
 		return nil
 	}
 
-	if inputs.ClientConfig.InitializeValue() {
-		a.flows.initializeSettingJson.Execute(entity.DefaultTemplateJson, inputs.DefaultConfig.SettingJsonFileName)
-	}
+	       if inputs.ClientConfig.InitializeValue() {
+		       outputPath := inputs.ClientConfig.OutputDirValue()
+		       err = a.flows.initializeSettingJson.Execute(entity.DefaultTemplateJson, outputPath)
+		       if err != nil {
+			       return err
+		       }
+		       return nil
+	       }
 
 	if inputs.ClientConfig.LangValue() != "" {
 		i18n.SetLang(inputs.ClientConfig.LangValue())

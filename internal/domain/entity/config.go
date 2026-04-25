@@ -95,9 +95,9 @@ func (c ClientConfig) InitializeValue() bool {
 }
 
 type LocaleConfig struct {
-	Lang     string `json:"lang"`
-	Language string `json:"language"`
-	LcAll    string `json:"lcAll"`
+	Lang     string `json:"lang,omitempty"`
+	Language string `json:"language,omitempty"`
+	LcAll    string `json:"lcAll,omitempty"`
 }
 
 var DefaultLocale = LocaleConfig{
@@ -107,11 +107,11 @@ var DefaultLocale = LocaleConfig{
 }
 
 type JsonEntry struct {
-	Image            string       `json:"image"`
-	Install          string       `json:"install,omitempty"`
-	Locale           LocaleConfig `json:"locale"`
-	Timezone         string       `json:"timezone"`
-	VSCodeExtensions []string     `json:"vscodeExtensions"`
+	Image            string        `json:"image,omitempty"`
+	Install          string        `json:"install,omitempty"`
+	Locale           *LocaleConfig `json:"locale,omitempty"`
+	Timezone         string        `json:"timezone,omitempty"`
+	VSCodeExtensions []string      `json:"vscodeExtensions,omitempty"`
 }
 
 type CodespaceConfig struct {

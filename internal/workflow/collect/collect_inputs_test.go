@@ -14,7 +14,7 @@ type fakeClientInput struct {
 	config entity.ClientConfig
 }
 
-func (f *fakeClientInput) GetInput() entity.ClientConfig {
+func (f *fakeClientInput) GetInput(args []string) entity.ClientConfig {
 	return f.config
 }
 
@@ -56,7 +56,7 @@ func TestCollectInputs_CollectConfig_ReturnsCollectedInputs(t *testing.T) {
 		&fakeDefaultSettingProvider{setting: defaultSetting},
 	)
 
-	got, err := ci.CollectConfig()
+	got, err := ci.CollectConfig([]string{})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -94,7 +94,7 @@ func TestCollectInputs_CollectConfig_PassesImageConfigToLoader(t *testing.T) {
 		&fakeDefaultSettingProvider{},
 	)
 
-	if _, err := ci.CollectConfig(); err != nil {
+	if _, err := ci.CollectConfig([]string{}); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
@@ -110,7 +110,7 @@ func TestCollectInputs_CollectConfig_ReturnsErrorFromImageConfigLoader(t *testin
 		&fakeDefaultSettingProvider{},
 	)
 
-	_, err := ci.CollectConfig()
+	_, err := ci.CollectConfig([]string{})
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
@@ -123,7 +123,7 @@ func TestCollectInputs_CollectConfig_EmptyJsonConfigWhenNoImageConfigSet(t *test
 		&fakeDefaultSettingProvider{setting: entity.DefaultSetting{Timezone: "UTC"}},
 	)
 
-	got, err := ci.CollectConfig()
+	got, err := ci.CollectConfig([]string{})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

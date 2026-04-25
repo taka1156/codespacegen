@@ -8,7 +8,7 @@ import (
 )
 
 type inputCollector interface {
-	CollectConfig() (*collect.CollectedInputs, error)
+	CollectConfig(args []string) (*collect.CollectedInputs, error)
 }
 
 type initializeSettingJson interface {

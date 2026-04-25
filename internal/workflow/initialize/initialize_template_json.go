@@ -4,6 +4,7 @@ import (
 	"codespacegen/internal/domain/entity"
 	"codespacegen/internal/domain/service"
 	"fmt"
+	"path/filepath"
 )
 
 type InitializeSettingJson struct {
@@ -31,7 +32,7 @@ func (isj *InitializeSettingJson) Execute(templateJson entity.TemplateJson, sett
 		return fmt.Errorf("failed to get config output path: %w", err)
 	}
 
-	err = isj.writer.Write(outputPath+settingJsonFileName, file, false)
+	err = isj.writer.Write(filepath.Join(outputPath, settingJsonFileName), file, false)
 	if err != nil {
 		return fmt.Errorf("failed to write template JSON: %w", err)
 	}

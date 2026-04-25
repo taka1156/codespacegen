@@ -1,29 +1,27 @@
 package entity
 
+import "codespacegen/internal/utils"
+
 const DefaultTemplateJsonPath = "codespacegen.json"
 
 type TemplateJson struct {
-	Schema     string    `json:"$schema"`
-	Common     JsonEntry `json:"common"`
-	Go         JsonEntry `json:"go"`
-	Python     JsonEntry `json:"python"`
-	NodeBiome  JsonEntry `json:"node:biome"`
-	NodeEslint JsonEntry `json:"node:eslint"`
-	NodeReact  JsonEntry `json:"node:react"`
-	Rust       JsonEntry `json:"rust"`
-	Moonbit    JsonEntry `json:"moonbit"`
-	Gcc        JsonEntry `json:"gcc"`
+	Schema     string    `json:"$schema,omitempty"`
+	Common     JsonEntry `json:"common,omitempty"`
+	Go         JsonEntry `json:"go,omitempty"`
+	Python     JsonEntry `json:"python,omitempty"`
+	NodeBiome  JsonEntry `json:"node:biome,omitempty"`
+	NodeEslint JsonEntry `json:"node:eslint,omitempty"`
+	NodeReact  JsonEntry `json:"node:react,omitempty"`
+	Rust       JsonEntry `json:"rust,omitempty"`
+	Moonbit    JsonEntry `json:"moonbit,omitempty"`
+	Gcc        JsonEntry `json:"gcc,omitempty"`
 }
 
 var DefaultTemplateJson = TemplateJson{
 	Schema: "https://raw.githubusercontent.com/codespacegen/codespacegen/main/codespacegen.schema.json",
 	Common: JsonEntry{
 		Timezone: "Asia/Tokyo",
-		Locale: LocaleConfig{
-			Lang:     "ja_JP.UTF-8",
-			Language: "ja_JP:ja",
-			LcAll:    "ja_JP.UTF-8",
-		},
+		Locale:   utils.Ptr(DefaultLocale),
 		VSCodeExtensions: []string{
 			"MS-CEINTL.vscode-language-pack-ja",
 			"GitHub.copilot",

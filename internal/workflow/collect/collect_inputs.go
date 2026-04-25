@@ -7,7 +7,7 @@ import (
 )
 
 type CollectInputs struct {
-	cliInput      ClientInputProvider
+	clientInput   ClientInputProvider
 	jsonInput     ImageConfigLoader
 	defaultConfig DefaultSettingProvider
 }
@@ -19,19 +19,19 @@ type CollectedInputs struct {
 }
 
 func NewCollectInputs(
-	cliInput ClientInputProvider,
+	clientInput ClientInputProvider,
 	jsonInput ImageConfigLoader,
 	defaultConfig DefaultSettingProvider,
 ) *CollectInputs {
 	return &CollectInputs{
-		cliInput:      cliInput,
+		clientInput:   clientInput,
 		jsonInput:     jsonInput,
 		defaultConfig: defaultConfig,
 	}
 }
 
-func (ri *CollectInputs) CollectConfig() (*CollectedInputs, error) {
-	ClientConfig := ri.cliInput.GetInput()
+func (ri *CollectInputs) CollectConfig(args []string) (*CollectedInputs, error) {
+	ClientConfig := ri.clientInput.GetInput(args)
 	jsonConfig, err := ri.jsonInput.LoadLanguageImages(ClientConfig.ImageConfigValue())
 	if err != nil {
 		return nil, err
