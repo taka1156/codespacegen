@@ -12,7 +12,7 @@ DIST_TARGETS := \
 	darwin/arm64/tar.gz \
 	windows/amd64/exe
 
-.PHONY: fmt run build test clean e2e bin exec dist
+.PHONY: fmt run build test test-cover clean e2e bin exec dist
 
 fmt:
 	go fmt ./...
@@ -27,6 +27,10 @@ build:
 
 test:
 	go test ./...
+
+test-cover:
+	go test -cover ./... -coverprofile=cover.out
+	go tool cover -html=cover.out -o cover.html
 
 e2e:
 	# UPD=--update is updating snapshots mode.
@@ -51,3 +55,4 @@ dist:
 
 clean:
 	rm -rf $(BIN_DIR) dist tmp
+	rm -f cover.out cover.html

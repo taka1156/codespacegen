@@ -28,6 +28,7 @@ func (ci *ClientInput) GetInput() entity.ClientConfig {
 	ClientConfig.EnableOverwriteFile = flag.Bool("force", false, "overwrite existing files")
 	ClientConfig.Lang = flag.String("lang", "", "language for CLI messages (en/ja, default: auto-detect)")
 	ClientConfig.ShowVersion = flag.Bool("v", false, "print version and exit")
+	ClientConfig.Initialize = flag.Bool("init", false, "initialize setting JSON")
 
 	flag.Parse()
 

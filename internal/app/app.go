@@ -5,8 +5,10 @@ import (
 	"os"
 	"path/filepath"
 
+	"codespacegen/internal/domain/entity"
 	"codespacegen/internal/generator"
 	"codespacegen/internal/generator/filewriter"
+	"codespacegen/internal/generator/workdirprovider"
 	"codespacegen/internal/i18n"
 	"codespacegen/internal/input"
 	"codespacegen/internal/resolve"
@@ -24,9 +26,10 @@ type Resolvers struct {
 }
 
 type WorkflowCases struct {
-	inputInputs           inputCollector
-	resolveCodespace      configAssembler
-	generateCodeArtifacts artifactExecutor
+	inputCollector             inputCollector
+	assembleConfigResolver     assembleConfigResolver
+	generateCodespaceArtifacts generateCodespaceArtifacts
+	initializeSettingJson      initializeSettingJson
 }
 
 type App struct {
@@ -46,20 +49,23 @@ func NewApp() *App {
 		CodespaceConfigResolver: resolve.NewCodespaceConfigResolver(os.Stdin),
 	}
 
-	generatorImpl := generator.NewDefaultTemplateGenerator()
+	codespaceGenerator := generator.NewCodespaceGenerator()
+	settingTemplateGenerator := generator.NewSettingTemplateGenerator()
+	workdir := workdirprovider.NewWorkdirProvider()
 	writer := filewriter.NewLocalFileWriter()
 
 	flows := WorkflowCases{
-		inputInputs:           workflow.NewCollectInputs(ic.clientInput, ic.jsonInput, ic.defaultConfig),
-		resolveCodespace:      workflow.NewAssembleCodespaceConfig(rs.CodespaceConfigResolver),
-		generateCodeArtifacts: workflow.NewGenerateCodespaceArtifacts(generatorImpl, writer),
+		inputCollector:             workflow.NewCollectInputs(ic.clientInput, ic.jsonInput, ic.defaultConfig),
+		assembleConfigResolver:     workflow.NewAssembleCodespaceConfig(rs.CodespaceConfigResolver),
+		generateCodespaceArtifacts: workflow.NewGenerateCodespaceArtifacts(codespaceGenerator, writer),
+		initializeSettingJson:      workflow.NewInitializeSettingJson(settingTemplateGenerator, workdir, writer),
 	}
 
 	return &App{flows: flows}
 }
 
 func (a *App) Run() error {
-	inputs, err := a.flows.inputInputs.CollectConfig()
+	inputs, err := a.flows.inputCollector.CollectConfig()
 	if err != nil {
 		return err
 	}
@@ -69,16 +75,20 @@ func (a *App) Run() error {
 		return nil
 	}
 
+	if inputs.ClientConfig.InitializeValue() {
+		a.flows.initializeSettingJson.Execute(entity.DefaultTemplateJson, inputs.DefaultConfig.SettingJsonFileName)
+	}
+
 	if inputs.ClientConfig.LangValue() != "" {
 		i18n.SetLang(inputs.ClientConfig.LangValue())
 	}
 
-	codespaceConfig, err := a.flows.resolveCodespace.Resolve(inputs.ClientConfig, inputs.DefaultConfig, inputs.JsonConfig)
+	codespaceConfig, err := a.flows.assembleConfigResolver.Resolve(inputs.ClientConfig, inputs.DefaultConfig, inputs.JsonConfig)
 	if err != nil {
 		return err
 	}
 
-	err = a.flows.generateCodeArtifacts.Execute(*codespaceConfig, inputs.ClientConfig.EnableOverwriteFileValue(), inputs.ClientConfig.OutputDirValue())
+	err = a.flows.generateCodespaceArtifacts.Execute(*codespaceConfig, inputs.ClientConfig.EnableOverwriteFileValue(), inputs.ClientConfig.OutputDirValue())
 	if err != nil {
 		return err
 	}

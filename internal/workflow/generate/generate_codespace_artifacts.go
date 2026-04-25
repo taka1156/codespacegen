@@ -9,17 +9,17 @@ import (
 )
 
 type GenerateCodespaceArtifacts struct {
-	generator service.TemplateGenerator
-	writer    service.FileWriter
+	codespaceGenerator service.CodespaceGenerator
+	writer             service.LocalFileWriter
 }
 
 func NewGenerateCodespaceArtifacts(
-	generator service.TemplateGenerator,
-	writer service.FileWriter,
+	codespaceGenerator service.CodespaceGenerator,
+	writer service.LocalFileWriter,
 ) *GenerateCodespaceArtifacts {
 	return &GenerateCodespaceArtifacts{
-		generator: generator,
-		writer:    writer,
+		codespaceGenerator: codespaceGenerator,
+		writer:             writer,
 	}
 }
 
@@ -28,7 +28,7 @@ func (u *GenerateCodespaceArtifacts) Execute(config entity.CodespaceConfig, enab
 		return fmt.Errorf("failed to validate config: %w", err)
 	}
 
-	files, err := u.generator.Generate(config)
+	files, err := u.codespaceGenerator.Generate(config)
 	if err != nil {
 		return fmt.Errorf("failed to generate templates: %w", err)
 	}

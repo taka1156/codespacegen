@@ -1,4 +1,4 @@
-package generator
+package codespace
 
 import (
 	"bytes"
@@ -35,7 +35,7 @@ type composeData struct {
 	PortMapping     string
 }
 
-type DefaultTemplateGenerator struct{}
+type CodespaceGenerator struct{}
 
 type baseImageStrategy interface {
 	renderBaseSetup(locale entity.LocaleConfig, osModules entity.OsModules) string
@@ -64,11 +64,11 @@ type devcontainerVSCode struct {
 	Extensions []string          `json:"extensions"`
 }
 
-func NewDefaultTemplateGenerator() *DefaultTemplateGenerator {
-	return &DefaultTemplateGenerator{}
+func NewCodespaceGenerator() *CodespaceGenerator {
+	return &CodespaceGenerator{}
 }
 
-func (g *DefaultTemplateGenerator) Generate(config entity.CodespaceConfig) ([]entity.GeneratedFile, error) {
+func (g *CodespaceGenerator) Generate(config entity.CodespaceConfig) ([]entity.GeneratedFile, error) {
 	dockerfile, err := g.renderDockerfile(config)
 	if err != nil {
 		return nil, err
@@ -91,7 +91,7 @@ func (g *DefaultTemplateGenerator) Generate(config entity.CodespaceConfig) ([]en
 	}, nil
 }
 
-func (g *DefaultTemplateGenerator) renderDockerfile(config entity.CodespaceConfig) (string, error) {
+func (g *CodespaceGenerator) renderDockerfile(config entity.CodespaceConfig) (string, error) {
 	locale := config.Locale
 	if locale.Lang == "" {
 		locale = entity.DefaultLocale
@@ -126,7 +126,7 @@ func (g *DefaultTemplateGenerator) renderDockerfile(config entity.CodespaceConfi
 	return dockerfileBuf.String(), nil
 }
 
-func (g *DefaultTemplateGenerator) renderCompose(config entity.CodespaceConfig) (string, error) {
+func (g *CodespaceGenerator) renderCompose(config entity.CodespaceConfig) (string, error) {
 	var composeBuf bytes.Buffer
 	if err := composeTmpl.Execute(&composeBuf, composeData{
 		ServiceName:     config.ServiceName,
@@ -139,7 +139,7 @@ func (g *DefaultTemplateGenerator) renderCompose(config entity.CodespaceConfig) 
 	return composeBuf.String(), nil
 }
 
-func (g *DefaultTemplateGenerator) renderDevcontainer(config entity.CodespaceConfig) (string, error) {
+func (g *CodespaceGenerator) renderDevcontainer(config entity.CodespaceConfig) (string, error) {
 	extensions := []string{}
 	extensions = append(extensions, config.VSCodeExtensions...)
 	extensions = uniqueStringsPreserveOrder(extensions)

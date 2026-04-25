@@ -12,11 +12,12 @@ type OsModules struct {
 }
 
 type DefaultSetting struct {
-	Timezone  string
-	Image     string
-	Version   string
-	VscSchema string
-	OsModules OsModules
+	Timezone            string
+	Image               string
+	Version             string
+	VscSchema           string
+	OsModules           OsModules
+	SettingJsonFileName string
 }
 
 type ClientConfig struct {
@@ -33,6 +34,8 @@ type ClientConfig struct {
 	EnableOverwriteFile *bool
 	Lang                *string
 	ShowVersion         *bool
+	OutputTemplateJson  *bool
+	Initialize          *bool
 }
 
 func (c ClientConfig) OutputDirValue() string {
@@ -87,10 +90,14 @@ func (c ClientConfig) ShowVersionValue() bool {
 	return boolValue(c.ShowVersion)
 }
 
+func (c ClientConfig) InitializeValue() bool {
+	return boolValue(c.Initialize)
+}
+
 type LocaleConfig struct {
-	Lang     string
-	Language string
-	LcAll    string
+	Lang     string `json:"lang"`
+	Language string `json:"language"`
+	LcAll    string `json:"lcAll"`
 }
 
 var DefaultLocale = LocaleConfig{
@@ -100,11 +107,11 @@ var DefaultLocale = LocaleConfig{
 }
 
 type JsonEntry struct {
-	Image            string
-	Install          string
-	Locale           LocaleConfig
-	Timezone         string
-	VSCodeExtensions []string
+	Image            string       `json:"image"`
+	Install          string       `json:"install,omitempty"`
+	Locale           LocaleConfig `json:"locale"`
+	Timezone         string       `json:"timezone"`
+	VSCodeExtensions []string     `json:"vscodeExtensions"`
 }
 
 type CodespaceConfig struct {

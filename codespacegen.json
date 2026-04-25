@@ -28,20 +28,20 @@
     ]
   },
   "node:biome": {
-    "image": "node:22-alpine",
+    "image": "node:24-alpine",
     "vscodeExtensions": [
       "biomejs.biome"
     ]
   },
   "node:eslint": {
-    "image": "node:22-alpine",
+    "image": "node:24-alpine",
     "vscodeExtensions": [
       "dbaeumer.vscode-eslint",
       "esbenp.prettier-vscode"
     ]
   },
   "node:react": {
-    "image": "node:22-alpine",
+    "image": "node:24-alpine",
     "vscodeExtensions": [
       "jawandarajbir.react-vscode-extension-pack",
       "dbaeumer.vscode-eslint",
@@ -50,7 +50,7 @@
     ]
   },
   "rust": {
-    "image": "rust:1-alpine",
+    "image": "rust:1.72-alpine",
     "vscodeExtensions": [
       "Zerotaskx.rust-extension-pack"
     ]

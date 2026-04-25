@@ -1,4 +1,4 @@
-package generator
+package codespace
 
 import (
 	"strings"
@@ -19,8 +19,8 @@ var testDebianLikeModules = []string{
 	"locales",
 }
 
-func TestDefaultTemplateGenerator_Generate_UsesApkForAlpineImage(t *testing.T) {
-	g := NewDefaultTemplateGenerator()
+func TestCodespaceGenerator_Generate_UsesApkForAlpineImage(t *testing.T) {
+	g := NewCodespaceGenerator()
 	cfg := entity.CodespaceConfig{
 		ContainerName:   "test",
 		ServiceName:     "app",
@@ -55,8 +55,8 @@ func TestDefaultTemplateGenerator_Generate_UsesApkForAlpineImage(t *testing.T) {
 	}
 }
 
-func TestDefaultTemplateGenerator_Generate_AlpineDoesNotRunLocaleGen(t *testing.T) {
-	g := NewDefaultTemplateGenerator()
+func TestCodespaceGenerator_Generate_AlpineDoesNotRunLocaleGen(t *testing.T) {
+	g := NewCodespaceGenerator()
 	cfg := entity.CodespaceConfig{
 		ContainerName:   "test",
 		ServiceName:     "app",
@@ -79,8 +79,8 @@ func TestDefaultTemplateGenerator_Generate_AlpineDoesNotRunLocaleGen(t *testing.
 	}
 }
 
-func TestDefaultTemplateGenerator_Generate_UsesAptForUbuntuImage(t *testing.T) {
-	g := NewDefaultTemplateGenerator()
+func TestCodespaceGenerator_Generate_UsesAptForUbuntuImage(t *testing.T) {
+	g := NewCodespaceGenerator()
 	cfg := entity.CodespaceConfig{
 		ContainerName:   "test",
 		ServiceName:     "app",
@@ -115,8 +115,8 @@ func TestDefaultTemplateGenerator_Generate_UsesAptForUbuntuImage(t *testing.T) {
 	}
 }
 
-func TestDefaultTemplateGenerator_Generate_UsesDefaultLocale(t *testing.T) {
-	g := NewDefaultTemplateGenerator()
+func TestCodespaceGenerator_Generate_UsesDefaultLocale(t *testing.T) {
+	g := NewCodespaceGenerator()
 	cfg := entity.CodespaceConfig{
 		ContainerName:   "test",
 		ServiceName:     "app",
@@ -142,8 +142,8 @@ func TestDefaultTemplateGenerator_Generate_UsesDefaultLocale(t *testing.T) {
 	}
 }
 
-func TestDefaultTemplateGenerator_Generate_UsesCustomLocale(t *testing.T) {
-	g := NewDefaultTemplateGenerator()
+func TestCodespaceGenerator_Generate_UsesCustomLocale(t *testing.T) {
+	g := NewCodespaceGenerator()
 	cfg := entity.CodespaceConfig{
 		ContainerName:   "test",
 		ServiceName:     "app",
@@ -183,8 +183,8 @@ func TestDefaultTemplateGenerator_Generate_UsesCustomLocale(t *testing.T) {
 	}
 }
 
-func TestDefaultTemplateGenerator_Generate_EmbedsInstallCommand(t *testing.T) {
-	g := NewDefaultTemplateGenerator()
+func TestCodespaceGenerator_Generate_EmbedsInstallCommand(t *testing.T) {
+	g := NewCodespaceGenerator()
 	cfg := entity.CodespaceConfig{
 		ContainerName:   "test",
 		ServiceName:     "app",
@@ -205,8 +205,8 @@ func TestDefaultTemplateGenerator_Generate_EmbedsInstallCommand(t *testing.T) {
 	}
 }
 
-func TestDefaultTemplateGenerator_Generate_UsesCustomTimezone(t *testing.T) {
-	g := NewDefaultTemplateGenerator()
+func TestCodespaceGenerator_Generate_UsesCustomTimezone(t *testing.T) {
+	g := NewCodespaceGenerator()
 	cfg := entity.CodespaceConfig{
 		ContainerName:   "test",
 		ServiceName:     "app",
@@ -233,8 +233,8 @@ func TestDefaultTemplateGenerator_Generate_UsesCustomTimezone(t *testing.T) {
 	}
 }
 
-func TestDefaultTemplateGenerator_Generate_EmbedsVSCodeExtensions(t *testing.T) {
-	g := NewDefaultTemplateGenerator()
+func TestCodespaceGenerator_Generate_EmbedsVSCodeExtensions(t *testing.T) {
+	g := NewCodespaceGenerator()
 	cfg := entity.CodespaceConfig{
 		ContainerName:    "test",
 		ServiceName:      "app",
@@ -261,8 +261,8 @@ func TestDefaultTemplateGenerator_Generate_EmbedsVSCodeExtensions(t *testing.T) 
 	}
 }
 
-func TestDefaultTemplateGenerator_Generate_DevcontainerKeyOrder(t *testing.T) {
-	g := NewDefaultTemplateGenerator()
+func TestCodespaceGenerator_Generate_DevcontainerKeyOrder(t *testing.T) {
+	g := NewCodespaceGenerator()
 	cfg := entity.CodespaceConfig{
 		ContainerName:   "sample",
 		ServiceName:     "app",
@@ -293,8 +293,8 @@ func TestDefaultTemplateGenerator_Generate_DevcontainerKeyOrder(t *testing.T) {
 	}
 }
 
-func TestDefaultTemplateGenerator_Generate_ComposeIncludesPortMapping(t *testing.T) {
-	g := NewDefaultTemplateGenerator()
+func TestCodespaceGenerator_Generate_ComposeIncludesPortMapping(t *testing.T) {
+	g := NewCodespaceGenerator()
 	cfg := entity.CodespaceConfig{
 		ContainerName:   "test",
 		ServiceName:     "app",
@@ -318,8 +318,8 @@ func TestDefaultTemplateGenerator_Generate_ComposeIncludesPortMapping(t *testing
 	}
 }
 
-func TestDefaultTemplateGenerator_Generate_ComposeOmitsPortsWhenEmpty(t *testing.T) {
-	g := NewDefaultTemplateGenerator()
+func TestCodespaceGenerator_Generate_ComposeOmitsPortsWhenEmpty(t *testing.T) {
+	g := NewCodespaceGenerator()
 	cfg := entity.CodespaceConfig{
 		ContainerName:   "test",
 		ServiceName:     "app",
