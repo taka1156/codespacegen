@@ -6,13 +6,13 @@ import (
 	"fmt"
 )
 
-type SettingTemplateGenerator struct{}
+type ConfigTemplateGenerator struct{}
 
-func NewSettingTemplateGenerator() *SettingTemplateGenerator {
-	return &SettingTemplateGenerator{}
+func NewConfigTemplateGenerator() *ConfigTemplateGenerator {
+	return &ConfigTemplateGenerator{}
 }
 
-func (g *SettingTemplateGenerator) Generate(templateJson entity.TemplateJson) (string, error) {
+func (g *ConfigTemplateGenerator) Generate(templateJson entity.TemplateJson) (string, error) {
 	devcontainerBytes, err := json.MarshalIndent(templateJson, "", "  ")
 	if err != nil {
 		return "", fmt.Errorf("failed to render devcontainer.json: %w", err)

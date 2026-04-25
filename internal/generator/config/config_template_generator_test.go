@@ -2,23 +2,25 @@ package config
 
 import (
 	"codespacegen/internal/domain/entity"
+	"codespacegen/internal/utils"
+
 	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSettingTemplateGenerator_Generate_Success(t *testing.T) {
-	g := NewSettingTemplateGenerator()
+func TestConfigTemplateGenerator_Generate_Success(t *testing.T) {
+	g := NewConfigTemplateGenerator()
 	input := entity.TemplateJson{
 		Schema: "test-schema",
 		Common: entity.JsonEntry{
 			Timezone: "Asia/Tokyo",
-			Locale: entity.LocaleConfig{
+			Locale: utils.Ptr(entity.LocaleConfig{
 				Lang:     "ja_JP.UTF-8",
 				Language: "ja_JP:ja",
 				LcAll:    "ja_JP.UTF-8",
-			},
+			}),
 			VSCodeExtensions: []string{"ext1", "ext2"},
 		},
 	}
@@ -29,8 +31,8 @@ func TestSettingTemplateGenerator_Generate_Success(t *testing.T) {
 	assert.Equal(t, string(wantBytes), got)
 }
 
-func TestSettingTemplateGenerator_Generate_MarshalError(t *testing.T) {
-	g := NewSettingTemplateGenerator()
+func TestConfigTemplateGenerator_Generate_MarshalError(t *testing.T) {
+	g := NewConfigTemplateGenerator()
 	// json.Marshalでエラーになる型を埋め込む
 	type Bad struct{}
 	type BadTemplate struct {
