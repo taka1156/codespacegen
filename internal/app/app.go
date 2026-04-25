@@ -78,14 +78,13 @@ func (a *App) Run() error {
 		return nil
 	}
 
-	       if inputs.ClientConfig.InitializeValue() {
-		       outputPath := inputs.ClientConfig.OutputDirValue()
-		       err = a.flows.initializeSettingJson.Execute(entity.DefaultTemplateJson, outputPath)
-		       if err != nil {
-			       return err
-		       }
-		       return nil
-	       }
+	if inputs.ClientConfig.InitializeValue() {
+		err = a.flows.initializeSettingJson.Execute(entity.DefaultTemplateJson, inputs.DefaultConfig.SettingJsonFileName)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
 
 	if inputs.ClientConfig.LangValue() != "" {
 		i18n.SetLang(inputs.ClientConfig.LangValue())

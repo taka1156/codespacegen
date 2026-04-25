@@ -18,20 +18,20 @@ func NewClientInput() *ClientInput {
 func (ci *ClientInput) GetInput(args []string) entity.ClientConfig {
 	ClientConfig := entity.ClientConfig{}
 
-	       // 引数が2つ以上あり、2番目が"init"ならinitコマンドとして扱う
-	       if len(args) > 1 && args[1] == "init" {
-		       initCmd := flag.NewFlagSet("init", flag.ExitOnError)
-		       outputDir := initCmd.String("output", ".devcontainer", "output directory for generated files")
-		       initCmd.Usage = func() {
-			       fmt.Fprintf(os.Stderr, "Usage: %s init [options]\n\n", os.Args[0])
-			       fmt.Fprintf(os.Stderr, "Initialize setting JSON\n")
-			       initCmd.PrintDefaults()
-		       }
-		       _ = initCmd.Parse(args[2:])
-		       ClientConfig.OutputDir = outputDir
-		       ClientConfig.Initialize = utils.Ptr(true)
-		       return ClientConfig
-	       }
+	// 引数が2つ以上あり、2番目が"init"ならinitコマンドとして扱う
+	if len(args) > 1 && args[1] == "init" {
+		initCmd := flag.NewFlagSet("init", flag.ExitOnError)
+		outputDir := initCmd.String("output", ".devcontainer", "output directory for generated files")
+		initCmd.Usage = func() {
+			fmt.Fprintf(os.Stderr, "Usage: %s init [options]\n\n", os.Args[0])
+			fmt.Fprintf(os.Stderr, "Initialize setting JSON\n")
+			initCmd.PrintDefaults()
+		}
+		_ = initCmd.Parse(args[2:])
+		ClientConfig.OutputDir = outputDir
+		ClientConfig.Initialize = utils.Ptr(true)
+		return ClientConfig
+	}
 
 	// 通常コマンド用のフラグセット
 	fs := flag.NewFlagSet("root", flag.ExitOnError)
