@@ -18,7 +18,7 @@ type TemplateJson struct {
 }
 
 var DefaultTemplateJson = TemplateJson{
-	Schema: "https://raw.githubusercontent.com/codespacegen/codespacegen/main/codespacegen.schema.json",
+	Schema: "https://raw.githubusercontent.com/taka1156/codespacegen/master/codespacegen.schema.json",
 	Common: JsonEntry{
 		Timezone: "Asia/Tokyo",
 		Locale:   utils.Ptr(DefaultLocale),
