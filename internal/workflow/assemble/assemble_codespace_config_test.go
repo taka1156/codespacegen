@@ -8,7 +8,6 @@ import (
 	"github.com/taka1156/codespacegen/internal/utils"
 )
 
-// fakeCodespacePromptResolver は CodespacePromptResolver のテスト用実装。
 type fakeCodespacePromptResolver struct {
 	projectName     string
 	language        string
@@ -63,7 +62,6 @@ var (
 	}
 )
 
-// defaultFakeResolver は正常系で使う最小限の fakeCodespacePromptResolver を返す。
 func defaultFakeResolver() *fakeCodespacePromptResolver {
 	return &fakeCodespacePromptResolver{
 		projectName:     "myproject",
@@ -73,8 +71,6 @@ func defaultFakeResolver() *fakeCodespacePromptResolver {
 		timezone:        "Asia/Tokyo",
 	}
 }
-
-// --- Resolve 正常系 ---
 
 func TestAssembleCodespaceConfig_Resolve_BuildsConfigCorrectly(t *testing.T) {
 	resolver := defaultFakeResolver()
@@ -129,8 +125,6 @@ func TestAssembleCodespaceConfig_Resolve_PortMappingIsSet(t *testing.T) {
 		t.Errorf("PortMapping: got %q, want %q", got.PortMapping, "3000:3000")
 	}
 }
-
-// --- Resolve エラー伝播 ---
 
 func TestAssembleCodespaceConfig_Resolve_ErrorFromPromptProjectName(t *testing.T) {
 	resolver := defaultFakeResolver()

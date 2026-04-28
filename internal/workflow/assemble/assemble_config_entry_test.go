@@ -7,8 +7,6 @@ import (
 	"github.com/taka1156/codespacegen/internal/utils"
 )
 
-// --- resolveMergedEntry ---
-
 func TestResolveMergedEntry_ReturnsEmptyWhenLangsNil(t *testing.T) {
 	acc := NewAssembleCodespaceConfig(nil)
 	got, err := acc.resolveMergedEntry(entity.JsonConfig{Common: &entity.CommonEntry{}})
@@ -86,8 +84,6 @@ func TestResolveMergedEntry_NormalizesKeyToLower(t *testing.T) {
 		t.Error("expected 'rust' key (lowercase) in result")
 	}
 }
-
-// --- mergeLanguageEntries ---
 
 func TestMergeLanguageEntries_LangExtensionsAppendCommon(t *testing.T) {
 	common := entity.CommonEntry{
@@ -182,7 +178,7 @@ func TestMergeLanguageEntries_CommonLocaleUsedWhenLangLocaleNil(t *testing.T) {
 	}
 	lang := entity.LangEntry{Image: "python:3.12"}
 	got := mergeLanguageEntries(common, lang)
-	// LangEntry.Locale が nil の場合、common.Locale がそのまま使われる
+
 	if got.Locale == nil || got.Locale.Lang != commonLocale.Lang {
 		t.Errorf("Locale.Lang: got %v, want %q", got.Locale, commonLocale.Lang)
 	}

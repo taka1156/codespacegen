@@ -6,8 +6,6 @@ import (
 	"testing"
 )
 
-// --- normalizePortMapping ---
-
 func TestNormalizePortMapping_PortOnlyNormalizesToMapping(t *testing.T) {
 	got, err := normalizePortMapping("3000")
 	if err != nil {
@@ -59,8 +57,6 @@ func TestNormalizePortMapping_AlphaNumericReturnsError(t *testing.T) {
 	}
 }
 
-// --- promptWithDefault ---
-
 func newBufReader(s string) *bufio.Reader {
 	return bufio.NewReader(strings.NewReader(s))
 }
@@ -96,7 +92,6 @@ func TestPromptWithDefault_EOFWithNoInputReturnsDefault(t *testing.T) {
 }
 
 func TestPromptWithDefault_EOFWithInputReturnsInput(t *testing.T) {
-	// 改行なし EOF（最後の行）
 	got, err := promptWithDefault(newBufReader("eofInput"), "", "defaultVal")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)

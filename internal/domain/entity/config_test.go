@@ -4,8 +4,6 @@ import (
 	"testing"
 )
 
-// --- ClientConfig アクセサ ---
-
 func TestClientConfig_StringAccessors_ReturnsEmptyWhenNil(t *testing.T) {
 	c := ClientConfig{}
 	if got := c.OutputDirValue(); got != "" {
@@ -127,8 +125,6 @@ func TestClientConfig_BoolAccessors_ReturnsTrueWhenSet(t *testing.T) {
 		t.Errorf("InitializeValue: got %v, want true", got)
 	}
 }
-
-// --- CodespaceConfig.Validate ---
 
 func validCodespaceConfig() CodespaceConfig {
 	return CodespaceConfig{
