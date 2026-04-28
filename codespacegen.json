@@ -77,12 +77,7 @@
   },
   "node:zenn": {
     "image": "node:24-alpine",
-    "languagePackages": {
-      "installCommand": "yarn global add",
-      "packages": [
-        "zenn-cli"
-      ]
-    },
+    "runCommand": "yarn global add zenn-cli",
     "vscodeExtensions": [
       "zenn.zenn-vscode-extension"
     ]

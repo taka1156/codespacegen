@@ -86,25 +86,6 @@
             "minLength": 1
           }
         },
-        "languagePackages": {
-          "type": "object",
-          "description": "Language-specific package installation settings.",
-          "properties": {
-            "installCommand": {
-              "type": "string",
-              "description": "Command to install language packages (e.g. yarn global add)."
-            },
-            "packages": {
-              "type": "array",
-              "description": "List of language-specific packages to install.",
-              "items": {
-                "type": "string",
-                "minLength": 1
-              }
-            }
-          },
-          "additionalProperties": false
-        },
         "timezone": {
           "type": "string",
           "description": "Default timezone for this entry (e.g. UTC, Asia/Tokyo)."
