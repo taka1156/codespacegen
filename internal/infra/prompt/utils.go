@@ -49,5 +49,3 @@ func promptWithDefault(reader *bufio.Reader, prompt string, defaultValue string)
 
 	return line, nil
 }
-
-

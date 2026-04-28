@@ -7,8 +7,6 @@ import (
 	"github.com/taka1156/codespacegen/internal/domain/entity"
 )
 
-// --- フェイク実装 ---
-
 type fakeClientInput struct {
 	config entity.ClientConfig
 }
@@ -33,8 +31,6 @@ type fakeDefaultSettingProvider struct {
 func (f *fakeDefaultSettingProvider) GetDefaultSetting() entity.DefaultSetting {
 	return f.setting
 }
-
-// --- テスト ---
 
 func TestCollectInputs_CollectConfig_ReturnsCollectedInputs(t *testing.T) {
 	imageConfig := "https://example.com/config.json"

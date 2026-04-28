@@ -33,7 +33,6 @@ func (ci *ClientInput) GetInput(args []string) entity.ClientConfig {
 		return ClientConfig
 	}
 
-	// 通常コマンド用のフラグセット
 	fs := flag.NewFlagSet("root", flag.ExitOnError)
 	fs.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: %s [command] [options]\n\n", os.Args[0])
@@ -57,7 +56,6 @@ func (ci *ClientInput) GetInput(args []string) entity.ClientConfig {
 	ClientConfig.Lang = fs.String("lang", "", "language for CLI messages (en/ja, default: auto-detect)")
 	ClientConfig.ShowVersion = fs.Bool("v", false, "print version and exit")
 
-	// args[1:]をパース（コマンド名を除く）
 	if len(args) > 1 {
 		_ = fs.Parse(args[1:])
 	} else {

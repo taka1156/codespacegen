@@ -5,15 +5,12 @@ import (
 	"testing"
 )
 
-// newResolver は strings.NewReader を使って入力を注入したリゾルバを返す。
 func newResolver(input string) *CodespacegenPrompter {
 	return NewCodespacegenPrompter(strings.NewReader(input))
 }
 
-// --- PromptLanguage ---
-
 func TestPromptLanguage_UsesExplicitValueWhenUserAccepts(t *testing.T) {
-	r := newResolver("\n") // Enter キーのみ → デフォルト採用
+	r := newResolver("\n")
 	got, err := r.PromptLanguage("Python")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -56,8 +53,6 @@ func TestPromptLanguage_NoExplicitUserAcceptsEmpty(t *testing.T) {
 	}
 }
 
-// --- PromptWorkspaceFolder ---
-
 func TestPromptWorkspaceFolder_UsesExplicitValue(t *testing.T) {
 	r := newResolver("\n")
 	got, err := r.PromptWorkspaceFolder("/app")
@@ -90,8 +85,6 @@ func TestPromptWorkspaceFolder_UserOverrides(t *testing.T) {
 		t.Errorf("got %q, want %q", got, "/custom")
 	}
 }
-
-// --- PromptServiceName ---
 
 func TestPromptServiceName_UsesExplicitValue(t *testing.T) {
 	r := newResolver("\n")
@@ -126,8 +119,6 @@ func TestPromptServiceName_UserOverrides(t *testing.T) {
 	}
 }
 
-// --- PromptTimezone ---
-
 func TestPromptTimezone_UsesDefaultWhenUserAccepts(t *testing.T) {
 	r := newResolver("\n")
 	got, err := r.PromptTimezone("UTC")
@@ -161,8 +152,6 @@ func TestPromptTimezone_EmptyDefaultAndEmptyInputReturnsEmpty(t *testing.T) {
 	}
 }
 
-// --- PromptProjectName ---
-
 func TestPromptProjectName_UsesExplicitValue(t *testing.T) {
 	r := newResolver("\n")
 	got, err := r.PromptProjectName("myproject")
@@ -192,8 +181,6 @@ func TestPromptProjectName_EOFWithNoInputReturnsError(t *testing.T) {
 		t.Fatal("expected error for empty project name at EOF, got nil")
 	}
 }
-
-// --- PromptPortMapping ---
 
 func TestPromptPortMapping_EmptyPorts(t *testing.T) {
 	r := newResolver("\n")
@@ -251,7 +238,6 @@ func TestPromptPortMapping_RetriesOnInvalidThenAcceptsValid(t *testing.T) {
 }
 
 func TestPromptPortMapping_InvalidDefaultPortRetriesUntilValid(t *testing.T) {
-	// explicitPort が不正フォーマットのとき、Enter を押すとリトライし、次の有効な入力を受け付ける
 	r := newResolver("\n5000\n")
 	got, err := r.PromptPortMapping("bad")
 	if err != nil {

@@ -7,18 +7,6 @@ import (
 	"github.com/taka1156/codespacegen/internal/utils"
 )
 
-type parsedLanguageSetting struct {
-	Image      string `json:"image"`
-	RunCommand string `json:"runCommand"`
-	Timezone   string `json:"timezone"`
-	Locale     struct {
-		Lang     string `json:"lang"`
-		Language string `json:"language"`
-		LcAll    string `json:"lcAll"`
-	} `json:"locale"`
-	VSCodeExtensions []string `json:"vscodeExtensions"`
-}
-
 func (acc *AssembleCodespaceConfig) resolveMergedEntry(jsonConfig entity.JsonConfig) (map[string]entity.LangEntry, error) {
 	mergedImages := make(map[string]entity.LangEntry)
 
@@ -52,7 +40,7 @@ func (acc *AssembleCodespaceConfig) resolveMergedEntry(jsonConfig entity.JsonCon
 
 func mergeLanguageEntries(common entity.CommonEntry, LangEntry entity.LangEntry) entity.LangEntry {
 	// priority: language-specific > common
-	var baseLocale entity.LocaleConfig = entity.DefaultLocale
+	baseLocale := entity.DefaultLocale
 
 	if common.Locale != nil {
 		baseLocale = *common.Locale

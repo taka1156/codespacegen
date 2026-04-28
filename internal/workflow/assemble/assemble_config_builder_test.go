@@ -7,8 +7,6 @@ import (
 	"github.com/taka1156/codespacegen/internal/utils"
 )
 
-// --- resolveBaseImage ---
-
 func TestResolveBaseImage_ExplicitImageTakesPriority(t *testing.T) {
 	entries := map[string]entity.LangEntry{
 		"python": {Image: "python:3.12"},
@@ -85,8 +83,6 @@ func TestResolveBaseImage_ErrorWhenEntryImageIsEmpty(t *testing.T) {
 	}
 }
 
-// --- resolveTimezone ---
-
 func TestResolveTimezone_PromptTakesPriority(t *testing.T) {
 	got := resolveTimezone("Asia/Tokyo", "America/New_York", utils.Ptr("Europe/London"), "UTC")
 	if got != "Asia/Tokyo" {
@@ -121,8 +117,6 @@ func TestResolveTimezone_EntityDefaultUsedWhenEverythingEmpty(t *testing.T) {
 		t.Errorf("got %q, want %q", got, entity.DefaultTimezone)
 	}
 }
-
-// --- mergeOsModules ---
 
 func TestMergeOsModules_ReturnsBaseWhenLinuxPackagesNil(t *testing.T) {
 	base := entity.OsModules{
@@ -165,10 +159,7 @@ func TestMergeOsModules_DeduplicatesPackages(t *testing.T) {
 	}
 }
 
-// --- buildCodespaceConfig (nil safe パス) ---
-
 func TestBuildCodespaceConfig_NilRunCommandAndExtensionsDoNotPanic(t *testing.T) {
-	// explicitBaseImage を指定すると RunCommand / VSCodeExtensions が nil の LangEntry が返る
 	acc := NewAssembleCodespaceConfig(&fakeCodespacePromptResolver{
 		projectName:     "p",
 		serviceName:     "s",
@@ -225,8 +216,6 @@ func TestBuildCodespaceConfig_NoLanguageUsesDefaultImage(t *testing.T) {
 		t.Errorf("BaseImage: got %q, want %q", got.BaseImage, "alpine:latest")
 	}
 }
-
-// --- resolvePort ---
 
 func TestResolvePort_PromptTakesPriority(t *testing.T) {
 	got := resolvePort("3000:3000", "8080:8080")
