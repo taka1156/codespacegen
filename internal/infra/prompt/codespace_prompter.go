@@ -25,9 +25,9 @@ func (cp *CodespacegenPrompter) PromptProjectName(explicitProjectName string) (s
 	for {
 		if defaultProjectName == "" {
 			fmt.Print(i18n.T("prompt_project_name_required"))
+		} else {
+			fmt.Print(i18n.T("prompt_project_name_with_default", map[string]interface{}{"Default": defaultProjectName}))
 		}
-
-		fmt.Print(i18n.T("prompt_project_name_with_default", map[string]interface{}{"Default": defaultProjectName}))
 
 		line, err := cp.reader.ReadString('\n')
 		isEOF := errors.Is(err, io.EOF)
@@ -95,9 +95,9 @@ func (cp *CodespacegenPrompter) PromptPortMapping(explicitPort string) (string, 
 	for {
 		if defaultPort == "" {
 			fmt.Print(i18n.T("prompt_port_empty"))
+		} else {
+			fmt.Print(i18n.T("prompt_port_with_default", map[string]interface{}{"Default": defaultPort}))
 		}
-
-		fmt.Print(i18n.T("prompt_port_with_default", map[string]interface{}{"Default": defaultPort}))
 
 		line, err := cp.reader.ReadString('\n')
 		if err != nil && !errors.Is(err, io.EOF) {
