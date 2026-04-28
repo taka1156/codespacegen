@@ -40,7 +40,7 @@ func (acc *AssembleCodespaceConfig) resolveMergedEntry(jsonConfig entity.JsonCon
 
 func mergeLanguageEntries(common entity.CommonEntry, LangEntry entity.LangEntry) entity.LangEntry {
 	// priority: language-specific > common
-	var baseLocale entity.LocaleConfig = entity.DefaultLocale
+	baseLocale := entity.DefaultLocale
 
 	if common.Locale != nil {
 		baseLocale = *common.Locale
