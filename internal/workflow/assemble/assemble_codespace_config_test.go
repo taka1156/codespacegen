@@ -8,16 +8,14 @@ import (
 	"codespacegen/internal/utils"
 )
 
-// fakeConfigResolver は ConfigResolver のテスト用実装。
-type fakeConfigResolver struct {
+// fakeCodespacePromptResolver は CodespacePromptResolver のテスト用実装。
+type fakeCodespacePromptResolver struct {
 	projectName     string
 	language        string
 	workspaceFolder string
 	serviceName     string
 	portMapping     string
 	timezone        string
-	mergedEntries   map[string]entity.LangEntry
-	baseImageEntry  entity.LangEntry
 
 	errProjectName     error
 	errLanguage        error
@@ -25,62 +23,54 @@ type fakeConfigResolver struct {
 	errServiceName     error
 	errPortMapping     error
 	errTimezone        error
-	errMergeEntries    error
-	errBaseImage       error
 }
 
-func (f *fakeConfigResolver) ResolveProjectName(_ string) (string, error) {
+func (f *fakeCodespacePromptResolver) PromptProjectName(_ string) (string, error) {
 	return f.projectName, f.errProjectName
 }
 
-func (f *fakeConfigResolver) ResolveLanguage(_ string) (string, error) {
+func (f *fakeCodespacePromptResolver) PromptLanguage(_ string) (string, error) {
 	return f.language, f.errLanguage
 }
 
-func (f *fakeConfigResolver) ResolveWorkspaceFolder(_ string) (string, error) {
+func (f *fakeCodespacePromptResolver) PromptWorkspaceFolder(_ string) (string, error) {
 	return f.workspaceFolder, f.errWorkspaceFolder
 }
 
-func (f *fakeConfigResolver) ResolveServiceName(_ string) (string, error) {
+func (f *fakeCodespacePromptResolver) PromptServiceName(_ string) (string, error) {
 	return f.serviceName, f.errServiceName
 }
 
-func (f *fakeConfigResolver) ResolvePortMapping(_ string) (string, error) {
+func (f *fakeCodespacePromptResolver) PromptPortMapping(_ string) (string, error) {
 	return f.portMapping, f.errPortMapping
 }
 
-func (f *fakeConfigResolver) ResolveTimezone(_, _, _ string) (string, error) {
+func (f *fakeCodespacePromptResolver) PromptTimezone(_ string) (string, error) {
 	return f.timezone, f.errTimezone
-}
-
-func (f *fakeConfigResolver) MergeLanguageEntries(_ *entity.CommonEntry, _ map[string]*entity.LangEntry) (map[string]entity.LangEntry, error) {
-	return f.mergedEntries, f.errMergeEntries
-}
-
-func (f *fakeConfigResolver) ResolveBaseImage(_, _ string, _ map[string]entity.LangEntry, _ string) (entity.LangEntry, error) {
-	return f.baseImageEntry, f.errBaseImage
 }
 
 var (
 	defaultTestSetting = entity.DefaultSetting{Image: "alpine:latest", Timezone: "UTC"}
-	defaultJsonConfig  = entity.JsonConfig{Common: &entity.CommonEntry{}}
+	defaultJsonConfig  = entity.JsonConfig{
+		Common: &entity.CommonEntry{},
+		Langs: map[string]*entity.LangEntry{
+			"python": {
+				Image:            "python:3.12",
+				RunCommand:       utils.Ptr("pip install -r requirements.txt"),
+				VSCodeExtensions: utils.Ptr([]string{"ms-python.python"}),
+			},
+		},
+	}
 )
 
-// defaultFakeResolver は正常系で使う最小限の fakeConfigResolver を返す。
-func defaultFakeResolver() *fakeConfigResolver {
-	return &fakeConfigResolver{
+// defaultFakeResolver は正常系で使う最小限の fakeCodespacePromptResolver を返す。
+func defaultFakeResolver() *fakeCodespacePromptResolver {
+	return &fakeCodespacePromptResolver{
 		projectName:     "myproject",
 		language:        "python",
 		workspaceFolder: "/workspace",
 		serviceName:     "app",
-		timezone:        "UTC",
-		mergedEntries:   map[string]entity.LangEntry{},
-		baseImageEntry: entity.LangEntry{
-			Image:            "python:3.12",
-			RunCommand:       utils.Ptr("pip install -r requirements.txt"),
-			Timezone:         utils.Ptr(""),
-			VSCodeExtensions: utils.Ptr([]string{}),
-		},
+		timezone:        "Asia/Tokyo",
 	}
 }
 
@@ -88,14 +78,6 @@ func defaultFakeResolver() *fakeConfigResolver {
 
 func TestAssembleCodespaceConfig_Resolve_BuildsConfigCorrectly(t *testing.T) {
 	resolver := defaultFakeResolver()
-	resolver.baseImageEntry = entity.LangEntry{
-		Image:            "python:3.12",
-		RunCommand:       utils.Ptr("pip install -r requirements.txt"),
-		Timezone:         utils.Ptr("Asia/Tokyo"),
-		VSCodeExtensions: utils.Ptr([]string{"ms-python.python"}),
-	}
-	resolver.timezone = "Asia/Tokyo"
-
 	composeName := "docker-compose.yaml"
 	clientConfig := entity.ClientConfig{
 		ComposeFile: utils.Ptr(composeName),
@@ -150,7 +132,7 @@ func TestAssembleCodespaceConfig_Resolve_PortMappingIsSet(t *testing.T) {
 
 // --- Resolve エラー伝播 ---
 
-func TestAssembleCodespaceConfig_Resolve_ErrorFromResolveProjectName(t *testing.T) {
+func TestAssembleCodespaceConfig_Resolve_ErrorFromPromptProjectName(t *testing.T) {
 	resolver := defaultFakeResolver()
 	resolver.errProjectName = errors.New("project name error")
 
@@ -162,7 +144,7 @@ func TestAssembleCodespaceConfig_Resolve_ErrorFromResolveProjectName(t *testing.
 	}
 }
 
-func TestAssembleCodespaceConfig_Resolve_ErrorFromResolveLanguage(t *testing.T) {
+func TestAssembleCodespaceConfig_Resolve_ErrorFromPromptLanguage(t *testing.T) {
 	resolver := defaultFakeResolver()
 	resolver.errLanguage = errors.New("language error")
 
@@ -174,7 +156,7 @@ func TestAssembleCodespaceConfig_Resolve_ErrorFromResolveLanguage(t *testing.T) 
 	}
 }
 
-func TestAssembleCodespaceConfig_Resolve_ErrorFromResolveWorkspaceFolder(t *testing.T) {
+func TestAssembleCodespaceConfig_Resolve_ErrorFromPromptWorkspaceFolder(t *testing.T) {
 	resolver := defaultFakeResolver()
 	resolver.errWorkspaceFolder = errors.New("workspace folder error")
 
@@ -186,7 +168,7 @@ func TestAssembleCodespaceConfig_Resolve_ErrorFromResolveWorkspaceFolder(t *test
 	}
 }
 
-func TestAssembleCodespaceConfig_Resolve_ErrorFromResolveServiceName(t *testing.T) {
+func TestAssembleCodespaceConfig_Resolve_ErrorFromPromptServiceName(t *testing.T) {
 	resolver := defaultFakeResolver()
 	resolver.errServiceName = errors.New("service name error")
 
@@ -198,7 +180,7 @@ func TestAssembleCodespaceConfig_Resolve_ErrorFromResolveServiceName(t *testing.
 	}
 }
 
-func TestAssembleCodespaceConfig_Resolve_ErrorFromResolvePortMapping(t *testing.T) {
+func TestAssembleCodespaceConfig_Resolve_ErrorFromPromptPortMapping(t *testing.T) {
 	resolver := defaultFakeResolver()
 	resolver.errPortMapping = errors.New("port mapping error")
 
@@ -210,33 +192,21 @@ func TestAssembleCodespaceConfig_Resolve_ErrorFromResolvePortMapping(t *testing.
 	}
 }
 
-func TestAssembleCodespaceConfig_Resolve_ErrorFromMergeLanguageEntries(t *testing.T) {
-	resolver := defaultFakeResolver()
-	resolver.errMergeEntries = errors.New("merge error")
-
-	rcc := NewAssembleCodespaceConfig(resolver)
-	_, err := rcc.Resolve(entity.ClientConfig{}, defaultTestSetting, defaultJsonConfig)
-
-	if err == nil {
-		t.Fatal("expected error, got nil")
-	}
-}
-
-func TestAssembleCodespaceConfig_Resolve_ErrorFromResolveBaseImage(t *testing.T) {
-	resolver := defaultFakeResolver()
-	resolver.errBaseImage = errors.New("base image error")
-
-	rcc := NewAssembleCodespaceConfig(resolver)
-	_, err := rcc.Resolve(entity.ClientConfig{}, defaultTestSetting, defaultJsonConfig)
-
-	if err == nil {
-		t.Fatal("expected error, got nil")
-	}
-}
-
-func TestAssembleCodespaceConfig_Resolve_ErrorFromResolveTimezone(t *testing.T) {
+func TestAssembleCodespaceConfig_Resolve_ErrorFromPromptTimezone(t *testing.T) {
 	resolver := defaultFakeResolver()
 	resolver.errTimezone = errors.New("timezone error")
+
+	rcc := NewAssembleCodespaceConfig(resolver)
+	_, err := rcc.Resolve(entity.ClientConfig{}, defaultTestSetting, defaultJsonConfig)
+
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
+}
+
+func TestAssembleCodespaceConfig_Resolve_ErrorFromUnknownLanguage(t *testing.T) {
+	resolver := defaultFakeResolver()
+	resolver.language = "unknown-language"
 
 	rcc := NewAssembleCodespaceConfig(resolver)
 	_, err := rcc.Resolve(entity.ClientConfig{}, defaultTestSetting, defaultJsonConfig)

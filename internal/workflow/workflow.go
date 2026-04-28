@@ -21,9 +21,9 @@ func NewCollectInputs(
 type AssembleCodespaceConfig = assemble.AssembleCodespaceConfig
 
 func NewAssembleCodespaceConfig(
-	CodespaceConfigResolver assemble.ConfigResolver,
+	CodespacePrompter assemble.CodespacegenPrompter,
 ) *AssembleCodespaceConfig {
-	return assemble.NewAssembleCodespaceConfig(CodespaceConfigResolver)
+	return assemble.NewAssembleCodespaceConfig(CodespacePrompter)
 }
 
 type FileWriter = service.LocalFileWriter

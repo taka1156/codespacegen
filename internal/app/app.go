@@ -10,8 +10,8 @@ import (
 	"codespacegen/internal/generator/filewriter"
 	"codespacegen/internal/generator/workdirprovider"
 	"codespacegen/internal/i18n"
+	"codespacegen/internal/infra"
 	"codespacegen/internal/input"
-	"codespacegen/internal/resolve"
 	"codespacegen/internal/workflow"
 )
 
@@ -21,8 +21,8 @@ type InputConfig struct {
 	defaultConfig *input.DefaultConfig
 }
 
-type Resolvers struct {
-	CodespaceConfigResolver *resolve.CodespaceConfigResolver
+type Infra struct {
+	CodespacePromptResolver *infra.CodespacePrompter
 }
 
 type WorkflowCases struct {
@@ -45,8 +45,8 @@ func NewApp() *App {
 		defaultConfig: input.NewDefaultConfig(),
 	}
 
-	rs := Resolvers{
-		CodespaceConfigResolver: resolve.NewCodespaceConfigResolver(os.Stdin),
+	rs := Infra{
+		CodespacePromptResolver: infra.NewCodespacePrompter(os.Stdin),
 	}
 
 	codespaceGenerator := generator.NewCodespaceGenerator()
@@ -56,7 +56,7 @@ func NewApp() *App {
 
 	flows := WorkflowCases{
 		inputCollector:             workflow.NewCollectInputs(ic.clientInput, ic.jsonInput, ic.defaultConfig),
-		assembleConfigResolver:     workflow.NewAssembleCodespaceConfig(rs.CodespaceConfigResolver),
+		assembleConfigResolver:     workflow.NewAssembleCodespaceConfig(rs.CodespacePromptResolver),
 		generateCodespaceArtifacts: workflow.NewGenerateCodespaceArtifacts(codespaceGenerator, writer),
 		initializeSettingJson:      workflow.NewInitializeSettingJson(settingTemplateGenerator, workdir, writer),
 	}

@@ -2,28 +2,7 @@ package input
 
 import (
 	"codespacegen/internal/domain/entity"
-	"slices"
 )
-
-var commonModules = []string{
-	"bash",
-	"bash-completion",
-	"ca-certificates",
-	"tzdata",
-	"git",
-	"git-lfs",
-	"vim",
-	"curl",
-}
-
-var defaultAlpineModules = slices.Concat(commonModules, []string{
-	"musl-locales",
-	"musl-locales-lang",
-})
-
-var defaultDebianLikeModules = slices.Concat(commonModules, []string{
-	"locales",
-})
 
 type DefaultConfig struct {
 }
@@ -37,9 +16,10 @@ func (dc *DefaultConfig) GetDefaultSetting() entity.DefaultSetting {
 		Image:     entity.DefaultImage,
 		Timezone:  entity.DefaultTimezone,
 		VscSchema: entity.DefaultVscSchema,
+		Locale:    entity.DefaultLocale,
 		OsModules: entity.OsModules{
-			AlpineModules:     defaultAlpineModules,
-			DebianLikeModules: defaultDebianLikeModules,
+			AlpineModules:     entity.DefaultAlpineModules,
+			DebianLikeModules: entity.DefaultDebianLikeModules,
 		},
 		SettingJsonFileName: entity.DefaultTemplateJsonPath,
 	}

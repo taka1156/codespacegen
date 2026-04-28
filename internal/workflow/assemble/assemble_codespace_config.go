@@ -5,32 +5,27 @@ import (
 )
 
 type AssembleCodespaceConfig struct {
-	CodespaceConfigResolver ConfigResolver
+	CodespacegenPrompter CodespacegenPrompter
 }
 
 func NewAssembleCodespaceConfig(
-	CodespaceConfigResolver ConfigResolver,
+	codespacegenPrompter CodespacegenPrompter,
 ) *AssembleCodespaceConfig {
 	return &AssembleCodespaceConfig{
-		CodespaceConfigResolver: CodespaceConfigResolver,
+		CodespacegenPrompter: codespacegenPrompter,
 	}
 }
 
 func (acc *AssembleCodespaceConfig) Resolve(clientConfig entity.ClientConfig, defaultSetting entity.DefaultSetting, jsonConfig entity.JsonConfig) (*entity.CodespaceConfig, error) {
-	resolvedValues, err := acc.resolveCoreValues(&clientConfig)
+	resolvedValues, err := acc.resolvePromptValues(&clientConfig)
 	if err != nil {
 		return nil, err
 	}
 
-	resolvedEntry, err := acc.resolveEntry(resolvedValues.Language, clientConfig, jsonConfig, defaultSetting.Image)
+	resolvedEntries, err := acc.resolveMergedEntry(jsonConfig)
 	if err != nil {
 		return nil, err
 	}
 
-	resolvedTimezone, err := acc.CodespaceConfigResolver.ResolveTimezone(clientConfig.TimezoneValue(), *resolvedEntry.Timezone, defaultSetting.Timezone)
-	if err != nil {
-		return nil, err
-	}
-
-	return acc.buildCodespaceConfig(clientConfig, defaultSetting, resolvedValues, resolvedEntry, resolvedTimezone), nil
+	return acc.buildCodespaceConfig(defaultSetting, clientConfig, resolvedValues, resolvedEntries)
 }
