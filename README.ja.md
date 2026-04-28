@@ -48,15 +48,17 @@ curl -fsSL https://raw.githubusercontent.com/taka1156/codespacegen/master/script
   - internal/app
 - Input adapters: CLI/JSON/デフォルト値の入力
   - internal/input
-- Config resolution: 対話入力とデフォルトの解決・マージ
-  - internal/resolve
+- Infra: 対話入力（標準入力プロンプト）
+  - internal/infra
 - Workflow: ユースケース
   - internal/workflow/collect
   - internal/workflow/assemble
   - internal/workflow/generate
+  - internal/workflow/initialize
 - Generator: テンプレート生成とファイル書き込み
   - internal/generator
   - internal/generator/filewriter
+  - internal/generator/workdirprovider
 - i18n: ローカライズリソース
   - internal/i18n
 - Entry Point: CLI
@@ -73,6 +75,16 @@ go run ./cmd/codespacegen
 ```
 
 デフォルトでは .devcontainer 配下にファイルを生成します。
+
+### codespacegen.json の初期化
+
+`init` サブコマンドを実行すると、カレントディレクトリに `codespacegen.json` のテンプレートを生成します。
+
+```bash
+codespacegen init
+```
+
+生成されたファイルをベースイメージや VS Code 拡張機能のカスタマイズの出発点として使用できます。
 
 ### 主なオプション
 
