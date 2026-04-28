@@ -20,6 +20,11 @@
         "editor.insertSpaces": true,
         "editor.tabSize": 2,
         "editor.detectIndentation": false,
+        "go.lintTool": "golangci-lint",
+        "go.lintFlags": [
+          "--config=${workspaceFolder}/.golangci.yaml",
+          "--fast"
+        ],
         "[go]": {
           "editor.defaultFormatter": "golang.go",
           "editor.insertSpaces": false,

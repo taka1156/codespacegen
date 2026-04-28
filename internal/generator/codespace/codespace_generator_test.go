@@ -260,7 +260,7 @@ func TestCodespaceGenerator_Generate_DevcontainerKeyOrder(t *testing.T) {
 		t.Fatalf("expected all keys to exist in devcontainer output: %s", devcontainer)
 	}
 
-	if !(namePos < servicePos && servicePos < workspacePos && workspacePos < dockerComposePos && dockerComposePos < customizationsPos) {
+	if namePos >= servicePos || servicePos >= workspacePos || workspacePos >= dockerComposePos || dockerComposePos >= customizationsPos {
 		t.Fatalf("unexpected key order in devcontainer output: %s", devcontainer)
 	}
 }

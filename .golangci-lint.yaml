@@ -1,0 +1,69 @@
+# ディファクトスタンダードな golangci-lint 設定例
+# 主要な推奨ルールを有効化しています
+run:
+  timeout: 5m
+
+linters:
+  enable:
+    - govet
+    - errcheck
+    - staticcheck
+    - gosimple
+    - unused
+    - structcheck
+    - varcheck
+    - deadcode
+    - typecheck
+    - ineffassign
+    - gofmt
+    - goimports
+    - misspell
+    - revive
+    - gocritic
+    - gosec
+    - depguard
+    - dupl
+    - nakedret
+    - unparam
+    - goconst
+    - gocyclo
+    - golint
+    - lll
+    - prealloc
+    - scopelint
+    - stylecheck
+    - whitespace
+
+linters-settings:
+  gofmt:
+    simplify: true
+  goimports:
+    local-prefixes: github.com/your_org/your_repo
+  lll:
+    line-length: 120
+    tab-width: 4
+    exclude-pattern: "^vendor/"
+  revive:
+    severity: warning
+    rules:
+      - name: var-naming
+        arguments:
+          allow-leading-underscore: false
+  gocyclo:
+    min-complexity: 15
+  dupl:
+    threshold: 100
+
+issues:
+  exclude-use-default: false
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  exclude:
+    - "error return value not checked.*(Close|Log|Print).?"
+    - "should have comment or be unexported"
+    - "cyclomatic complexity .* of function"
+    - "don't use underscores in Go names"
+    - "field.*is unused"
+    - "SA[0-9]{4}"
+
+# 必要に応じてプロジェクトに合わせて調整してください

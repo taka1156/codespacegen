@@ -95,7 +95,12 @@ func (l httpsConfigLoader) Load(source string) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", i18n.T("error_failed_to_fetch_base_image_config_url"), err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		err := resp.Body.Close()
+		if err != nil {
+			fmt.Printf("%s: %v\n", i18n.T("error_failed_to_close_base_image_config_response_body"), err)
+		}
+	}()
 	if resp.StatusCode != http.StatusOK {
 		return nil, errors.New(i18n.T("error_base_image_config_url_status", map[string]interface{}{"StatusCode": resp.StatusCode}))
 	}

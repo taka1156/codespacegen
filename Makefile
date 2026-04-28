@@ -16,6 +16,8 @@ DIST_TARGETS := \
 
 fmt:
 	go fmt ./...
+	golangci-lint run ./...
+	git diff --exit-code
 
 run:
 	go run $(CMD) $(RUN_ARGS)

@@ -9,8 +9,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-// --- フェイク実装 ---
-
 type fakeLoader struct {
 	data []byte
 	err  error
@@ -20,15 +18,12 @@ func (f *fakeLoader) Load(_ string) ([]byte, error) {
 	return f.data, f.err
 }
 
-// newJsonInputWithFakes は httpsLoader と fileLoader にフェイクを注入した JsonInput を返す。
 func newJsonInputWithFakes(httpsLoader, fileLoader baseImageConfigLoader) *JsonInput {
 	return &JsonInput{
 		httpsLoader: httpsLoader,
 		fileLoader:  fileLoader,
 	}
 }
-
-// --- LoadLanguageImages ---
 
 func TestLoadLanguageImages_ReturnsNilWhenSourceIsEmpty(t *testing.T) {
 	ji := newJsonInputWithFakes(&fakeLoader{}, &fakeLoader{})
@@ -124,7 +119,6 @@ func TestLoadLanguageImages_ReturnsErrorOnInvalidJSON(t *testing.T) {
 }
 
 func TestLoadLanguageImages_ReturnsNilWhenFileLoaderReturnsNil(t *testing.T) {
-	// fileConfigLoader.Load は ErrNotExist の場合 nil を返す
 	ji := newJsonInputWithFakes(
 		&fakeLoader{},
 		&fakeLoader{data: nil, err: nil},
