@@ -18,7 +18,11 @@ apt install -y --no-install-recommends \
   git-lfs \
   vim \
   curl \
-  locales
+  locales \
+  gcc \
+  make \
+  binutils \
+  libc6-dev
 rm -rf /var/lib/apt/lists/*
 locale-gen en.UTF-8
 update-locale LANG=en.UTF-8 LC_ALL=en.UTF-8
@@ -43,7 +47,5 @@ echo "GIT_PS1_SHOWUPSTREAM=auto"  >> ~/.bashrc
 git config --system --add safe.directory /workspace
 echo 'export PS1="\[\033[01;32m\]\u@\h\[\033[01;33m\] \w \[\033[01;31m\]\$(__git_ps1 \"(%s)\") \\n+\[\033[01;34m\]\\$ \[\033[00m\]"' >> ~/.bashrc
 EOF
-
-RUN apt install -y gcc make git binutils libc6-dev
 
 CMD ["bash"]
