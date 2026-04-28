@@ -81,5 +81,13 @@
     "vscodeExtensions": [
       "ms-vscode.cpptools"
     ]
+  },
+  "node:zenn": {
+    "image": "node:24-alpine",
+    "timezone": "Asia/Tokyo",
+    "runCommand": "yarn global add zenn-cli",
+    "vscodeExtensions": [
+      "zenn.zenn-vscode-extension"
+    ]
   }
 }
