@@ -71,15 +71,15 @@ var DefaultTemplateJson = TemplateJson{
 		},
 	},
 	Moonbit: JsonEntry{
-		Image:   "ubuntu:24.04",
-		Install: "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
+		Image:      "ubuntu:24.04",
+		RunCommand: "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
 		VSCodeExtensions: []string{
 			"moonbit.moonbit-lang",
 		},
 	},
 	Gcc: JsonEntry{
-		Image:   "ubuntu:24.04",
-		Install: "apt install -y gcc make git binutils libc6-dev",
+		Image:      "ubuntu:24.04",
+		RunCommand: "apt install -y gcc make git binutils libc6-dev",
 		VSCodeExtensions: []string{
 			"ms-vscode.cpptools",
 		},

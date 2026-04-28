@@ -11,10 +11,10 @@ import (
 )
 
 type parsedLanguageSetting struct {
-	Image    string `json:"image"`
-	Install  string `json:"install"`
-	Timezone string `json:"timezone"`
-	Locale   struct {
+	Image      string `json:"image"`
+	RunCommand string `json:"runCommand"`
+	Timezone   string `json:"timezone"`
+	Locale     struct {
 		Lang     string `json:"lang"`
 		Language string `json:"language"`
 		LcAll    string `json:"lcAll"`
@@ -61,10 +61,10 @@ func mergeLanguageEntries(base entity.JsonEntry, override entity.JsonEntry) enti
 		overrideLocale = entity.DefaultLocale
 	}
 	merged := entity.JsonEntry{
-		Image:    firstNonEmpty(override.Image, base.Image),
-		Install:  firstNonEmpty(override.Install, base.Install),
-		Timezone: firstNonEmpty(override.Timezone, base.Timezone),
-		Locale:   utils.Ptr(mergeLocale(baseLocale, overrideLocale)),
+		Image:      firstNonEmpty(override.Image, base.Image),
+		RunCommand: firstNonEmpty(override.RunCommand, base.RunCommand),
+		Timezone:   firstNonEmpty(override.Timezone, base.Timezone),
+		Locale:     utils.Ptr(mergeLocale(baseLocale, overrideLocale)),
 	}
 
 	merged.VSCodeExtensions = append(merged.VSCodeExtensions, base.VSCodeExtensions...)
@@ -109,8 +109,8 @@ func parseLanguageEntry(raw json.RawMessage) (entity.JsonEntry, error) {
 	}
 
 	entry := toJsonEntry(setting)
-	if entry.Image == "" && entry.Install != "" {
-		return entity.JsonEntry{}, errors.New(i18n.T("error_image_required_when_install"))
+	if entry.Image == "" && entry.RunCommand != "" {
+		return entity.JsonEntry{}, errors.New(i18n.T("error_image_required_when_RunCommand"))
 	}
 
 	return entry, nil
@@ -133,7 +133,7 @@ func toJsonEntry(setting parsedLanguageSetting) entity.JsonEntry {
 
 	return entity.JsonEntry{
 		Image:            strings.TrimSpace(setting.Image),
-		Install:          strings.TrimSpace(setting.Install),
+		RunCommand:       strings.TrimSpace(setting.RunCommand),
 		Locale:           utils.Ptr(locale),
 		Timezone:         strings.TrimSpace(setting.Timezone),
 		VSCodeExtensions: vscodeExtensions,

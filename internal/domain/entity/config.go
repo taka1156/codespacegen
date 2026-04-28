@@ -108,7 +108,7 @@ var DefaultLocale = LocaleConfig{
 
 type JsonEntry struct {
 	Image            string        `json:"image,omitempty"`
-	Install          string        `json:"install,omitempty"`
+	RunCommand       string        `json:"runCommand,omitempty"`
 	Locale           *LocaleConfig `json:"locale,omitempty"`
 	Timezone         string        `json:"timezone,omitempty"`
 	VSCodeExtensions []string      `json:"vscodeExtensions,omitempty"`
@@ -124,7 +124,7 @@ type CodespaceConfig struct {
 	Timezone         string
 	ComposeFileName  string
 	PortMapping      string
-	InstallCommand   string
+	RunCommand       string
 	VSCodeExtensions []string
 	OsModules        OsModules
 }

@@ -280,7 +280,7 @@ func TestResolveBaseImage_EmptyLanguageAndDefaultImageFallsBackToConstant(t *tes
 func TestResolveBaseImage_LanguageFoundInEntries(t *testing.T) {
 	r := newResolver("")
 	entries := map[string]entity.JsonEntry{
-		"python": {Image: "python:3.12", Install: "pip install -r requirements.txt"},
+		"python": {Image: "python:3.12", RunCommand: "pip install -r requirements.txt"},
 	}
 	got, err := r.ResolveBaseImage("python", "", "", entries, "alpine:latest")
 	if err != nil {
@@ -289,8 +289,8 @@ func TestResolveBaseImage_LanguageFoundInEntries(t *testing.T) {
 	if got.Image != "python:3.12" {
 		t.Errorf("got %q, want %q", got.Image, "python:3.12")
 	}
-	if got.Install != "pip install -r requirements.txt" {
-		t.Errorf("Install: got %q, want %q", got.Install, "pip install -r requirements.txt")
+	if got.RunCommand != "pip install -r requirements.txt" {
+		t.Errorf("RunCommand: got %q, want %q", got.RunCommand, "pip install -r requirements.txt")
 	}
 }
 
@@ -365,7 +365,7 @@ func TestMergeLanguageEntries_StringEntryParsed(t *testing.T) {
 func TestMergeLanguageEntries_ObjectEntryParsed(t *testing.T) {
 	r := newResolver("")
 	overrides := map[string]json.RawMessage{
-		"node": json.RawMessage(`{"image":"node:20","install":"npm ci"}`),
+		"node": json.RawMessage(`{"image":"node:20","runCommand":"npm ci"}`),
 	}
 	got, err := r.MergeLanguageEntries(overrides)
 	if err != nil {
@@ -378,8 +378,8 @@ func TestMergeLanguageEntries_ObjectEntryParsed(t *testing.T) {
 	if entry.Image != "node:20" {
 		t.Errorf("Image: got %q, want %q", entry.Image, "node:20")
 	}
-	if entry.Install != "npm ci" {
-		t.Errorf("Install: got %q, want %q", entry.Install, "npm ci")
+	if entry.RunCommand != "npm ci" {
+		t.Errorf("RunCommand: got %q, want %q", entry.RunCommand, "npm ci")
 	}
 }
 
@@ -405,8 +405,8 @@ func TestMergeLanguageEntries_CommonAppliedAsBase(t *testing.T) {
 func TestMergeLanguageEntries_LanguageOverridesCommon(t *testing.T) {
 	r := newResolver("")
 	overrides := map[string]json.RawMessage{
-		"common": json.RawMessage(`{"image":"alpine:latest","install":"apk add git"}`),
-		"python": json.RawMessage(`{"image":"python:3.12","install":"pip install -r requirements.txt"}`),
+		"common": json.RawMessage(`{"image":"alpine:latest","runCommand":"apk add git"}`),
+		"python": json.RawMessage(`{"image":"python:3.12","runCommand":"pip install -r requirements.txt"}`),
 	}
 	got, err := r.MergeLanguageEntries(overrides)
 	if err != nil {
@@ -416,8 +416,8 @@ func TestMergeLanguageEntries_LanguageOverridesCommon(t *testing.T) {
 	if entry.Image != "python:3.12" {
 		t.Errorf("Image: got %q, want %q", entry.Image, "python:3.12")
 	}
-	if entry.Install != "pip install -r requirements.txt" {
-		t.Errorf("Install: got %q, want %q", entry.Install, "pip install -r requirements.txt")
+	if entry.RunCommand != "pip install -r requirements.txt" {
+		t.Errorf("RunCommand: got %q, want %q", entry.RunCommand, "pip install -r requirements.txt")
 	}
 }
 
