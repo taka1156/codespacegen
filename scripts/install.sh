@@ -43,7 +43,7 @@ create_symlink() {
 		local current
 		current="$(readlink "$link" 2>/dev/null || echo "(not a symlink)")"
 		echo "warning: '$link' already exists (currently -> '$current')"
-		printf "overwrite with '%s'? [y/N]: " "$target"
+		printf "overwrite with '%s'? [y/N]: " "$target" >/dev/tty
 		read -r answer
 		[[ "$answer" =~ ^[yY] ]] || {
 			echo "skipped: $link"
