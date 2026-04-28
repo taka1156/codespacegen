@@ -109,8 +109,14 @@ func mergeOsModules(base entity.OsModules, linuxPackages *[]entity.LinuxPackage)
 		return base
 	}
 
+	mergedAlpineModules := append(base.AlpineModules, *linuxPackages...)
+	mergedDebianLikeModules := append(base.DebianLikeModules, *linuxPackages...)
+
+	removedDuplicateAlpineModules := uniqueStringsPreserveOrder(mergedAlpineModules)
+	removedDuplicateDebianLikeModules := uniqueStringsPreserveOrder(mergedDebianLikeModules)
+
 	return entity.OsModules{
-		AlpineModules:     append(base.AlpineModules, *linuxPackages...),
-		DebianLikeModules: append(base.DebianLikeModules, *linuxPackages...),
+		AlpineModules:     removedDuplicateAlpineModules,
+		DebianLikeModules: removedDuplicateDebianLikeModules,
 	}
 }

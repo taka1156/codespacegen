@@ -140,9 +140,6 @@ func (g *CodespaceGenerator) renderCompose(config entity.CodespaceConfig) (strin
 }
 
 func (g *CodespaceGenerator) renderDevcontainer(config entity.CodespaceConfig) (string, error) {
-	extensions := []string{}
-	extensions = append(extensions, config.VSCodeExtensions...)
-	extensions = uniqueStringsPreserveOrder(extensions)
 
 	devcontainerObj := devcontainerJSON{
 		Schema:          config.Schema,
@@ -155,7 +152,7 @@ func (g *CodespaceGenerator) renderDevcontainer(config entity.CodespaceConfig) (
 				Settings: map[string]string{
 					"terminal.integrated.defaultProfile.linux": "bash",
 				},
-				Extensions: extensions,
+				Extensions: config.VSCodeExtensions,
 			},
 		},
 	}
@@ -174,20 +171,6 @@ func resolveBaseImageStrategy(baseImage string) baseImageStrategy {
 	}
 
 	return debianLikeStrategy{}
-}
-
-func uniqueStringsPreserveOrder(values []string) []string {
-	seen := make(map[string]struct{}, len(values))
-	result := make([]string, 0, len(values))
-	for _, v := range values {
-		if _, ok := seen[v]; ok {
-			continue
-		}
-		seen[v] = struct{}{}
-		result = append(result, v)
-	}
-
-	return result
 }
 
 func isAlpineImage(baseImage string) bool {
