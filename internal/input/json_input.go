@@ -1,8 +1,6 @@
 package input
 
 import (
-	"codespacegen/internal/domain/entity"
-	"codespacegen/internal/i18n"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,6 +9,9 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/taka1156/codespacegen/internal/domain/entity"
+	"github.com/taka1156/codespacegen/internal/i18n"
 )
 
 type JsonInput struct {

@@ -1,8 +1,8 @@
 package generator
 
 import (
-	"codespacegen/internal/generator/codespace"
-	"codespacegen/internal/generator/setting"
+	"github.com/taka1156/codespacegen/internal/generator/codespace"
+	"github.com/taka1156/codespacegen/internal/generator/setting"
 )
 
 func NewSettingTemplateGenerator() *setting.SettingTemplateGenerator {

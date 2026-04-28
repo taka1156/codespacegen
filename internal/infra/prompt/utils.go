@@ -2,12 +2,13 @@ package prompt
 
 import (
 	"bufio"
-	"codespacegen/internal/i18n"
 	"errors"
 	"fmt"
 	"io"
 	"regexp"
 	"strings"
+
+	"github.com/taka1156/codespacegen/internal/i18n"
 )
 
 var (

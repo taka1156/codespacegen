@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"codespacegen/internal/domain/entity"
+	"github.com/taka1156/codespacegen/internal/domain/entity"
 )
 
 var testAlpineModules = []string{

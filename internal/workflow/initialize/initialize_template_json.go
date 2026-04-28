@@ -1,10 +1,11 @@
 package initialize
 
 import (
-	"codespacegen/internal/domain/entity"
-	"codespacegen/internal/domain/service"
 	"fmt"
 	"path/filepath"
+
+	"github.com/taka1156/codespacegen/internal/domain/entity"
+	"github.com/taka1156/codespacegen/internal/domain/service"
 )
 
 type InitializeSettingJson struct {

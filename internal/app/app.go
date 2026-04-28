@@ -5,14 +5,14 @@ import (
 	"os"
 	"path/filepath"
 
-	"codespacegen/internal/domain/entity"
-	"codespacegen/internal/generator"
-	"codespacegen/internal/generator/filewriter"
-	"codespacegen/internal/generator/workdirprovider"
-	"codespacegen/internal/i18n"
-	"codespacegen/internal/infra"
-	"codespacegen/internal/input"
-	"codespacegen/internal/workflow"
+	"github.com/taka1156/codespacegen/internal/domain/entity"
+	"github.com/taka1156/codespacegen/internal/generator"
+	"github.com/taka1156/codespacegen/internal/generator/filewriter"
+	"github.com/taka1156/codespacegen/internal/generator/workdirprovider"
+	"github.com/taka1156/codespacegen/internal/i18n"
+	"github.com/taka1156/codespacegen/internal/infra"
+	"github.com/taka1156/codespacegen/internal/input"
+	"github.com/taka1156/codespacegen/internal/workflow"
 )
 
 type InputConfig struct {

@@ -1,8 +1,8 @@
 package app
 
 import (
-	"codespacegen/internal/domain/entity"
-	"codespacegen/internal/workflow/collect"
+	"github.com/taka1156/codespacegen/internal/domain/entity"
+	"github.com/taka1156/codespacegen/internal/workflow/collect"
 )
 
 type inputCollector interface {

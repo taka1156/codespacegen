@@ -1,4 +1,4 @@
-module codespacegen
+module github.com/taka1156/codespacegen
 
 go 1.24.0
 

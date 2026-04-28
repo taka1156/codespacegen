@@ -1,9 +1,10 @@
 package input
 
 import (
-	"codespacegen/internal/domain/entity"
 	"errors"
 	"testing"
+
+	"github.com/taka1156/codespacegen/internal/domain/entity"
 
 	"github.com/google/go-cmp/cmp"
 )

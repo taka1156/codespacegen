@@ -8,7 +8,7 @@ import (
 	"strings"
 	"text/template"
 
-	"codespacegen/internal/domain/entity"
+	"github.com/taka1156/codespacegen/internal/domain/entity"
 )
 
 //go:embed template/Dockerfile.tmpl template/docker-compose.yaml.tmpl

@@ -1,11 +1,12 @@
 package input
 
 import (
-	"codespacegen/internal/domain/entity"
-	"codespacegen/internal/utils"
 	"flag"
 	"fmt"
 	"os"
+
+	"github.com/taka1156/codespacegen/internal/domain/entity"
+	"github.com/taka1156/codespacegen/internal/utils"
 )
 
 type ClientInput struct {

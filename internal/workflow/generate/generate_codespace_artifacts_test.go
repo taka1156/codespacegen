@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"codespacegen/internal/domain/entity"
+	"github.com/taka1156/codespacegen/internal/domain/entity"
 )
 
 type fakeGenerator struct {
