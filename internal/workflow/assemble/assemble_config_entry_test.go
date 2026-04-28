@@ -161,14 +161,15 @@ func TestMergeLanguageEntries_LangLocaleOverridesCommon(t *testing.T) {
 	}
 }
 
-func TestMergeLanguageEntries_DefaultLocaleUsedWhenLangLocaleNil(t *testing.T) {
+func TestMergeLanguageEntries_CommonLocaleUsedWhenLangLocaleNil(t *testing.T) {
+	commonLocale := entity.LocaleConfig{Lang: "en_US.UTF-8", Language: "en_US:en", LcAll: "en_US.UTF-8"}
 	common := entity.CommonEntry{
-		Locale: &entity.LocaleConfig{Lang: "en_US.UTF-8", Language: "en_US:en", LcAll: "en_US.UTF-8"},
+		Locale: &commonLocale,
 	}
 	lang := entity.LangEntry{Image: "python:3.12"}
 	got := mergeLanguageEntries(common, lang)
-	// LangEntry.Locale が nil の場合、entity.DefaultLocale が override として適用される
-	if got.Locale == nil || got.Locale.Lang != entity.DefaultLocale.Lang {
-		t.Errorf("Locale.Lang: got %v, want %q", got.Locale, entity.DefaultLocale.Lang)
+	// LangEntry.Locale が nil の場合、common.Locale がそのまま使われる
+	if got.Locale == nil || got.Locale.Lang != commonLocale.Lang {
+		t.Errorf("Locale.Lang: got %v, want %q", got.Locale, commonLocale.Lang)
 	}
 }

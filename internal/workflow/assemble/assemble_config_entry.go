@@ -50,15 +50,18 @@ func (acc *AssembleCodespaceConfig) resolveMergedEntry(jsonConfig entity.JsonCon
 }
 
 func mergeLanguageEntries(common entity.CommonEntry, LangEntry entity.LangEntry) entity.LangEntry {
+	// priority: language-specific > common
 	var baseLocale entity.LocaleConfig = entity.DefaultLocale
-	var overrideLocale entity.LocaleConfig = entity.DefaultLocale
 
 	if common.Locale != nil {
 		baseLocale = *common.Locale
 	}
 
+	var resolvedLocale entity.LocaleConfig
 	if LangEntry.Locale != nil {
-		overrideLocale = *LangEntry.Locale
+		resolvedLocale = resolveLocale(baseLocale, *LangEntry.Locale)
+	} else {
+		resolvedLocale = baseLocale
 	}
 
 	merged := entity.LangEntry{
@@ -66,7 +69,7 @@ func mergeLanguageEntries(common entity.CommonEntry, LangEntry entity.LangEntry)
 		LinuxPackages: LangEntry.LinuxPackages,
 		RunCommand:    LangEntry.RunCommand,
 		Timezone:      utils.Ptr(firstNonEmpty(LangEntry.Timezone, common.Timezone)),
-		Locale:        utils.Ptr(resolveLocale(baseLocale, overrideLocale)),
+		Locale:        utils.Ptr(resolvedLocale),
 	}
 
 	switch {
