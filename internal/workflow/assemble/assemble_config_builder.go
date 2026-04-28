@@ -4,7 +4,7 @@ import (
 	"codespacegen/internal/domain/entity"
 )
 
-func (acc *AssembleCodespaceConfig) buildCodespaceConfig(ClientConfig entity.ClientConfig, defaultSetting entity.DefaultSetting, coreValues resolvedCoreValues, resolvedEntry entity.JsonEntry, resolvedTimezone string) *entity.CodespaceConfig {
+func (acc *AssembleCodespaceConfig) buildCodespaceConfig(ClientConfig entity.ClientConfig, defaultSetting entity.DefaultSetting, coreValues resolvedCoreValues, resolvedEntry entity.LangEntry, resolvedTimezone string) *entity.CodespaceConfig {
 	var locale entity.LocaleConfig
 	if resolvedEntry.Locale != nil {
 		locale = *resolvedEntry.Locale

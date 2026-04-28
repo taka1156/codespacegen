@@ -15,6 +15,6 @@ type ConfigResolver interface {
 	ResolveServiceName(explicitServiceName string) (string, error)
 	ResolvePortMapping(explicitPort string) (string, error)
 	ResolveTimezone(explicitTimezone string, configTimezone string, defaultTimezone string) (string, error)
-	MergeLanguageEntries(overrides map[string]json.RawMessage) (map[string]entity.JsonEntry, error)
-	ResolveBaseImage(language string, explicitBaseImage string, imageConfig string, jsonEntries map[string]entity.JsonEntry, defaultImage string) (entity.JsonEntry, error)
+	MergeLanguageEntries(overrides map[string]json.RawMessage) (map[string]entity.LangEntry, error)
+	ResolveBaseImage(language string, explicitBaseImage string, imageConfig string, jsonEntries map[string]entity.LangEntry, defaultImage string) (entity.LangEntry, error)
 }

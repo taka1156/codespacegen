@@ -279,7 +279,7 @@ func TestResolveBaseImage_EmptyLanguageAndDefaultImageFallsBackToConstant(t *tes
 
 func TestResolveBaseImage_LanguageFoundInEntries(t *testing.T) {
 	r := newResolver("")
-	entries := map[string]entity.JsonEntry{
+	entries := map[string]entity.LangEntry{
 		"python": {Image: "python:3.12", RunCommand: "pip install -r requirements.txt"},
 	}
 	got, err := r.ResolveBaseImage("python", "", "", entries, "alpine:latest")
@@ -296,7 +296,7 @@ func TestResolveBaseImage_LanguageFoundInEntries(t *testing.T) {
 
 func TestResolveBaseImage_LanguageNotFoundReturnsError(t *testing.T) {
 	r := newResolver("")
-	entries := map[string]entity.JsonEntry{}
+	entries := map[string]entity.LangEntry{}
 	_, err := r.ResolveBaseImage("python", "", "", entries, "alpine:latest")
 	if err == nil {
 		t.Fatal("expected error for unsupported language, got nil")
@@ -305,7 +305,7 @@ func TestResolveBaseImage_LanguageNotFoundReturnsError(t *testing.T) {
 
 func TestResolveBaseImage_LanguageCaseInsensitive(t *testing.T) {
 	r := newResolver("")
-	entries := map[string]entity.JsonEntry{
+	entries := map[string]entity.LangEntry{
 		"python": {Image: "python:3.12"},
 	}
 	got, err := r.ResolveBaseImage("Python", "", "", entries, "alpine:latest")

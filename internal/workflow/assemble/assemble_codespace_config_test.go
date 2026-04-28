@@ -16,8 +16,8 @@ type fakeConfigResolver struct {
 	serviceName     string
 	portMapping     string
 	timezone        string
-	mergedEntries   map[string]entity.JsonEntry
-	baseImageEntry  entity.JsonEntry
+	mergedEntries   map[string]entity.LangEntry
+	baseImageEntry  entity.LangEntry
 
 	errProjectName     error
 	errLanguage        error
@@ -53,11 +53,11 @@ func (f *fakeConfigResolver) ResolveTimezone(_, _, _ string) (string, error) {
 	return f.timezone, f.errTimezone
 }
 
-func (f *fakeConfigResolver) MergeLanguageEntries(_ map[string]json.RawMessage) (map[string]entity.JsonEntry, error) {
+func (f *fakeConfigResolver) MergeLanguageEntries(_ map[string]json.RawMessage) (map[string]entity.LangEntry, error) {
 	return f.mergedEntries, f.errMergeEntries
 }
 
-func (f *fakeConfigResolver) ResolveBaseImage(_, _, _ string, _ map[string]entity.JsonEntry, _ string) (entity.JsonEntry, error) {
+func (f *fakeConfigResolver) ResolveBaseImage(_, _, _ string, _ map[string]entity.LangEntry, _ string) (entity.LangEntry, error) {
 	return f.baseImageEntry, f.errBaseImage
 }
 
@@ -70,8 +70,8 @@ func defaultFakeResolver() *fakeConfigResolver {
 		serviceName:     "app",
 		portMapping:     "",
 		timezone:        "UTC",
-		mergedEntries:   map[string]entity.JsonEntry{},
-		baseImageEntry:  entity.JsonEntry{Image: "python:3.12", RunCommand: "pip install -r requirements.txt"},
+		mergedEntries:   map[string]entity.LangEntry{},
+		baseImageEntry:  entity.LangEntry{Image: "python:3.12", RunCommand: "pip install -r requirements.txt"},
 	}
 }
 
@@ -81,7 +81,7 @@ func strPtr(s string) *string { return &s }
 
 func TestAssembleCodespaceConfig_Resolve_BuildsConfigCorrectly(t *testing.T) {
 	resolver := defaultFakeResolver()
-	resolver.baseImageEntry = entity.JsonEntry{
+	resolver.baseImageEntry = entity.LangEntry{
 		Image:            "python:3.12",
 		RunCommand:       "pip install -r requirements.txt",
 		Timezone:         "Asia/Tokyo",

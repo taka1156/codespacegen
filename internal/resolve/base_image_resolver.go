@@ -7,9 +7,9 @@ import (
 	"strings"
 )
 
-func (cscr *CodespaceConfigResolver) ResolveBaseImage(language string, explicitBaseImage string, imageConfig string, jsonEntries map[string]entity.JsonEntry, defaultImage string) (entity.JsonEntry, error) {
+func (cscr *CodespaceConfigResolver) ResolveBaseImage(language string, explicitBaseImage string, imageConfig string, jsonEntries map[string]entity.LangEntry, defaultImage string) (entity.LangEntry, error) {
 	if explicitBaseImage != "" {
-		return entity.JsonEntry{Image: explicitBaseImage}, nil
+		return entity.LangEntry{Image: explicitBaseImage}, nil
 	}
 
 	if strings.TrimSpace(language) == "" {
@@ -17,17 +17,17 @@ func (cscr *CodespaceConfigResolver) ResolveBaseImage(language string, explicitB
 		if image == "" {
 			image = entity.DefaultImage
 		}
-		return entity.JsonEntry{Image: image}, nil
+		return entity.LangEntry{Image: image}, nil
 	}
 
 	key := strings.ToLower(strings.TrimSpace(language))
 	entry, ok := jsonEntries[key]
 	if !ok {
-		return entity.JsonEntry{}, errors.New(i18n.T("error_unsupported_language", map[string]interface{}{"Language": language}))
+		return entity.LangEntry{}, errors.New(i18n.T("error_unsupported_language", map[string]interface{}{"Language": language}))
 	}
 
 	if entry.Image == "" {
-		return entity.JsonEntry{}, errors.New(i18n.T("error_image_required_for_language", map[string]interface{}{"Language": language}))
+		return entity.LangEntry{}, errors.New(i18n.T("error_image_required_for_language", map[string]interface{}{"Language": language}))
 	}
 
 	return entry, nil

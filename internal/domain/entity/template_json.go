@@ -7,14 +7,14 @@ const DefaultTemplateJsonPath = "codespacegen.json"
 type TemplateJson struct {
 	Schema     string      `json:"$schema,omitempty"`
 	Common     CommonEntry `json:"common,omitempty"`
-	Go         JsonEntry   `json:"go,omitempty"`
-	Python     JsonEntry   `json:"python,omitempty"`
-	NodeBiome  JsonEntry   `json:"node:biome,omitempty"`
-	NodeEslint JsonEntry   `json:"node:eslint,omitempty"`
-	NodeReact  JsonEntry   `json:"node:react,omitempty"`
-	Rust       JsonEntry   `json:"rust,omitempty"`
-	Moonbit    JsonEntry   `json:"moonbit,omitempty"`
-	Gcc        JsonEntry   `json:"gcc,omitempty"`
+	Go         LangEntry   `json:"go,omitempty"`
+	Python     LangEntry   `json:"python,omitempty"`
+	NodeBiome  LangEntry   `json:"node:biome,omitempty"`
+	NodeEslint LangEntry   `json:"node:eslint,omitempty"`
+	NodeReact  LangEntry   `json:"node:react,omitempty"`
+	Rust       LangEntry   `json:"rust,omitempty"`
+	Moonbit    LangEntry   `json:"moonbit,omitempty"`
+	Gcc        LangEntry   `json:"gcc,omitempty"`
 }
 
 var DefaultTemplateJson = TemplateJson{
@@ -30,32 +30,32 @@ var DefaultTemplateJson = TemplateJson{
 			"username.errorlens",
 		},
 	},
-	Go: JsonEntry{
+	Go: LangEntry{
 		Image: "golang:1.24-alpine",
 		VSCodeExtensions: []string{
 			"golang.GO",
 		},
 	},
-	Python: JsonEntry{
+	Python: LangEntry{
 		Image: "python:3.12-alpine",
 		VSCodeExtensions: []string{
 			"ms-python.python",
 		},
 	},
-	NodeBiome: JsonEntry{
+	NodeBiome: LangEntry{
 		Image: "node:24-alpine",
 		VSCodeExtensions: []string{
 			"biomejs.biome",
 		},
 	},
-	NodeEslint: JsonEntry{
+	NodeEslint: LangEntry{
 		Image: "node:24-alpine",
 		VSCodeExtensions: []string{
 			"dbaeumer.vscode-eslint",
 			"esbenp.prettier-vscode",
 		},
 	},
-	NodeReact: JsonEntry{
+	NodeReact: LangEntry{
 		Image: "node:24-alpine",
 		VSCodeExtensions: []string{
 			"jawandarajbir.react-vscode-extension-pack",
@@ -64,22 +64,27 @@ var DefaultTemplateJson = TemplateJson{
 			"esbenp.prettier-vscode",
 		},
 	},
-	Rust: JsonEntry{
+	Rust: LangEntry{
 		Image: "rust:1.72-alpine",
 		VSCodeExtensions: []string{
 			"Zerotaskx.rust-extension-pack",
 		},
 	},
-	Moonbit: JsonEntry{
+	Moonbit: LangEntry{
 		Image:      "ubuntu:24.04",
 		RunCommand: "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
 		VSCodeExtensions: []string{
 			"moonbit.moonbit-lang",
 		},
 	},
-	Gcc: JsonEntry{
-		Image:      "ubuntu:24.04",
-		RunCommand: "apt install -y gcc make git binutils libc6-dev",
+	Gcc: LangEntry{
+		Image: "ubuntu:24.04",
+		LinuxPackages: utils.Ptr([]string{
+			"gcc",
+			"make",
+			"binutils",
+			"libc6-dev",
+		}),
 		VSCodeExtensions: []string{
 			"ms-vscode.cpptools",
 		},

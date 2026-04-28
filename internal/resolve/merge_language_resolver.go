@@ -22,8 +22,8 @@ type parsedLanguageSetting struct {
 	VSCodeExtensions []string `json:"vscodeExtensions"`
 }
 
-func (cscr *CodespaceConfigResolver) MergeLanguageEntries(overrides map[string]json.RawMessage) (map[string]entity.JsonEntry, error) {
-	mergedImages := make(map[string]entity.JsonEntry)
+func (cscr *CodespaceConfigResolver) MergeLanguageEntries(overrides map[string]json.RawMessage) (map[string]entity.LangEntry, error) {
+	mergedImages := make(map[string]entity.LangEntry)
 
 	common, err := parseCommonEntry(overrides)
 	if err != nil {
@@ -48,7 +48,7 @@ func (cscr *CodespaceConfigResolver) MergeLanguageEntries(overrides map[string]j
 
 }
 
-func mergeLanguageEntries(base entity.JsonEntry, override entity.JsonEntry) entity.JsonEntry {
+func mergeLanguageEntries(base entity.LangEntry, override entity.LangEntry) entity.LangEntry {
 	var baseLocale, overrideLocale entity.LocaleConfig
 	if base.Locale != nil {
 		baseLocale = *base.Locale
@@ -60,7 +60,7 @@ func mergeLanguageEntries(base entity.JsonEntry, override entity.JsonEntry) enti
 	} else {
 		overrideLocale = entity.DefaultLocale
 	}
-	merged := entity.JsonEntry{
+	merged := entity.LangEntry{
 		Image:      firstNonEmpty(override.Image, base.Image),
 		RunCommand: firstNonEmpty(override.RunCommand, base.RunCommand),
 		Timezone:   firstNonEmpty(override.Timezone, base.Timezone),
@@ -81,7 +81,7 @@ func mergeLocale(base entity.LocaleConfig, override entity.LocaleConfig) entity.
 	return override
 }
 
-func parseCommonEntry(overrides map[string]json.RawMessage) (entity.JsonEntry, error) {
+func parseCommonEntry(overrides map[string]json.RawMessage) (entity.LangEntry, error) {
 	for k, v := range overrides {
 		if strings.ToLower(strings.TrimSpace(k)) != "common" {
 			continue
@@ -89,34 +89,34 @@ func parseCommonEntry(overrides map[string]json.RawMessage) (entity.JsonEntry, e
 
 		entry, err := parseLanguageEntry(v)
 		if err != nil {
-			return entity.JsonEntry{}, fmt.Errorf("%s: %w", i18n.T("error_invalid_entry_for_key", map[string]interface{}{"Key": k}), err)
+			return entity.LangEntry{}, fmt.Errorf("%s: %w", i18n.T("error_invalid_entry_for_key", map[string]interface{}{"Key": k}), err)
 		}
 		return entry, nil
 	}
 
-	return entity.JsonEntry{}, nil
+	return entity.LangEntry{}, nil
 }
 
-func parseLanguageEntry(raw json.RawMessage) (entity.JsonEntry, error) {
+func parseLanguageEntry(raw json.RawMessage) (entity.LangEntry, error) {
 	var s string
 	if err := json.Unmarshal(raw, &s); err == nil {
-		return entity.JsonEntry{Image: strings.TrimSpace(s)}, nil
+		return entity.LangEntry{Image: strings.TrimSpace(s)}, nil
 	}
 
 	var setting parsedLanguageSetting
 	if err := json.Unmarshal(raw, &setting); err != nil {
-		return entity.JsonEntry{}, fmt.Errorf("%s: %w", i18n.T("error_must_be_string_or_object"), err)
+		return entity.LangEntry{}, fmt.Errorf("%s: %w", i18n.T("error_must_be_string_or_object"), err)
 	}
 
 	entry := toJsonEntry(setting)
 	if entry.Image == "" && entry.RunCommand != "" {
-		return entity.JsonEntry{}, errors.New(i18n.T("error_image_required_when_RunCommand"))
+		return entity.LangEntry{}, errors.New(i18n.T("error_image_required_when_RunCommand"))
 	}
 
 	return entry, nil
 }
 
-func toJsonEntry(setting parsedLanguageSetting) entity.JsonEntry {
+func toJsonEntry(setting parsedLanguageSetting) entity.LangEntry {
 	locale := entity.LocaleConfig{
 		Lang:     strings.TrimSpace(setting.Locale.Lang),
 		Language: strings.TrimSpace(setting.Locale.Language),
@@ -131,7 +131,7 @@ func toJsonEntry(setting parsedLanguageSetting) entity.JsonEntry {
 		}
 	}
 
-	return entity.JsonEntry{
+	return entity.LangEntry{
 		Image:            strings.TrimSpace(setting.Image),
 		RunCommand:       strings.TrimSpace(setting.RunCommand),
 		Locale:           utils.Ptr(locale),

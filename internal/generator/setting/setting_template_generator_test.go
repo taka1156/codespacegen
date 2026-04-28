@@ -10,7 +10,7 @@ func TestSettingTemplateGenerator_Generate_ReturnsValidJSON(t *testing.T) {
 	g := NewSettingTemplateGenerator()
 	input := entity.TemplateJson{
 		Schema: "https://example.com/schema.json",
-		Go: entity.JsonEntry{
+		Go: entity.LangEntry{
 			Image: "golang:1.24-alpine",
 		},
 	}

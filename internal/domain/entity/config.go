@@ -112,12 +112,19 @@ type CommonEntry struct {
 	VSCodeExtensions []string      `json:"vscodeExtensions,omitempty"`
 }
 
-type JsonEntry struct {
-	Image            string        `json:"image,omitempty"`
-	RunCommand       string        `json:"runCommand,omitempty"`
-	Locale           *LocaleConfig `json:"locale,omitempty"`
-	Timezone         string        `json:"timezone,omitempty"`
-	VSCodeExtensions []string      `json:"vscodeExtensions,omitempty"`
+type LanguagePackage struct {
+	InstallCommand string   `json:"installCommand,omitempty"`
+	Packages       []string `json:"packages,omitempty"`
+}
+
+type LangEntry struct {
+	Image            string           `json:"image,omitempty"`
+	LinuxPackages    *[]string        `json:"linuxPackages,omitempty"`
+	LanguagePackages *LanguagePackage `json:"languagePackages,omitempty"`
+	RunCommand       string           `json:"runCommand,omitempty"`
+	Locale           *LocaleConfig    `json:"locale,omitempty"`
+	Timezone         string           `json:"timezone,omitempty"`
+	VSCodeExtensions []string         `json:"vscodeExtensions,omitempty"`
 }
 
 type CodespaceConfig struct {
