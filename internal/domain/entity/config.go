@@ -106,12 +106,25 @@ var DefaultLocale = LocaleConfig{
 	LcAll:    "ja_JP.UTF-8",
 }
 
-type JsonEntry struct {
-	Image            string        `json:"image,omitempty"`
-	RunCommand       string        `json:"runCommand,omitempty"`
+type LanguagePackages struct {
+	InstallCommand string   `json:"installCommand"`
+	Packages       []string `json:"packages"`
+}
+
+type CommonEntry struct {
 	Locale           *LocaleConfig `json:"locale,omitempty"`
 	Timezone         string        `json:"timezone,omitempty"`
 	VSCodeExtensions []string      `json:"vscodeExtensions,omitempty"`
+}
+
+type JsonEntry struct {
+	Image            string             `json:"image,omitempty"`
+	LinuxPackages    LanguagePackages   `json:"linuxPackages,omitempty"`
+	LanguagePackages []LanguagePackages `json:"languagePackages,omitempty"`
+	RunCommand       string             `json:"runCommand,omitempty"`
+	Locale           *LocaleConfig      `json:"locale,omitempty"`
+	Timezone         string             `json:"timezone,omitempty"`
+	VSCodeExtensions []string           `json:"vscodeExtensions,omitempty"`
 }
 
 type CodespaceConfig struct {

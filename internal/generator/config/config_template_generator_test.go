@@ -14,7 +14,7 @@ func TestConfigTemplateGenerator_Generate_Success(t *testing.T) {
 	g := NewConfigTemplateGenerator()
 	input := entity.TemplateJson{
 		Schema: "test-schema",
-		Common: entity.JsonEntry{
+		Common: entity.CommonEntry{
 			Timezone: "Asia/Tokyo",
 			Locale: utils.Ptr(entity.LocaleConfig{
 				Lang:     "ja_JP.UTF-8",
