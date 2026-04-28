@@ -1,3 +1,9 @@
+error_failed_to_parse_base_image_config_schema:
+  other: "Failed to parse base image config schema: {{.Error}}"
+error_failed_to_parse_base_image_config_common:
+  other: "Failed to parse base image config entry for \"{{.Key}}\""
+error_failed_to_parse_base_image_config_language_entry:
+  other: "Failed to parse base image config entry for language \"{{.Key}}\""
 prompt_project_name_required:
   other: "Enter project name (required): "
 prompt_project_name_with_default:
