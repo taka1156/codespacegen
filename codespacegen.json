@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/taka1156/codespacegen/refs/heads/master/codespacegen.schema.json",
+  "$schema": "codespacegen.schema.json",
   "common": {
     "timezone": "Asia/Tokyo",
     "locale": {
@@ -57,14 +57,14 @@
   },
   "moonbit": {
     "image": "ubuntu:24.04",
-    "install": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
+    "runCommand": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
     "vscodeExtensions": [
       "moonbit.moonbit-lang"
     ]
   },
   "gcc": {
     "image": "ubuntu:24.04",
-    "install": "apt install -y gcc make git binutils libc6-dev",
+    "runCommand": "apt install -y gcc make git binutils libc6-dev",
     "vscodeExtensions": [
       "ms-vscode.cpptools"
     ]

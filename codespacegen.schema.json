@@ -10,7 +10,7 @@
       "description": "Optional schema URI for editor validation."
     },
     "common": {
-      "$ref": "#/$defs/configEntry",
+      "$ref": "#/$defs/commonEntry",
       "description": "Base settings applied to all languages. Language-specific settings take precedence."
     }
   },
@@ -30,14 +30,51 @@
   },
   "additionalProperties": false,
   "$defs": {
+    "commonEntry": {
+      "type": "object",
+      "properties": {
+        "timezone": {
+          "type": "string",
+          "description": "Default timezone for this entry (e.g. UTC, Asia/Tokyo)."
+        },
+        "locale": {
+          "type": "object",
+          "description": "OS locale settings for the container.",
+          "properties": {
+            "lang": {
+              "type": "string",
+              "description": "LANG environment variable (e.g. ja_JP.UTF-8)."
+            },
+            "language": {
+              "type": "string",
+              "description": "LANGUAGE environment variable (e.g. ja_JP:ja)."
+            },
+            "lcAll": {
+              "type": "string",
+              "description": "LC_ALL environment variable (e.g. ja_JP.UTF-8)."
+            }
+          },
+          "additionalProperties": false
+        },
+        "vscodeExtensions": {
+          "type": "array",
+          "description": "VS Code extension IDs (e.g. golang.Go).",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "additionalProperties": false
+    },
     "configEntry": {
       "type": "object",
       "properties": {
         "image": {
           "type": "string",
-          "description": "Base image name. If omitted while install is set, codespacegen uses alpine:latest."
+          "description": "Base image name. If omitted while runCommand is set, codespacegen uses alpine:latest."
         },
-        "install": {
+        "runCommand": {
           "type": "string",
           "description": "Shell command injected as RUN in Dockerfile."
         },
@@ -94,7 +131,7 @@
       },
       "moonbit": {
         "image": "ubuntu:24.04",
-        "install": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
+        "runCommand": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
         "timezone": "UTC",
         "vscodeExtensions": [
           "moonbit.moonbit-lang"
