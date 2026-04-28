@@ -133,6 +133,22 @@ func TestCollectInputs_CollectConfig_EmptyJsonConfigWhenNoImageConfigSet(t *test
 	}
 }
 
+func TestCollectInputs_CollectConfig_SkipsWhenJsonConfigLoaderReturnsNil(t *testing.T) {
+	ci := NewCollectInputs(
+		&fakeClientInput{},
+		&fakeJsonConfigLoader{result: nil},
+		&fakeDefaultSettingProvider{setting: entity.DefaultSetting{Timezone: "UTC"}},
+	)
+
+	got, err := ci.CollectConfig([]string{})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if got.JsonConfig.Langs != nil {
+		t.Errorf("expected empty JsonConfig, got %v", got.JsonConfig)
+	}
+}
+
 type captureJsonConfigLoader struct {
 	captureSource func(string)
 	result        *entity.JsonConfig

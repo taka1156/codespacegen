@@ -54,7 +54,7 @@ func (ji *JsonInput) LoadLanguageImages(source string) (*entity.JsonConfig, erro
 
 	for key, value := range jsonConfig {
 		switch key {
-		case "schema":
+		case "$schema":
 			if err := json.Unmarshal(value, &jsonConfigEntity.Schema); err != nil {
 				return nil, fmt.Errorf("%s: %w", i18n.T("error_failed_to_parse_base_image_config_schema"), err)
 			}

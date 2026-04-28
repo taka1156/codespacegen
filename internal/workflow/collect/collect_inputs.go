@@ -30,9 +30,14 @@ func NewCollectInputs(
 
 func (ri *CollectInputs) CollectConfig(args []string) (*CollectedInputs, error) {
 	ClientConfig := ri.clientInput.GetInput(args)
+
+
 	jsonConfig, err := ri.jsonInput.LoadLanguageImages(ClientConfig.ImageConfigValue())
 	if err != nil {
 		return nil, err
+	}
+	if jsonConfig == nil {
+		jsonConfig = &entity.JsonConfig{}
 	}
 	ds := ri.defaultConfig.GetDefaultSetting()
 
