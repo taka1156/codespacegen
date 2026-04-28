@@ -31,6 +31,8 @@ func (acc *AssembleCodespaceConfig) buildCodespaceConfig(clientConfig entity.Cli
 		vsCodeExtensions = *imageEntry.VSCodeExtensions
 	}
 
+	portMapping := resolvePort(promptValues.Port, clientConfig.PortValue())
+
 	return &entity.CodespaceConfig{
 		Schema:           defaultSetting.VscSchema,
 		ContainerName:    promptValues.ProjectName,
@@ -40,7 +42,7 @@ func (acc *AssembleCodespaceConfig) buildCodespaceConfig(clientConfig entity.Cli
 		Locale:           *imageEntry.Locale,
 		Timezone:         localeTimezone,
 		ComposeFileName:  clientConfig.ComposeFileValue(),
-		PortMapping:      promptValues.Port,
+		PortMapping:      portMapping,
 		RunCommand:       runCommand,
 		VSCodeExtensions: vsCodeExtensions,
 		OsModules:        osModules,
@@ -91,6 +93,14 @@ func resolveTimezone(promptTimezone string, explicitTimezone string, configTimez
 	}
 
 	return strings.TrimSpace(resolved)
+}
+
+func resolvePort(promptPort string, explicitPort string) string {
+	// priority: prompt > explicit(flag) > nil
+	if strings.TrimSpace(promptPort) != "" {
+		return strings.TrimSpace(promptPort)
+	}
+	return strings.TrimSpace(explicitPort)
 }
 
 func mergeOsModules(base entity.OsModules, linuxPackages *[]entity.LinuxPackage) entity.OsModules {

@@ -210,3 +210,26 @@ func TestBuildCodespaceConfig_NoLanguageUsesDefaultImage(t *testing.T) {
 		t.Errorf("BaseImage: got %q, want %q", got.BaseImage, "alpine:latest")
 	}
 }
+
+// --- resolvePort ---
+
+func TestResolvePort_PromptTakesPriority(t *testing.T) {
+	got := resolvePort("3000:3000", "8080:8080")
+	if got != "3000:3000" {
+		t.Errorf("got %q, want %q", got, "3000:3000")
+	}
+}
+
+func TestResolvePort_ExplicitUsedWhenPromptEmpty(t *testing.T) {
+	got := resolvePort("", "8080:8080")
+	if got != "8080:8080" {
+		t.Errorf("got %q, want %q", got, "8080:8080")
+	}
+}
+
+func TestResolvePort_EmptyWhenBothEmpty(t *testing.T) {
+	got := resolvePort("", "")
+	if got != "" {
+		t.Errorf("got %q, want empty", got)
+	}
+}
