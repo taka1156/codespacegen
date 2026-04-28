@@ -84,7 +84,7 @@ By default, files are generated under .devcontainer.
 | `-workspace-folder` | *(interactive, `/workspace` on Enter)* | Workspace path inside the container. Prompted every time |
 | `-timezone` | *(interactive, default from `common.timezone` or `UTC`)* | Timezone inside the container. Prompted every time and reflected in `ENV TZ` and timezone setup in the Dockerfile |
 | `-base-image` | *(language default)* | Explicit Docker base image. Overrides the default derived from `-language` |
-| `-image-config` | `codespacegen.json` | Local path or `https://` URL for base image definitions. Supports top-level `common` defaults plus per-language entries. `image` is required when `install` is specified; it can be omitted for timezone- or extension-only entries when `common` provides the image |
+| `-image-config` | `codespacegen.json` | Local path or `https://` URL for base image definitions. Supports top-level `common` defaults plus per-language entries. `image` is required when `runCommand` or `linuxPackages` is specified; it can be omitted for timezone- or extension-only entries when `common` provides the image |
 | `-port` | *(interactive, no ports on Enter)* | Port mapping. For example, `3000` is normalized to `3000:3000`, and `8080:3000` is also accepted. Prompted every time |
 | `-compose-file` | `docker-compose.yaml` | Compose file name |
 | `-force` | `false` | Overwrite existing files |
@@ -119,13 +119,13 @@ If `codespacegen.json` is at the repository root, `./codespacegen.schema.json` p
 }
 ```
 
-**Pattern 2: object value for install commands, timezone, locale, and VS Code extensions (`image` is required when `install` is specified)**
+**Pattern 2: object value for run commands, Linux packages, timezone, locale, and VS Code extensions (`image` is required when `runCommand` or `linuxPackages` is specified)**
 
 ```json
 {
 	"moonbit": {
 		"image": "ubuntu:24.04",
-		"install": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
+		"runCommand": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
 		"timezone": "UTC",
 		"locale": {
 			"lang": "ja_JP.UTF-8",
@@ -141,6 +141,18 @@ The generated Dockerfile adds the following `RUN` step.
 
 ```dockerfile
 RUN curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+```
+
+Use `linuxPackages` to specify Linux system packages. They are merged with the default package list and installed by the package manager appropriate for the base image (e.g. `apt` for Debian/Ubuntu, `apk` for Alpine).
+
+```json
+{
+	"gcc": {
+		"image": "ubuntu:24.04",
+		"linuxPackages": ["gcc", "make", "git", "binutils", "libc6-dev"],
+		"vscodeExtensions": ["ms-vscode.cpptools"]
+	}
+}
 ```
 
 **Pattern 3: shared defaults with `common`**
