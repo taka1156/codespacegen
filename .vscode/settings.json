@@ -24,6 +24,7 @@
     "noctx",
     "nolint",
     "noninteractive",
+    "pkgs",
     "shfmt",
     "SHOWDIRTYSTATE",
     "SHOWUNTRACKEDFILES",
@@ -37,6 +38,7 @@
     "unknownlang",
     "usecase",
     "workdirprovider",
+    "zenn",
     "Zerotaskx",
     "zoneinfo"
   ]

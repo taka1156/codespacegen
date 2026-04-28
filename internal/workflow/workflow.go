@@ -12,7 +12,7 @@ type CollectInputs = collect.CollectInputs
 
 func NewCollectInputs(
 	cliInput collect.ClientInputProvider,
-	jsonInput collect.ImageConfigLoader,
+	jsonInput collect.JsonConfigLoader,
 	defaultConfig collect.DefaultSettingProvider,
 ) *CollectInputs {
 	return collect.NewCollectInputs(cliInput, jsonInput, defaultConfig)
@@ -21,9 +21,9 @@ func NewCollectInputs(
 type AssembleCodespaceConfig = assemble.AssembleCodespaceConfig
 
 func NewAssembleCodespaceConfig(
-	CodespaceConfigResolver assemble.ConfigResolver,
+	CodespacePrompter assemble.CodespacegenPrompter,
 ) *AssembleCodespaceConfig {
-	return assemble.NewAssembleCodespaceConfig(CodespaceConfigResolver)
+	return assemble.NewAssembleCodespaceConfig(CodespacePrompter)
 }
 
 type FileWriter = service.LocalFileWriter

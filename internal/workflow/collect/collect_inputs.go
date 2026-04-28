@@ -1,26 +1,24 @@
 package collect
 
 import (
-	"encoding/json"
-
 	"codespacegen/internal/domain/entity"
 )
 
 type CollectInputs struct {
 	clientInput   ClientInputProvider
-	jsonInput     ImageConfigLoader
+	jsonInput     JsonConfigLoader
 	defaultConfig DefaultSettingProvider
 }
 
 type CollectedInputs struct {
 	ClientConfig  entity.ClientConfig
-	JsonConfig    map[string]json.RawMessage
+	JsonConfig    entity.JsonConfig
 	DefaultConfig entity.DefaultSetting
 }
 
 func NewCollectInputs(
 	clientInput ClientInputProvider,
-	jsonInput ImageConfigLoader,
+	jsonInput JsonConfigLoader,
 	defaultConfig DefaultSettingProvider,
 ) *CollectInputs {
 	return &CollectInputs{
@@ -36,11 +34,14 @@ func (ri *CollectInputs) CollectConfig(args []string) (*CollectedInputs, error) 
 	if err != nil {
 		return nil, err
 	}
+	if jsonConfig == nil {
+		jsonConfig = &entity.JsonConfig{}
+	}
 	ds := ri.defaultConfig.GetDefaultSetting()
 
 	return &CollectedInputs{
 		ClientConfig:  ClientConfig,
-		JsonConfig:    jsonConfig,
+		JsonConfig:    *jsonConfig,
 		DefaultConfig: ds,
 	}, nil
 }

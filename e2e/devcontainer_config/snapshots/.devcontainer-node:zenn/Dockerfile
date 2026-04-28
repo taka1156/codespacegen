@@ -1,15 +1,14 @@
-FROM ubuntu:24.04
+FROM node:24-alpine
 
 WORKDIR /workspace
 
 ENV LANG=en.UTF-8 \
     LANGUAGE=en_US:en \
     LC_ALL=en.UTF-8 \
-  TZ=UTC
+  TZ=Asia/Tokyo
 
 RUN <<-EOF
-apt update
-apt install -y --no-install-recommends \
+apk add --no-cache \
   bash \
   bash-completion \
   ca-certificates \
@@ -18,21 +17,15 @@ apt install -y --no-install-recommends \
   git-lfs \
   vim \
   curl \
-  locales \
-  gcc \
-  make \
-  binutils \
-  libc6-dev
-rm -rf /var/lib/apt/lists/*
-locale-gen en.UTF-8
-update-locale LANG=en.UTF-8 LC_ALL=en.UTF-8
+  musl-locales \
+  musl-locales-lang
 EOF
 
 RUN git lfs install
 
 RUN <<-EOF
-ln -fs /usr/share/zoneinfo/UTC /etc/localtime
-dpkg-reconfigure -f noninteractive tzdata
+ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+echo "Asia/Tokyo" > /etc/timezone
 EOF
 
 RUN <<-EOF
@@ -47,5 +40,7 @@ echo "GIT_PS1_SHOWUPSTREAM=auto"  >> ~/.bashrc
 git config --system --add safe.directory /workspace
 echo 'export PS1="\[\033[01;32m\]\u@\h\[\033[01;33m\] \w \[\033[01;31m\]\$(__git_ps1 \"(%s)\") \\n+\[\033[01;34m\]\\$ \[\033[00m\]"' >> ~/.bashrc
 EOF
+
+RUN yarn global add zenn-cli
 
 CMD ["bash"]

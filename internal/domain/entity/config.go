@@ -1,11 +1,5 @@
 package entity
 
-const DefaultImage = "alpine:latest"
-
-const DefaultTimezone = "UTC"
-
-const DefaultVscSchema = "https://raw.githubusercontent.com/microsoft/vscode/main/extensions/configuration-editing/schemas/devContainer.vscode.schema.json"
-
 type OsModules struct {
 	AlpineModules     []string
 	DebianLikeModules []string
@@ -16,6 +10,7 @@ type DefaultSetting struct {
 	Image               string
 	Version             string
 	VscSchema           string
+	Locale              LocaleConfig
 	OsModules           OsModules
 	SettingJsonFileName string
 }
@@ -100,24 +95,27 @@ type LocaleConfig struct {
 	LcAll    string `json:"lcAll,omitempty"`
 }
 
-var DefaultLocale = LocaleConfig{
-	Lang:     "ja_JP.UTF-8",
-	Language: "ja_JP:ja",
-	LcAll:    "ja_JP.UTF-8",
-}
-
 type CommonEntry struct {
 	Locale           *LocaleConfig `json:"locale,omitempty"`
-	Timezone         string        `json:"timezone,omitempty"`
-	VSCodeExtensions []string      `json:"vscodeExtensions,omitempty"`
+	Timezone         *string       `json:"timezone,omitempty"`
+	VSCodeExtensions *[]string     `json:"vscodeExtensions,omitempty"`
 }
 
-type JsonEntry struct {
-	Image            string        `json:"image,omitempty"`
-	RunCommand       string        `json:"runCommand,omitempty"`
-	Locale           *LocaleConfig `json:"locale,omitempty"`
-	Timezone         string        `json:"timezone,omitempty"`
-	VSCodeExtensions []string      `json:"vscodeExtensions,omitempty"`
+type LinuxPackage = string
+
+type LangEntry struct {
+	Image            string          `json:"image,omitempty"`
+	LinuxPackages    *[]LinuxPackage `json:"linuxPackages,omitempty"`
+	RunCommand       *string         `json:"runCommand,omitempty"`
+	Locale           *LocaleConfig   `json:"locale,omitempty"`
+	Timezone         *string         `json:"timezone,omitempty"`
+	VSCodeExtensions *[]string       `json:"vscodeExtensions,omitempty"`
+}
+
+type JsonConfig struct {
+	Schema string
+	Common *CommonEntry          `json:"common,omitempty"`
+	Langs  map[string]*LangEntry `json:"-"`
 }
 
 type CodespaceConfig struct {
