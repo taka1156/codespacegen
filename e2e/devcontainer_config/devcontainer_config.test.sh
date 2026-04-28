@@ -45,6 +45,7 @@ for snapshot_case_dir in "$SNAPSHOT_DIR"/.devcontainer-*; do
 	biome) lang="node:biome" ;;
 	eslint) lang="node:eslint" ;;
 	react) lang="node:react" ;;
+	gcc) lang="gcc" ;;
 	*)
 		echo "[e2e] unsupported snapshot case: $suffix"
 		failures=$((failures + 1))
