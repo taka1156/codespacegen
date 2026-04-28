@@ -150,6 +150,21 @@ func TestMergeOsModules_AppendsLinuxPackages(t *testing.T) {
 	}
 }
 
+func TestMergeOsModules_DeduplicatesPackages(t *testing.T) {
+	base := entity.OsModules{
+		AlpineModules:     []string{"bash", "git"},
+		DebianLikeModules: []string{"bash", "git"},
+	}
+	pkgs := []entity.LinuxPackage{"git", "curl"}
+	got := mergeOsModules(base, &pkgs)
+	if len(got.AlpineModules) != 3 {
+		t.Errorf("AlpineModules len: got %d, want 3 (bash, git, curl)", len(got.AlpineModules))
+	}
+	if len(got.DebianLikeModules) != 3 {
+		t.Errorf("DebianLikeModules len: got %d, want 3 (bash, git, curl)", len(got.DebianLikeModules))
+	}
+}
+
 // --- buildCodespaceConfig (nil safe パス) ---
 
 func TestBuildCodespaceConfig_NilRunCommandAndExtensionsDoNotPanic(t *testing.T) {
