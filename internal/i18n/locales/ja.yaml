@@ -1,9 +1,11 @@
 error_failed_to_parse_base_image_config_schema:
   other: "ベースイメージ設定のスキーマのパースに失敗しました: {{.Error}}"
 error_failed_to_parse_base_image_config_common:
-  other: "ベースイメージ設定の \"{{.Key}}\" エントリのパースに失敗しました"
+  other: "ベースイメージ設定の \"{{.Key}}\" エントリのパースに失敗しました: {{.Error}}"
 error_failed_to_parse_base_image_config_language_entry:
-  other: "ベースイメージ設定の \"{{.Key}}\" エントリのパースに失敗しました"
+  other: "ベースイメージ設定の \"{{.Key}}\" エントリのパースに失敗しました: {{.Error}}"
+error_failed_to_close_base_image_config_response_body:
+  other: "ベースイメージ設定のレスポンスボディのクローズに失敗しました: {{.Error}}"
 prompt_project_name_required:
   other: "プロジェクト名を入力してください（必須）: "
 prompt_project_name_with_default:
