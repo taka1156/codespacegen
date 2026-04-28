@@ -1,0 +1,9 @@
+prepare-commit-msg:
+  commands:
+    fmt:
+      run: make fmt
+
+commit-msg:
+  commands:
+    commitlint:
+      run: commitlint lint --message $1

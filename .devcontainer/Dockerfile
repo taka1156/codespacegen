@@ -8,8 +8,9 @@ ENV LANG=ja_JP.UTF-8 \
     TZ=Asia/Tokyo
 
 RUN <<-EOF
+curl -1sLf 'https://dl.cloudsmith.io/public/evilmartians/lefthook/setup.deb.sh' | bash
 apt update
-apt install -y locales tzdata git vim curl shfmt
+apt install -y locales tzdata git vim curl shfmt lefthook
 apt clean
 EOF
 
