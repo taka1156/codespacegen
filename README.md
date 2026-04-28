@@ -43,19 +43,21 @@ Main generated assets:
 - Domain: rules and models
 	- internal/domain/entity
 	- internal/domain/service
-- App composition and orchestration
+- App: composition and orchestration
 	- internal/app
 - Input adapters (CLI/JSON/defaults)
 	- internal/input
-- Config resolution (interactive/default merge)
-	- internal/resolve
+- Infra (interactive prompt I/O)
+	- internal/infra
 - Workflows (use cases)
 	- internal/workflow/collect
 	- internal/workflow/assemble
 	- internal/workflow/generate
+	- internal/workflow/initialize
 - Artifact generation and file writing
 	- internal/generator
 	- internal/generator/filewriter
+	- internal/generator/workdirprovider
 - i18n resources
 	- internal/i18n
 - Entry point: CLI
@@ -72,6 +74,16 @@ go run ./cmd/codespacegen
 ```
 
 By default, files are generated under .devcontainer.
+
+### Initialize codespacegen.json
+
+Run the `init` subcommand to generate a `codespacegen.json` template in the current directory.
+
+```bash
+codespacegen init
+```
+
+The generated file serves as a starting point for customizing base images and VS Code extensions.
 
 ### Main options
 
