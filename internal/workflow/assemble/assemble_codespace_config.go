@@ -27,5 +27,5 @@ func (acc *AssembleCodespaceConfig) Resolve(clientConfig entity.ClientConfig, de
 		return nil, err
 	}
 
-	return acc.buildCodespaceConfig(defaultSetting, clientConfig, resolvedValues, resolvedEntries)
+	return acc.buildCodespaceConfig(clientConfig, defaultSetting, resolvedValues, resolvedEntries)
 }

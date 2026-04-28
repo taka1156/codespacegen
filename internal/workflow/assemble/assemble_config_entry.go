@@ -28,7 +28,6 @@ func (acc *AssembleCodespaceConfig) resolveMergedEntry(jsonConfig entity.JsonCon
 		return mergedImages, nil
 	case jsonConfig.Common == nil:
 		for k, entry := range jsonConfig.Langs {
-
 			normalizedKey := strings.ToLower(strings.TrimSpace(k))
 			if normalizedKey == "" || normalizedKey == "common" || normalizedKey == "$schema" {
 				continue
@@ -51,18 +50,15 @@ func (acc *AssembleCodespaceConfig) resolveMergedEntry(jsonConfig entity.JsonCon
 }
 
 func mergeLanguageEntries(common entity.CommonEntry, LangEntry entity.LangEntry) entity.LangEntry {
-	var baseLocale, overrideLocale entity.LocaleConfig
+	var baseLocale entity.LocaleConfig = entity.DefaultLocale
+	var overrideLocale entity.LocaleConfig = entity.DefaultLocale
 
 	if common.Locale != nil {
 		baseLocale = *common.Locale
-	} else {
-		baseLocale = entity.DefaultLocale
 	}
 
 	if LangEntry.Locale != nil {
 		overrideLocale = *LangEntry.Locale
-	} else {
-		overrideLocale = entity.DefaultLocale
 	}
 
 	merged := entity.LangEntry{
@@ -70,12 +66,14 @@ func mergeLanguageEntries(common entity.CommonEntry, LangEntry entity.LangEntry)
 		LinuxPackages: LangEntry.LinuxPackages,
 		RunCommand:    LangEntry.RunCommand,
 		Timezone:      utils.Ptr(firstNonEmpty(LangEntry.Timezone, common.Timezone)),
-		Locale:        utils.Ptr(mergeLocale(baseLocale, overrideLocale)),
+		Locale:        utils.Ptr(resolveLocale(baseLocale, overrideLocale)),
 	}
 
 	switch {
-	case LangEntry.VSCodeExtensions != nil && common.VSCodeExtensions != nil:
-		merged.VSCodeExtensions = utils.Ptr(append(*LangEntry.VSCodeExtensions, *common.VSCodeExtensions...))
+	case common.VSCodeExtensions != nil && LangEntry.VSCodeExtensions != nil:
+		commonCopy := make([]string, len(*common.VSCodeExtensions))
+		copy(commonCopy, *common.VSCodeExtensions)
+		merged.VSCodeExtensions = utils.Ptr(append(commonCopy, *LangEntry.VSCodeExtensions...))
 	case LangEntry.VSCodeExtensions != nil:
 		merged.VSCodeExtensions = LangEntry.VSCodeExtensions
 	case common.VSCodeExtensions != nil:
@@ -85,7 +83,7 @@ func mergeLanguageEntries(common entity.CommonEntry, LangEntry entity.LangEntry)
 	return merged
 }
 
-func mergeLocale(base entity.LocaleConfig, override entity.LocaleConfig) entity.LocaleConfig {
+func resolveLocale(base entity.LocaleConfig, override entity.LocaleConfig) entity.LocaleConfig {
 	if strings.TrimSpace(override.Lang) == "" {
 		return base
 	}

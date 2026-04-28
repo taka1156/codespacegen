@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func (acc *AssembleCodespaceConfig) buildCodespaceConfig(defaultSetting entity.DefaultSetting, clientConfig entity.ClientConfig, promptValues resolvedCoreValues, langEntries map[string]entity.LangEntry) (*entity.CodespaceConfig, error) {
+func (acc *AssembleCodespaceConfig) buildCodespaceConfig(clientConfig entity.ClientConfig, defaultSetting entity.DefaultSetting, promptValues resolvedCoreValues, langEntries map[string]entity.LangEntry) (*entity.CodespaceConfig, error) {
 	imageEntry, err := resolveBaseImage(promptValues.Language, clientConfig.BaseImageValue(), langEntries, defaultSetting.Image)
 	if err != nil {
 		return nil, err
