@@ -18,7 +18,8 @@ func (cscr *CodespaceConfigResolver) ResolvePortMapping(explicitPort string) (st
 				if defaultValue != "" {
 					normalizedDefault, err := normalizePortMapping(defaultValue)
 					if err != nil {
-						return "", true, err
+						fmt.Println(i18n.T("error_invalid_port_format"))
+						return "", false, nil
 					}
 					return normalizedDefault, true, nil
 				}

@@ -15,13 +15,13 @@ func TestConfigTemplateGenerator_Generate_Success(t *testing.T) {
 	input := entity.TemplateJson{
 		Schema: "test-schema",
 		Common: entity.CommonEntry{
-			Timezone: "Asia/Tokyo",
+			Timezone: utils.Ptr("Asia/Tokyo"),
 			Locale: utils.Ptr(entity.LocaleConfig{
 				Lang:     "ja_JP.UTF-8",
 				Language: "ja_JP:ja",
 				LcAll:    "ja_JP.UTF-8",
 			}),
-			VSCodeExtensions: []string{"ext1", "ext2"},
+			VSCodeExtensions: utils.Ptr([]string{"ext1", "ext2"}),
 		},
 	}
 	got, err := g.Generate(input)

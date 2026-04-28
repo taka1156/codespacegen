@@ -20,62 +20,62 @@ type TemplateJson struct {
 var DefaultTemplateJson = TemplateJson{
 	Schema: "https://raw.githubusercontent.com/taka1156/codespacegen/master/codespacegen.schema.json",
 	Common: CommonEntry{
-		Timezone: "Asia/Tokyo",
+		Timezone: utils.Ptr("Asia/Tokyo"),
 		Locale:   utils.Ptr(DefaultLocale),
-		VSCodeExtensions: []string{
+		VSCodeExtensions: utils.Ptr([]string{
 			"MS-CEINTL.vscode-language-pack-ja",
 			"GitHub.copilot",
 			"GitHub.copilot-chat",
 			"streetsidesoftware.code-spell-checker",
 			"username.errorlens",
-		},
+		}),
 	},
 	Go: LangEntry{
 		Image: "golang:1.24-alpine",
-		VSCodeExtensions: []string{
+		VSCodeExtensions: utils.Ptr([]string{
 			"golang.GO",
-		},
+		}),
 	},
 	Python: LangEntry{
 		Image: "python:3.12-alpine",
-		VSCodeExtensions: []string{
+		VSCodeExtensions: utils.Ptr([]string{
 			"ms-python.python",
-		},
+		}),
 	},
 	NodeBiome: LangEntry{
 		Image: "node:24-alpine",
-		VSCodeExtensions: []string{
+		VSCodeExtensions: utils.Ptr([]string{
 			"biomejs.biome",
-		},
+		}),
 	},
 	NodeEslint: LangEntry{
 		Image: "node:24-alpine",
-		VSCodeExtensions: []string{
+		VSCodeExtensions: utils.Ptr([]string{
 			"dbaeumer.vscode-eslint",
 			"esbenp.prettier-vscode",
-		},
+		}),
 	},
 	NodeReact: LangEntry{
 		Image: "node:24-alpine",
-		VSCodeExtensions: []string{
+		VSCodeExtensions: utils.Ptr([]string{
 			"jawandarajbir.react-vscode-extension-pack",
 			"dbaeumer.vscode-eslint",
 			"stylelint.vscode-stylelint",
 			"esbenp.prettier-vscode",
-		},
+		}),
 	},
 	Rust: LangEntry{
 		Image: "rust:1.72-alpine",
-		VSCodeExtensions: []string{
+		VSCodeExtensions: utils.Ptr([]string{
 			"Zerotaskx.rust-extension-pack",
-		},
+		}),
 	},
 	Moonbit: LangEntry{
 		Image:      "ubuntu:24.04",
-		RunCommand: "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
-		VSCodeExtensions: []string{
+		RunCommand: utils.Ptr("curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash"),
+		VSCodeExtensions: utils.Ptr([]string{
 			"moonbit.moonbit-lang",
-		},
+		}),
 	},
 	Gcc: LangEntry{
 		Image: "ubuntu:24.04",
@@ -85,8 +85,8 @@ var DefaultTemplateJson = TemplateJson{
 			"binutils",
 			"libc6-dev",
 		}),
-		VSCodeExtensions: []string{
+		VSCodeExtensions: utils.Ptr([]string{
 			"ms-vscode.cpptools",
-		},
+		}),
 	},
 }

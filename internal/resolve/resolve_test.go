@@ -1,11 +1,11 @@
 package resolve
 
 import (
-	"encoding/json"
 	"strings"
 	"testing"
 
 	"codespacegen/internal/domain/entity"
+	"codespacegen/internal/utils"
 )
 
 // newResolver は strings.NewReader を使って入力を注入したリゾルバを返す。
@@ -242,11 +242,23 @@ func TestResolvePortMapping_RetriesOnInvalidThenAcceptsValid(t *testing.T) {
 	}
 }
 
+func TestResolvePortMapping_InvalidDefaultPortRetriesUntilValid(t *testing.T) {
+	// explicitPort が不正フォーマットのとき、Enter を押すとリトライし、次の有効な入力を受け付ける
+	r := newResolver("\n5000\n")
+	got, err := r.ResolvePortMapping("bad")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if got != "5000:5000" {
+		t.Errorf("got %q, want %q", got, "5000:5000")
+	}
+}
+
 // --- ResolveBaseImage ---
 
 func TestResolveBaseImage_ExplicitImageTakesPriority(t *testing.T) {
 	r := newResolver("")
-	got, err := r.ResolveBaseImage("python", "custom:latest", "", nil, "alpine:latest")
+	got, err := r.ResolveBaseImage("python", "custom:latest", nil, "alpine:latest")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -257,7 +269,7 @@ func TestResolveBaseImage_ExplicitImageTakesPriority(t *testing.T) {
 
 func TestResolveBaseImage_EmptyLanguageReturnsDefaultImage(t *testing.T) {
 	r := newResolver("")
-	got, err := r.ResolveBaseImage("", "", "", nil, "ubuntu:22.04")
+	got, err := r.ResolveBaseImage("", "", nil, "ubuntu:22.04")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -268,7 +280,7 @@ func TestResolveBaseImage_EmptyLanguageReturnsDefaultImage(t *testing.T) {
 
 func TestResolveBaseImage_EmptyLanguageAndDefaultImageFallsBackToConstant(t *testing.T) {
 	r := newResolver("")
-	got, err := r.ResolveBaseImage("", "", "", nil, "")
+	got, err := r.ResolveBaseImage("", "", nil, "")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -280,24 +292,24 @@ func TestResolveBaseImage_EmptyLanguageAndDefaultImageFallsBackToConstant(t *tes
 func TestResolveBaseImage_LanguageFoundInEntries(t *testing.T) {
 	r := newResolver("")
 	entries := map[string]entity.LangEntry{
-		"python": {Image: "python:3.12", RunCommand: "pip install -r requirements.txt"},
+		"python": {Image: "python:3.12", RunCommand: utils.Ptr("pip install -r requirements.txt")},
 	}
-	got, err := r.ResolveBaseImage("python", "", "", entries, "alpine:latest")
+	got, err := r.ResolveBaseImage("python", "", entries, "alpine:latest")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	if got.Image != "python:3.12" {
 		t.Errorf("got %q, want %q", got.Image, "python:3.12")
 	}
-	if got.RunCommand != "pip install -r requirements.txt" {
-		t.Errorf("RunCommand: got %q, want %q", got.RunCommand, "pip install -r requirements.txt")
+	if got.RunCommand == nil || *got.RunCommand != "pip install -r requirements.txt" {
+		t.Errorf("RunCommand: got %q, want %q", *got.RunCommand, "pip install -r requirements.txt")
 	}
 }
 
 func TestResolveBaseImage_LanguageNotFoundReturnsError(t *testing.T) {
 	r := newResolver("")
 	entries := map[string]entity.LangEntry{}
-	_, err := r.ResolveBaseImage("python", "", "", entries, "alpine:latest")
+	_, err := r.ResolveBaseImage("python", "", entries, "alpine:latest")
 	if err == nil {
 		t.Fatal("expected error for unsupported language, got nil")
 	}
@@ -308,7 +320,7 @@ func TestResolveBaseImage_LanguageCaseInsensitive(t *testing.T) {
 	entries := map[string]entity.LangEntry{
 		"python": {Image: "python:3.12"},
 	}
-	got, err := r.ResolveBaseImage("Python", "", "", entries, "alpine:latest")
+	got, err := r.ResolveBaseImage("Python", "", entries, "alpine:latest")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -317,11 +329,33 @@ func TestResolveBaseImage_LanguageCaseInsensitive(t *testing.T) {
 	}
 }
 
+func TestResolveBaseImage_EntryWithEmptyImageReturnsError(t *testing.T) {
+	r := newResolver("")
+	entries := map[string]entity.LangEntry{
+		"python": {Image: ""},
+	}
+	_, err := r.ResolveBaseImage("python", "", entries, "alpine:latest")
+	if err == nil {
+		t.Fatal("expected error for entry with empty image, got nil")
+	}
+}
+
 // --- MergeLanguageEntries ---
+
+func TestMergeLanguageEntries_BothNilReturnsEmpty(t *testing.T) {
+	r := newResolver("")
+	got, err := r.MergeLanguageEntries(nil, nil)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(got) != 0 {
+		t.Errorf("expected empty map, got %v", got)
+	}
+}
 
 func TestMergeLanguageEntries_EmptyOverrides(t *testing.T) {
 	r := newResolver("")
-	got, err := r.MergeLanguageEntries(nil)
+	got, err := r.MergeLanguageEntries(&entity.CommonEntry{}, nil)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -330,26 +364,12 @@ func TestMergeLanguageEntries_EmptyOverrides(t *testing.T) {
 	}
 }
 
-func TestMergeLanguageEntries_SkipsSchemaKey(t *testing.T) {
+func TestMergeLanguageEntries_NilCommonPassesThroughLanguages(t *testing.T) {
 	r := newResolver("")
-	overrides := map[string]json.RawMessage{
-		"$schema": json.RawMessage(`"https://example.com/schema.json"`),
+	langEntries := map[string]*entity.LangEntry{
+		"python": {Image: "python:3.12"},
 	}
-	got, err := r.MergeLanguageEntries(overrides)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-	if len(got) != 0 {
-		t.Errorf("expected empty map, got %v", got)
-	}
-}
-
-func TestMergeLanguageEntries_StringEntryParsed(t *testing.T) {
-	r := newResolver("")
-	overrides := map[string]json.RawMessage{
-		"python": json.RawMessage(`"python:3.12"`),
-	}
-	got, err := r.MergeLanguageEntries(overrides)
+	got, err := r.MergeLanguageEntries(nil, langEntries)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -362,34 +382,15 @@ func TestMergeLanguageEntries_StringEntryParsed(t *testing.T) {
 	}
 }
 
-func TestMergeLanguageEntries_ObjectEntryParsed(t *testing.T) {
-	r := newResolver("")
-	overrides := map[string]json.RawMessage{
-		"node": json.RawMessage(`{"image":"node:20","runCommand":"npm ci"}`),
-	}
-	got, err := r.MergeLanguageEntries(overrides)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-	entry, ok := got["node"]
-	if !ok {
-		t.Fatal("expected node key in result")
-	}
-	if entry.Image != "node:20" {
-		t.Errorf("Image: got %q, want %q", entry.Image, "node:20")
-	}
-	if entry.RunCommand != "npm ci" {
-		t.Errorf("RunCommand: got %q, want %q", entry.RunCommand, "npm ci")
-	}
-}
-
 func TestMergeLanguageEntries_CommonAppliedAsBase(t *testing.T) {
 	r := newResolver("")
-	overrides := map[string]json.RawMessage{
-		"common": json.RawMessage(`{"vscodeExtensions":["GitHub.copilot"]}`),
-		"python": json.RawMessage(`"python:3.12"`),
+	commonEntry := &entity.CommonEntry{
+		VSCodeExtensions: utils.Ptr([]string{"GitHub.copilot"}),
 	}
-	got, err := r.MergeLanguageEntries(overrides)
+	langEntries := map[string]*entity.LangEntry{
+		"python": {Image: "python:3.12"},
+	}
+	got, err := r.MergeLanguageEntries(commonEntry, langEntries)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -397,18 +398,38 @@ func TestMergeLanguageEntries_CommonAppliedAsBase(t *testing.T) {
 	if !ok {
 		t.Fatal("expected python key in result")
 	}
-	if len(entry.VSCodeExtensions) != 1 || entry.VSCodeExtensions[0] != "GitHub.copilot" {
+	if entry.VSCodeExtensions == nil || len(*entry.VSCodeExtensions) != 1 || (*entry.VSCodeExtensions)[0] != "GitHub.copilot" {
 		t.Errorf("VSCodeExtensions: got %v, want [GitHub.copilot]", entry.VSCodeExtensions)
+	}
+}
+
+func TestMergeLanguageEntries_LanguageTimezoneOverridesCommon(t *testing.T) {
+	r := newResolver("")
+	commonEntry := &entity.CommonEntry{
+		Timezone: utils.Ptr("UTC"),
+	}
+	langEntries := map[string]*entity.LangEntry{
+		"python": {Image: "python:3.12", Timezone: utils.Ptr("Asia/Tokyo")},
+	}
+	got, err := r.MergeLanguageEntries(commonEntry, langEntries)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	entry := got["python"]
+	if entry.Timezone == nil || *entry.Timezone != "Asia/Tokyo" {
+		t.Errorf("Timezone: got %v, want Asia/Tokyo", entry.Timezone)
 	}
 }
 
 func TestMergeLanguageEntries_LanguageOverridesCommon(t *testing.T) {
 	r := newResolver("")
-	overrides := map[string]json.RawMessage{
-		"common": json.RawMessage(`{"image":"alpine:latest","runCommand":"apk add git"}`),
-		"python": json.RawMessage(`{"image":"python:3.12","runCommand":"pip install -r requirements.txt"}`),
+	commonEntry := &entity.CommonEntry{
+		Timezone: utils.Ptr("UTC"),
 	}
-	got, err := r.MergeLanguageEntries(overrides)
+	langEntries := map[string]*entity.LangEntry{
+		"python": {Image: "python:3.12", Timezone: utils.Ptr("Asia/Tokyo"), RunCommand: utils.Ptr("pip install -r requirements.txt")},
+	}
+	got, err := r.MergeLanguageEntries(commonEntry, langEntries)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -416,18 +437,98 @@ func TestMergeLanguageEntries_LanguageOverridesCommon(t *testing.T) {
 	if entry.Image != "python:3.12" {
 		t.Errorf("Image: got %q, want %q", entry.Image, "python:3.12")
 	}
-	if entry.RunCommand != "pip install -r requirements.txt" {
-		t.Errorf("RunCommand: got %q, want %q", entry.RunCommand, "pip install -r requirements.txt")
+	if entry.RunCommand == nil || *entry.RunCommand != "pip install -r requirements.txt" {
+		t.Errorf("RunCommand: got %q, want %q", *entry.RunCommand, "pip install -r requirements.txt")
 	}
 }
 
-func TestMergeLanguageEntries_InvalidJSONReturnsError(t *testing.T) {
+func TestMergeLanguageEntries_VSCodeExtensionsMergedFromBoth(t *testing.T) {
 	r := newResolver("")
-	overrides := map[string]json.RawMessage{
-		"python": json.RawMessage(`{invalid`),
+	commonEntry := &entity.CommonEntry{
+		VSCodeExtensions: utils.Ptr([]string{"GitHub.copilot"}),
 	}
-	_, err := r.MergeLanguageEntries(overrides)
-	if err == nil {
-		t.Fatal("expected error for invalid JSON, got nil")
+	langEntries := map[string]*entity.LangEntry{
+		"python": {Image: "python:3.12", VSCodeExtensions: utils.Ptr([]string{"ms-python.python"})},
+	}
+	got, err := r.MergeLanguageEntries(commonEntry, langEntries)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	entry := got["python"]
+	if entry.VSCodeExtensions == nil || len(*entry.VSCodeExtensions) != 2 {
+		t.Errorf("VSCodeExtensions: got %v, want 2 items", entry.VSCodeExtensions)
+	}
+}
+
+func TestMergeLanguageEntries_OnlyCommonVSCodeExtensions(t *testing.T) {
+	r := newResolver("")
+	commonEntry := &entity.CommonEntry{
+		VSCodeExtensions: utils.Ptr([]string{"GitHub.copilot"}),
+	}
+	langEntries := map[string]*entity.LangEntry{
+		"python": {Image: "python:3.12"},
+	}
+	got, err := r.MergeLanguageEntries(commonEntry, langEntries)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	entry := got["python"]
+	if entry.VSCodeExtensions == nil || len(*entry.VSCodeExtensions) != 1 || (*entry.VSCodeExtensions)[0] != "GitHub.copilot" {
+		t.Errorf("VSCodeExtensions: got %v, want [GitHub.copilot]", entry.VSCodeExtensions)
+	}
+}
+
+func TestMergeLanguageEntries_OnlyLangVSCodeExtensions(t *testing.T) {
+	r := newResolver("")
+	commonEntry := &entity.CommonEntry{}
+	langEntries := map[string]*entity.LangEntry{
+		"python": {Image: "python:3.12", VSCodeExtensions: utils.Ptr([]string{"ms-python.python"})},
+	}
+	got, err := r.MergeLanguageEntries(commonEntry, langEntries)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	entry := got["python"]
+	if entry.VSCodeExtensions == nil || len(*entry.VSCodeExtensions) != 1 || (*entry.VSCodeExtensions)[0] != "ms-python.python" {
+		t.Errorf("VSCodeExtensions: got %v, want [ms-python.python]", entry.VSCodeExtensions)
+	}
+}
+
+func TestMergeLanguageEntries_KeyNormalizedToLowercase(t *testing.T) {
+	r := newResolver("")
+	langEntries := map[string]*entity.LangEntry{
+		"Python": {Image: "python:3.12"},
+	}
+	got, err := r.MergeLanguageEntries(&entity.CommonEntry{}, langEntries)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if _, ok := got["python"]; !ok {
+		t.Error("expected key normalized to lowercase 'python'")
+	}
+	if _, ok := got["Python"]; ok {
+		t.Error("expected original 'Python' key to be absent")
+	}
+}
+
+func TestMergeLanguageEntries_CommonAndSchemaKeysFiltered(t *testing.T) {
+	r := newResolver("")
+	langEntries := map[string]*entity.LangEntry{
+		"python":  {Image: "python:3.12"},
+		"common":  {Image: "should-be-filtered"},
+		"$schema": {Image: "should-be-filtered"},
+	}
+	got, err := r.MergeLanguageEntries(&entity.CommonEntry{}, langEntries)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if _, ok := got["common"]; ok {
+		t.Error("expected 'common' key to be filtered out")
+	}
+	if _, ok := got["$schema"]; ok {
+		t.Error("expected '$schema' key to be filtered out")
+	}
+	if _, ok := got["python"]; !ok {
+		t.Error("expected 'python' key to be present")
 	}
 }

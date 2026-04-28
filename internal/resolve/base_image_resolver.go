@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func (cscr *CodespaceConfigResolver) ResolveBaseImage(language string, explicitBaseImage string, imageConfig string, jsonEntries map[string]entity.LangEntry, defaultImage string) (entity.LangEntry, error) {
+func (cscr *CodespaceConfigResolver) ResolveBaseImage(language string, explicitBaseImage string, jsonEntries map[string]entity.LangEntry, defaultImage string) (entity.LangEntry, error) {
 	if explicitBaseImage != "" {
 		return entity.LangEntry{Image: explicitBaseImage}, nil
 	}

@@ -1,8 +1,6 @@
 package assemble
 
 import (
-	"encoding/json"
-
 	"codespacegen/internal/domain/entity"
 )
 
@@ -15,6 +13,6 @@ type ConfigResolver interface {
 	ResolveServiceName(explicitServiceName string) (string, error)
 	ResolvePortMapping(explicitPort string) (string, error)
 	ResolveTimezone(explicitTimezone string, configTimezone string, defaultTimezone string) (string, error)
-	MergeLanguageEntries(overrides map[string]json.RawMessage) (map[string]entity.LangEntry, error)
-	ResolveBaseImage(language string, explicitBaseImage string, imageConfig string, jsonEntries map[string]entity.LangEntry, defaultImage string) (entity.LangEntry, error)
+	MergeLanguageEntries(commonEntry *entity.CommonEntry, langEntries map[string]*entity.LangEntry) (map[string]entity.LangEntry, error)
+	ResolveBaseImage(language string, explicitBaseImage string, jsonEntries map[string]entity.LangEntry, defaultImage string) (entity.LangEntry, error)
 }

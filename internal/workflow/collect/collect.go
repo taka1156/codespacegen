@@ -2,15 +2,14 @@ package collect
 
 import (
 	"codespacegen/internal/domain/entity"
-	"encoding/json"
 )
 
 type ClientInputProvider interface {
 	GetInput(args []string) entity.ClientConfig
 }
 
-type ImageConfigLoader interface {
-	LoadLanguageImages(source string) (map[string]json.RawMessage, error)
+type JsonConfigLoader interface {
+	LoadLanguageImages(source string) (*entity.JsonConfig, error)
 }
 
 type DefaultSettingProvider interface {

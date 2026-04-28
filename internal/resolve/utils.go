@@ -74,11 +74,13 @@ func promptUntilResolved(reader *bufio.Reader, defaultValue string, promptFn fun
 	}
 }
 
-func firstNonEmpty(values ...string) string {
+func firstNonEmpty(values ...*string) string {
 	for _, v := range values {
-		trimmed := strings.TrimSpace(v)
-		if trimmed != "" {
-			return trimmed
+		if v != nil {
+			trimmed := strings.TrimSpace(*v)
+			if trimmed != "" {
+				return trimmed
+			}
 		}
 	}
 

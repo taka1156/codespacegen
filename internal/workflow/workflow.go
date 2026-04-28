@@ -12,7 +12,7 @@ type CollectInputs = collect.CollectInputs
 
 func NewCollectInputs(
 	cliInput collect.ClientInputProvider,
-	jsonInput collect.ImageConfigLoader,
+	jsonInput collect.JsonConfigLoader,
 	defaultConfig collect.DefaultSettingProvider,
 ) *CollectInputs {
 	return collect.NewCollectInputs(cliInput, jsonInput, defaultConfig)

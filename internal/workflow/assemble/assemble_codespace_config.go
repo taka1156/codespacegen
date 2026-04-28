@@ -1,8 +1,6 @@
 package assemble
 
 import (
-	"encoding/json"
-
 	"codespacegen/internal/domain/entity"
 )
 
@@ -18,7 +16,7 @@ func NewAssembleCodespaceConfig(
 	}
 }
 
-func (acc *AssembleCodespaceConfig) Resolve(clientConfig entity.ClientConfig, defaultSetting entity.DefaultSetting, jsonConfig map[string]json.RawMessage) (*entity.CodespaceConfig, error) {
+func (acc *AssembleCodespaceConfig) Resolve(clientConfig entity.ClientConfig, defaultSetting entity.DefaultSetting, jsonConfig entity.JsonConfig) (*entity.CodespaceConfig, error) {
 	resolvedValues, err := acc.resolveCoreValues(&clientConfig)
 	if err != nil {
 		return nil, err
@@ -29,7 +27,7 @@ func (acc *AssembleCodespaceConfig) Resolve(clientConfig entity.ClientConfig, de
 		return nil, err
 	}
 
-	resolvedTimezone, err := acc.CodespaceConfigResolver.ResolveTimezone(clientConfig.TimezoneValue(), resolvedEntry.Timezone, defaultSetting.Timezone)
+	resolvedTimezone, err := acc.CodespaceConfigResolver.ResolveTimezone(clientConfig.TimezoneValue(), *resolvedEntry.Timezone, defaultSetting.Timezone)
 	if err != nil {
 		return nil, err
 	}

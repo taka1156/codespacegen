@@ -21,8 +21,8 @@ func (acc *AssembleCodespaceConfig) buildCodespaceConfig(ClientConfig entity.Cli
 		Timezone:         resolvedTimezone,
 		ComposeFileName:  ClientConfig.ComposeFileValue(),
 		PortMapping:      coreValues.Port,
-		RunCommand:       resolvedEntry.RunCommand,
-		VSCodeExtensions: resolvedEntry.VSCodeExtensions,
+		RunCommand:       *resolvedEntry.RunCommand,
+		VSCodeExtensions: *resolvedEntry.VSCodeExtensions,
 		OsModules:        defaultSetting.OsModules,
 	}
 }

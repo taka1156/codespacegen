@@ -108,8 +108,8 @@ var DefaultLocale = LocaleConfig{
 
 type CommonEntry struct {
 	Locale           *LocaleConfig `json:"locale,omitempty"`
-	Timezone         string        `json:"timezone,omitempty"`
-	VSCodeExtensions []string      `json:"vscodeExtensions,omitempty"`
+	Timezone         *string       `json:"timezone,omitempty"`
+	VSCodeExtensions *[]string     `json:"vscodeExtensions,omitempty"`
 }
 
 type LanguagePackage struct {
@@ -121,10 +121,16 @@ type LangEntry struct {
 	Image            string           `json:"image,omitempty"`
 	LinuxPackages    *[]string        `json:"linuxPackages,omitempty"`
 	LanguagePackages *LanguagePackage `json:"languagePackages,omitempty"`
-	RunCommand       string           `json:"runCommand,omitempty"`
+	RunCommand       *string          `json:"runCommand,omitempty"`
 	Locale           *LocaleConfig    `json:"locale,omitempty"`
-	Timezone         string           `json:"timezone,omitempty"`
-	VSCodeExtensions []string         `json:"vscodeExtensions,omitempty"`
+	Timezone         *string          `json:"timezone,omitempty"`
+	VSCodeExtensions *[]string        `json:"vscodeExtensions,omitempty"`
+}
+
+type JsonConfig struct {
+	Schema string
+	Common *CommonEntry          `json:"common,omitempty"`
+	Langs  map[string]*LangEntry `json:"-"`
 }
 
 type CodespaceConfig struct {
