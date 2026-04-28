@@ -64,9 +64,27 @@
   },
   "gcc": {
     "image": "ubuntu:24.04",
-    "runCommand": "apt install -y gcc make git binutils libc6-dev",
+    "linuxPackages": [
+      "gcc",
+      "make",
+      "git",
+      "binutils",
+      "libc6-dev"
+    ],
     "vscodeExtensions": [
       "ms-vscode.cpptools"
+    ]
+  },
+  "node:zenn": {
+    "image": "node:24-alpine",
+    "languagePackages": {
+      "installCommand": "yarn global add",
+      "packages": [
+        "zenn-cli"
+      ]
+    },
+    "vscodeExtensions": [
+      "zenn.zenn-vscode-extension"
     ]
   }
 }

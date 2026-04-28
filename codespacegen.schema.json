@@ -76,7 +76,34 @@
         },
         "runCommand": {
           "type": "string",
-          "description": "Shell command injected as RUN in Dockerfile."
+          "description": "Injected as RUN in Dockerfile."
+        },
+        "linuxPackages": {
+          "type": "array",
+          "description": "List of Linux system packages to install (e.g. make, git). Used for apt, apk, etc.",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "languagePackages": {
+          "type": "object",
+          "description": "Language-specific package installation settings.",
+          "properties": {
+            "installCommand": {
+              "type": "string",
+              "description": "Command to install language packages (e.g. yarn global add)."
+            },
+            "packages": {
+              "type": "array",
+              "description": "List of language-specific packages to install.",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "additionalProperties": false
         },
         "timezone": {
           "type": "string",
