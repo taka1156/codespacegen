@@ -1,9 +1,10 @@
 package main
 
 import (
-	"codespacegen/internal/app"
 	"fmt"
 	"os"
+
+	"github.com/taka1156/codespacegen/internal/app"
 )
 
 func main() {

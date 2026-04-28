@@ -1,11 +1,10 @@
 package collect
 
 import (
-	"encoding/json"
 	"errors"
 	"testing"
 
-	"codespacegen/internal/domain/entity"
+	"github.com/taka1156/codespacegen/internal/domain/entity"
 )
 
 // --- フェイク実装 ---
@@ -18,12 +17,12 @@ func (f *fakeClientInput) GetInput(args []string) entity.ClientConfig {
 	return f.config
 }
 
-type fakeImageConfigLoader struct {
-	result map[string]json.RawMessage
+type fakeJsonConfigLoader struct {
+	result *entity.JsonConfig
 	err    error
 }
 
-func (f *fakeImageConfigLoader) LoadLanguageImages(_ string) (map[string]json.RawMessage, error) {
+func (f *fakeJsonConfigLoader) LoadLanguageImages(_ string) (*entity.JsonConfig, error) {
 	return f.result, f.err
 }
 
@@ -41,8 +40,10 @@ func TestCollectInputs_CollectConfig_ReturnsCollectedInputs(t *testing.T) {
 	imageConfig := "https://example.com/config.json"
 	clientConfig := entity.ClientConfig{ImageConfig: &imageConfig}
 
-	jsonResult := map[string]json.RawMessage{
-		"python": json.RawMessage(`"python:3.12"`),
+	jsonResult := entity.JsonConfig{
+		Langs: map[string]*entity.LangEntry{
+			"python": {Image: "python:3.12"},
+		},
 	}
 	defaultSetting := entity.DefaultSetting{
 		Timezone: "UTC",
@@ -52,7 +53,7 @@ func TestCollectInputs_CollectConfig_ReturnsCollectedInputs(t *testing.T) {
 
 	ci := NewCollectInputs(
 		&fakeClientInput{config: clientConfig},
-		&fakeImageConfigLoader{result: jsonResult},
+		&fakeJsonConfigLoader{result: &jsonResult},
 		&fakeDefaultSettingProvider{setting: defaultSetting},
 	)
 
@@ -64,8 +65,8 @@ func TestCollectInputs_CollectConfig_ReturnsCollectedInputs(t *testing.T) {
 	if got.ClientConfig.ImageConfigValue() != imageConfig {
 		t.Errorf("ClientConfig.ImageConfig: got %q, want %q", got.ClientConfig.ImageConfigValue(), imageConfig)
 	}
-	if len(got.JsonConfig) != 1 {
-		t.Errorf("JsonConfig length: got %d, want 1", len(got.JsonConfig))
+	if len(got.JsonConfig.Langs) != 1 {
+		t.Errorf("JsonConfig length: got %d, want 1", len(got.JsonConfig.Langs))
 	}
 	if got.DefaultConfig.Timezone != "UTC" {
 		t.Errorf("DefaultConfig.Timezone: got %q, want %q", got.DefaultConfig.Timezone, "UTC")
@@ -83,9 +84,9 @@ func TestCollectInputs_CollectConfig_PassesImageConfigToLoader(t *testing.T) {
 	ClientConfig := entity.ClientConfig{ImageConfig: &imageConfig}
 
 	var capturedSource string
-	loader := &captureImageConfigLoader{
+	loader := &captureJsonConfigLoader{
 		captureSource: func(s string) { capturedSource = s },
-		result:        map[string]json.RawMessage{},
+		result:        &entity.JsonConfig{},
 	}
 
 	ci := NewCollectInputs(
@@ -106,7 +107,7 @@ func TestCollectInputs_CollectConfig_PassesImageConfigToLoader(t *testing.T) {
 func TestCollectInputs_CollectConfig_ReturnsErrorFromImageConfigLoader(t *testing.T) {
 	ci := NewCollectInputs(
 		&fakeClientInput{},
-		&fakeImageConfigLoader{err: errors.New("load failed")},
+		&fakeJsonConfigLoader{err: errors.New("load failed")},
 		&fakeDefaultSettingProvider{},
 	)
 
@@ -119,7 +120,7 @@ func TestCollectInputs_CollectConfig_ReturnsErrorFromImageConfigLoader(t *testin
 func TestCollectInputs_CollectConfig_EmptyJsonConfigWhenNoImageConfigSet(t *testing.T) {
 	ci := NewCollectInputs(
 		&fakeClientInput{},
-		&fakeImageConfigLoader{result: map[string]json.RawMessage{}},
+		&fakeJsonConfigLoader{result: &entity.JsonConfig{}},
 		&fakeDefaultSettingProvider{setting: entity.DefaultSetting{Timezone: "UTC"}},
 	)
 
@@ -127,19 +128,34 @@ func TestCollectInputs_CollectConfig_EmptyJsonConfigWhenNoImageConfigSet(t *test
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if len(got.JsonConfig) != 0 {
+	if len(got.JsonConfig.Langs) != 0 {
 		t.Errorf("expected empty JsonConfig, got %v", got.JsonConfig)
 	}
 }
 
-// captureImageConfigLoader は LoadLanguageImages に渡された source をキャプチャする。
-type captureImageConfigLoader struct {
+func TestCollectInputs_CollectConfig_SkipsWhenJsonConfigLoaderReturnsNil(t *testing.T) {
+	ci := NewCollectInputs(
+		&fakeClientInput{},
+		&fakeJsonConfigLoader{result: nil},
+		&fakeDefaultSettingProvider{setting: entity.DefaultSetting{Timezone: "UTC"}},
+	)
+
+	got, err := ci.CollectConfig([]string{})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if got.JsonConfig.Langs != nil {
+		t.Errorf("expected empty JsonConfig, got %v", got.JsonConfig)
+	}
+}
+
+type captureJsonConfigLoader struct {
 	captureSource func(string)
-	result        map[string]json.RawMessage
+	result        *entity.JsonConfig
 	err           error
 }
 
-func (c *captureImageConfigLoader) LoadLanguageImages(source string) (map[string]json.RawMessage, error) {
+func (c *captureJsonConfigLoader) LoadLanguageImages(source string) (*entity.JsonConfig, error) {
 	c.captureSource(source)
 	return c.result, c.err
 }

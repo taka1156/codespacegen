@@ -1,23 +1,21 @@
 package assemble
 
 import (
-	"encoding/json"
 	"errors"
 	"testing"
 
-	"codespacegen/internal/domain/entity"
+	"github.com/taka1156/codespacegen/internal/domain/entity"
+	"github.com/taka1156/codespacegen/internal/utils"
 )
 
-// fakeConfigResolver は ConfigResolver のテスト用実装。
-type fakeConfigResolver struct {
+// fakeCodespacePromptResolver は CodespacePromptResolver のテスト用実装。
+type fakeCodespacePromptResolver struct {
 	projectName     string
 	language        string
 	workspaceFolder string
 	serviceName     string
 	portMapping     string
 	timezone        string
-	mergedEntries   map[string]entity.JsonEntry
-	baseImageEntry  entity.JsonEntry
 
 	errProjectName     error
 	errLanguage        error
@@ -25,80 +23,68 @@ type fakeConfigResolver struct {
 	errServiceName     error
 	errPortMapping     error
 	errTimezone        error
-	errMergeEntries    error
-	errBaseImage       error
 }
 
-func (f *fakeConfigResolver) ResolveProjectName(_ string) (string, error) {
+func (f *fakeCodespacePromptResolver) PromptProjectName(_ string) (string, error) {
 	return f.projectName, f.errProjectName
 }
 
-func (f *fakeConfigResolver) ResolveLanguage(_ string) (string, error) {
+func (f *fakeCodespacePromptResolver) PromptLanguage(_ string) (string, error) {
 	return f.language, f.errLanguage
 }
 
-func (f *fakeConfigResolver) ResolveWorkspaceFolder(_ string) (string, error) {
+func (f *fakeCodespacePromptResolver) PromptWorkspaceFolder(_ string) (string, error) {
 	return f.workspaceFolder, f.errWorkspaceFolder
 }
 
-func (f *fakeConfigResolver) ResolveServiceName(_ string) (string, error) {
+func (f *fakeCodespacePromptResolver) PromptServiceName(_ string) (string, error) {
 	return f.serviceName, f.errServiceName
 }
 
-func (f *fakeConfigResolver) ResolvePortMapping(_ string) (string, error) {
+func (f *fakeCodespacePromptResolver) PromptPortMapping(_ string) (string, error) {
 	return f.portMapping, f.errPortMapping
 }
 
-func (f *fakeConfigResolver) ResolveTimezone(_, _, _ string) (string, error) {
+func (f *fakeCodespacePromptResolver) PromptTimezone(_ string) (string, error) {
 	return f.timezone, f.errTimezone
 }
 
-func (f *fakeConfigResolver) MergeLanguageEntries(_ map[string]json.RawMessage) (map[string]entity.JsonEntry, error) {
-	return f.mergedEntries, f.errMergeEntries
-}
+var (
+	defaultTestSetting = entity.DefaultSetting{Image: "alpine:latest", Timezone: "UTC"}
+	defaultJsonConfig  = entity.JsonConfig{
+		Common: &entity.CommonEntry{},
+		Langs: map[string]*entity.LangEntry{
+			"python": {
+				Image:            "python:3.12",
+				RunCommand:       utils.Ptr("pip install -r requirements.txt"),
+				VSCodeExtensions: utils.Ptr([]string{"ms-python.python"}),
+			},
+		},
+	}
+)
 
-func (f *fakeConfigResolver) ResolveBaseImage(_, _, _ string, _ map[string]entity.JsonEntry, _ string) (entity.JsonEntry, error) {
-	return f.baseImageEntry, f.errBaseImage
-}
-
-// defaultFakeResolver は正常系で使う最小限の fakeConfigResolver を返す。
-func defaultFakeResolver() *fakeConfigResolver {
-	return &fakeConfigResolver{
+// defaultFakeResolver は正常系で使う最小限の fakeCodespacePromptResolver を返す。
+func defaultFakeResolver() *fakeCodespacePromptResolver {
+	return &fakeCodespacePromptResolver{
 		projectName:     "myproject",
 		language:        "python",
 		workspaceFolder: "/workspace",
 		serviceName:     "app",
-		portMapping:     "",
-		timezone:        "UTC",
-		mergedEntries:   map[string]entity.JsonEntry{},
-		baseImageEntry:  entity.JsonEntry{Image: "python:3.12", Install: "pip install -r requirements.txt"},
+		timezone:        "Asia/Tokyo",
 	}
 }
-
-func strPtr(s string) *string { return &s }
 
 // --- Resolve 正常系 ---
 
 func TestAssembleCodespaceConfig_Resolve_BuildsConfigCorrectly(t *testing.T) {
 	resolver := defaultFakeResolver()
-	resolver.baseImageEntry = entity.JsonEntry{
-		Image:            "python:3.12",
-		Install:          "pip install -r requirements.txt",
-		Timezone:         "Asia/Tokyo",
-		VSCodeExtensions: []string{"ms-python.python"},
-	}
-	resolver.timezone = "Asia/Tokyo"
-
 	composeName := "docker-compose.yaml"
 	clientConfig := entity.ClientConfig{
-		ComposeFile: strPtr(composeName),
+		ComposeFile: utils.Ptr(composeName),
 	}
 
 	rcc := NewAssembleCodespaceConfig(resolver)
-	got, err := rcc.Resolve(clientConfig, entity.DefaultSetting{
-		Image:    "alpine:latest",
-		Timezone: "UTC",
-	}, nil)
+	got, err := rcc.Resolve(clientConfig, defaultTestSetting, defaultJsonConfig)
 
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -121,8 +107,8 @@ func TestAssembleCodespaceConfig_Resolve_BuildsConfigCorrectly(t *testing.T) {
 	if got.ComposeFileName != composeName {
 		t.Errorf("ComposeFileName: got %q, want %q", got.ComposeFileName, composeName)
 	}
-	if got.InstallCommand != "pip install -r requirements.txt" {
-		t.Errorf("InstallCommand: got %q, want %q", got.InstallCommand, "pip install -r requirements.txt")
+	if got.RunCommand != "pip install -r requirements.txt" {
+		t.Errorf("RunCommand: got %q, want %q", got.RunCommand, "pip install -r requirements.txt")
 	}
 	if len(got.VSCodeExtensions) != 1 || got.VSCodeExtensions[0] != "ms-python.python" {
 		t.Errorf("VSCodeExtensions: got %v, want [ms-python.python]", got.VSCodeExtensions)
@@ -134,10 +120,7 @@ func TestAssembleCodespaceConfig_Resolve_PortMappingIsSet(t *testing.T) {
 	resolver.portMapping = "3000:3000"
 
 	rcc := NewAssembleCodespaceConfig(resolver)
-	got, err := rcc.Resolve(entity.ClientConfig{}, entity.DefaultSetting{
-		Image:    "alpine:latest",
-		Timezone: "UTC",
-	}, nil)
+	got, err := rcc.Resolve(entity.ClientConfig{}, defaultTestSetting, defaultJsonConfig)
 
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -149,120 +132,84 @@ func TestAssembleCodespaceConfig_Resolve_PortMappingIsSet(t *testing.T) {
 
 // --- Resolve エラー伝播 ---
 
-func TestAssembleCodespaceConfig_Resolve_ErrorFromResolveProjectName(t *testing.T) {
+func TestAssembleCodespaceConfig_Resolve_ErrorFromPromptProjectName(t *testing.T) {
 	resolver := defaultFakeResolver()
 	resolver.errProjectName = errors.New("project name error")
 
 	rcc := NewAssembleCodespaceConfig(resolver)
-	_, err := rcc.Resolve(entity.ClientConfig{}, entity.DefaultSetting{
-		Image:    "alpine:latest",
-		Timezone: "UTC",
-	}, nil)
+	_, err := rcc.Resolve(entity.ClientConfig{}, defaultTestSetting, defaultJsonConfig)
 
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
 }
 
-func TestAssembleCodespaceConfig_Resolve_ErrorFromResolveLanguage(t *testing.T) {
+func TestAssembleCodespaceConfig_Resolve_ErrorFromPromptLanguage(t *testing.T) {
 	resolver := defaultFakeResolver()
 	resolver.errLanguage = errors.New("language error")
 
 	rcc := NewAssembleCodespaceConfig(resolver)
-	_, err := rcc.Resolve(entity.ClientConfig{}, entity.DefaultSetting{
-		Image:    "alpine:latest",
-		Timezone: "UTC",
-	}, nil)
+	_, err := rcc.Resolve(entity.ClientConfig{}, defaultTestSetting, defaultJsonConfig)
 
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
 }
 
-func TestAssembleCodespaceConfig_Resolve_ErrorFromResolveWorkspaceFolder(t *testing.T) {
+func TestAssembleCodespaceConfig_Resolve_ErrorFromPromptWorkspaceFolder(t *testing.T) {
 	resolver := defaultFakeResolver()
 	resolver.errWorkspaceFolder = errors.New("workspace folder error")
 
 	rcc := NewAssembleCodespaceConfig(resolver)
-	_, err := rcc.Resolve(entity.ClientConfig{}, entity.DefaultSetting{
-		Image:    "alpine:latest",
-		Timezone: "UTC",
-	}, nil)
+	_, err := rcc.Resolve(entity.ClientConfig{}, defaultTestSetting, defaultJsonConfig)
 
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
 }
 
-func TestAssembleCodespaceConfig_Resolve_ErrorFromResolveServiceName(t *testing.T) {
+func TestAssembleCodespaceConfig_Resolve_ErrorFromPromptServiceName(t *testing.T) {
 	resolver := defaultFakeResolver()
 	resolver.errServiceName = errors.New("service name error")
 
 	rcc := NewAssembleCodespaceConfig(resolver)
-	_, err := rcc.Resolve(entity.ClientConfig{}, entity.DefaultSetting{
-		Image:    "alpine:latest",
-		Timezone: "UTC",
-	}, nil)
+	_, err := rcc.Resolve(entity.ClientConfig{}, defaultTestSetting, defaultJsonConfig)
 
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
 }
 
-func TestAssembleCodespaceConfig_Resolve_ErrorFromResolvePortMapping(t *testing.T) {
+func TestAssembleCodespaceConfig_Resolve_ErrorFromPromptPortMapping(t *testing.T) {
 	resolver := defaultFakeResolver()
 	resolver.errPortMapping = errors.New("port mapping error")
 
 	rcc := NewAssembleCodespaceConfig(resolver)
-	_, err := rcc.Resolve(entity.ClientConfig{}, entity.DefaultSetting{
-		Image:    "alpine:latest",
-		Timezone: "UTC",
-	}, nil)
+	_, err := rcc.Resolve(entity.ClientConfig{}, defaultTestSetting, defaultJsonConfig)
 
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
 }
 
-func TestAssembleCodespaceConfig_Resolve_ErrorFromMergeLanguageEntries(t *testing.T) {
-	resolver := defaultFakeResolver()
-	resolver.errMergeEntries = errors.New("merge error")
-
-	rcc := NewAssembleCodespaceConfig(resolver)
-	_, err := rcc.Resolve(entity.ClientConfig{}, entity.DefaultSetting{
-		Image:    "alpine:latest",
-		Timezone: "UTC",
-	}, nil)
-
-	if err == nil {
-		t.Fatal("expected error, got nil")
-	}
-}
-
-func TestAssembleCodespaceConfig_Resolve_ErrorFromResolveBaseImage(t *testing.T) {
-	resolver := defaultFakeResolver()
-	resolver.errBaseImage = errors.New("base image error")
-
-	rcc := NewAssembleCodespaceConfig(resolver)
-	_, err := rcc.Resolve(entity.ClientConfig{}, entity.DefaultSetting{
-		Image:    "alpine:latest",
-		Timezone: "UTC",
-	}, nil)
-
-	if err == nil {
-		t.Fatal("expected error, got nil")
-	}
-}
-
-func TestAssembleCodespaceConfig_Resolve_ErrorFromResolveTimezone(t *testing.T) {
+func TestAssembleCodespaceConfig_Resolve_ErrorFromPromptTimezone(t *testing.T) {
 	resolver := defaultFakeResolver()
 	resolver.errTimezone = errors.New("timezone error")
 
 	rcc := NewAssembleCodespaceConfig(resolver)
-	_, err := rcc.Resolve(entity.ClientConfig{}, entity.DefaultSetting{
-		Image:    "alpine:latest",
-		Timezone: "UTC",
-	}, nil)
+	_, err := rcc.Resolve(entity.ClientConfig{}, defaultTestSetting, defaultJsonConfig)
+
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
+}
+
+func TestAssembleCodespaceConfig_Resolve_ErrorFromUnknownLanguage(t *testing.T) {
+	resolver := defaultFakeResolver()
+	resolver.language = "unknown-language"
+
+	rcc := NewAssembleCodespaceConfig(resolver)
+	_, err := rcc.Resolve(entity.ClientConfig{}, defaultTestSetting, defaultJsonConfig)
 
 	if err == nil {
 		t.Fatal("expected error, got nil")

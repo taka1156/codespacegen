@@ -1,8 +1,8 @@
 package config
 
 import (
-	"codespacegen/internal/domain/entity"
-	"codespacegen/internal/utils"
+	"github.com/taka1156/codespacegen/internal/domain/entity"
+	"github.com/taka1156/codespacegen/internal/utils"
 
 	"encoding/json"
 	"testing"
@@ -14,14 +14,14 @@ func TestConfigTemplateGenerator_Generate_Success(t *testing.T) {
 	g := NewConfigTemplateGenerator()
 	input := entity.TemplateJson{
 		Schema: "test-schema",
-		Common: entity.JsonEntry{
-			Timezone: "Asia/Tokyo",
+		Common: entity.CommonEntry{
+			Timezone: utils.Ptr("Asia/Tokyo"),
 			Locale: utils.Ptr(entity.LocaleConfig{
 				Lang:     "ja_JP.UTF-8",
 				Language: "ja_JP:ja",
 				LcAll:    "ja_JP.UTF-8",
 			}),
-			VSCodeExtensions: []string{"ext1", "ext2"},
+			VSCodeExtensions: utils.Ptr([]string{"ext1", "ext2"}),
 		},
 	}
 	got, err := g.Generate(input)

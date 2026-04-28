@@ -1,18 +1,18 @@
 package workflow
 
 import (
-	"codespacegen/internal/domain/service"
-	"codespacegen/internal/workflow/assemble"
-	"codespacegen/internal/workflow/collect"
-	"codespacegen/internal/workflow/generate"
-	"codespacegen/internal/workflow/initialize"
+	"github.com/taka1156/codespacegen/internal/domain/service"
+	"github.com/taka1156/codespacegen/internal/workflow/assemble"
+	"github.com/taka1156/codespacegen/internal/workflow/collect"
+	"github.com/taka1156/codespacegen/internal/workflow/generate"
+	"github.com/taka1156/codespacegen/internal/workflow/initialize"
 )
 
 type CollectInputs = collect.CollectInputs
 
 func NewCollectInputs(
 	cliInput collect.ClientInputProvider,
-	jsonInput collect.ImageConfigLoader,
+	jsonInput collect.JsonConfigLoader,
 	defaultConfig collect.DefaultSettingProvider,
 ) *CollectInputs {
 	return collect.NewCollectInputs(cliInput, jsonInput, defaultConfig)
@@ -21,9 +21,9 @@ func NewCollectInputs(
 type AssembleCodespaceConfig = assemble.AssembleCodespaceConfig
 
 func NewAssembleCodespaceConfig(
-	CodespaceConfigResolver assemble.ConfigResolver,
+	CodespacePrompter assemble.CodespacegenPrompter,
 ) *AssembleCodespaceConfig {
-	return assemble.NewAssembleCodespaceConfig(CodespaceConfigResolver)
+	return assemble.NewAssembleCodespaceConfig(CodespacePrompter)
 }
 
 type FileWriter = service.LocalFileWriter

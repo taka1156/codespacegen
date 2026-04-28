@@ -8,8 +8,8 @@ ENV LANG=en.UTF-8 \
   TZ=UTC
 
 RUN <<-EOF
-apt-get update
-apt-get install -y --no-install-recommends \
+apt update
+apt install -y --no-install-recommends \
   bash \
   bash-completion \
   ca-certificates \

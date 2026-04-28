@@ -57,14 +57,19 @@
   },
   "moonbit": {
     "image": "ubuntu:24.04",
-    "install": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
+    "runCommand": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
     "vscodeExtensions": [
       "moonbit.moonbit-lang"
     ]
   },
   "gcc": {
     "image": "ubuntu:24.04",
-    "install": "apt install -y gcc make git binutils libc6-dev",
+    "linuxPackages": [
+      "gcc",
+      "make",
+      "binutils",
+      "libc6-dev"
+    ],
     "vscodeExtensions": [
       "ms-vscode.cpptools"
     ]

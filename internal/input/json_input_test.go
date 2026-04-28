@@ -3,6 +3,10 @@ package input
 import (
 	"errors"
 	"testing"
+
+	"github.com/taka1156/codespacegen/internal/domain/entity"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 // --- フェイク実装 ---
@@ -38,7 +42,13 @@ func TestLoadLanguageImages_ReturnsNilWhenSourceIsEmpty(t *testing.T) {
 }
 
 func TestLoadLanguageImages_ParsesValidJSONFromFileLoader(t *testing.T) {
-	raw := []byte(`{"python":"python:3.12","node":"node:20"}`)
+	raw := []byte(`{"python": {"image": "python:3.12"},"node":{"image":"node:20"}}`)
+	expected := &entity.JsonConfig{
+		Langs: map[string]*entity.LangEntry{
+			"python": {Image: "python:3.12"},
+			"node":   {Image: "node:20"},
+		},
+	}
 	ji := newJsonInputWithFakes(
 		&fakeLoader{},
 		&fakeLoader{data: raw},
@@ -48,16 +58,24 @@ func TestLoadLanguageImages_ParsesValidJSONFromFileLoader(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if len(got) != 2 {
-		t.Errorf("expected 2 entries, got %d", len(got))
+	if len(got.Langs) != 2 {
+		t.Errorf("expected 2 entries, got %d", len(got.Langs))
 	}
-	if _, ok := got["python"]; !ok {
+	if _, ok := got.Langs["python"]; !ok {
 		t.Error("expected python key in result")
+	}
+	if diff := cmp.Diff(got, expected); diff != "" {
+		t.Errorf("mismatch (-got +expected):\n%s", diff)
 	}
 }
 
 func TestLoadLanguageImages_ParsesValidJSONFromHTTPSLoader(t *testing.T) {
-	raw := []byte(`{"rust":"rust:1.76"}`)
+	raw := []byte(`{"rust": {"image": "rust:1.76"}}`)
+	expected := &entity.JsonConfig{
+		Langs: map[string]*entity.LangEntry{
+			"rust": {Image: "rust:1.76"},
+		},
+	}
 	ji := newJsonInputWithFakes(
 		&fakeLoader{data: raw},
 		&fakeLoader{},
@@ -67,8 +85,11 @@ func TestLoadLanguageImages_ParsesValidJSONFromHTTPSLoader(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if _, ok := got["rust"]; !ok {
+	if _, ok := got.Langs["rust"]; !ok {
 		t.Error("expected rust key in result")
+	}
+	if diff := cmp.Diff(got, expected); diff != "" {
+		t.Errorf("mismatch (-got +expected):\n%s", diff)
 	}
 }
 

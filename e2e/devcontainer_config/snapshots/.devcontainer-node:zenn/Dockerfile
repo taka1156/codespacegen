@@ -1,17 +1,32 @@
-FROM {{.BaseImage}}
+FROM node:24-alpine
 
-WORKDIR {{.WorkspaceFolder}}
+WORKDIR /workspace
 
-ENV LANG={{.Locale.Lang}} \
-    LANGUAGE={{.Locale.Language}} \
-    LC_ALL={{.Locale.LcAll}} \
-  TZ={{.Timezone}}
+ENV LANG=en.UTF-8 \
+    LANGUAGE=en_US:en \
+    LC_ALL=en.UTF-8 \
+  TZ=Asia/Tokyo
 
-{{.BaseSetup}}
+RUN <<-EOF
+apk add --no-cache \
+  bash \
+  bash-completion \
+  ca-certificates \
+  tzdata \
+  git \
+  git-lfs \
+  vim \
+  curl \
+  musl-locales \
+  musl-locales-lang
+EOF
 
 RUN git lfs install
 
-{{.TimezoneSetup}}
+RUN <<-EOF
+ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+echo "Asia/Tokyo" > /etc/timezone
+EOF
 
 RUN <<-EOF
 curl -o ~/.git-prompt.sh https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh
@@ -22,8 +37,10 @@ echo "[ -f ~/.git-completion.sh ] && source ~/.git-completion.sh" >> ~/.bashrc
 echo "GIT_PS1_SHOWDIRTYSTATE=true" >> ~/.bashrc
 echo "GIT_PS1_SHOWUNTRACKEDFILES=true" >> ~/.bashrc
 echo "GIT_PS1_SHOWUPSTREAM=auto"  >> ~/.bashrc
-git config --system --add safe.directory {{.WorkspaceFolder}}
+git config --system --add safe.directory /workspace
 echo 'export PS1="\[\033[01;32m\]\u@\h\[\033[01;33m\] \w \[\033[01;31m\]\$(__git_ps1 \"(%s)\") \\n+\[\033[01;34m\]\\$ \[\033[00m\]"' >> ~/.bashrc
 EOF
 
-{{.RunCommandBlock}}CMD ["bash"]
+RUN yarn global add zenn-cli
+
+CMD ["bash"]

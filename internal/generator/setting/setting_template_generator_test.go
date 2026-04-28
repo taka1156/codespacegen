@@ -1,16 +1,17 @@
 package setting
 
 import (
-	"codespacegen/internal/domain/entity"
 	"encoding/json"
 	"testing"
+
+	"github.com/taka1156/codespacegen/internal/domain/entity"
 )
 
 func TestSettingTemplateGenerator_Generate_ReturnsValidJSON(t *testing.T) {
 	g := NewSettingTemplateGenerator()
 	input := entity.TemplateJson{
 		Schema: "https://example.com/schema.json",
-		Go: entity.JsonEntry{
+		Go: entity.LangEntry{
 			Image: "golang:1.24-alpine",
 		},
 	}

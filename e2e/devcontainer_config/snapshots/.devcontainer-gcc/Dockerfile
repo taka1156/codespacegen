@@ -1,17 +1,39 @@
-FROM {{.BaseImage}}
+FROM ubuntu:24.04
 
-WORKDIR {{.WorkspaceFolder}}
+WORKDIR /workspace
 
-ENV LANG={{.Locale.Lang}} \
-    LANGUAGE={{.Locale.Language}} \
-    LC_ALL={{.Locale.LcAll}} \
-  TZ={{.Timezone}}
+ENV LANG=en.UTF-8 \
+    LANGUAGE=en_US:en \
+    LC_ALL=en.UTF-8 \
+  TZ=UTC
 
-{{.BaseSetup}}
+RUN <<-EOF
+apt update
+apt install -y --no-install-recommends \
+  bash \
+  bash-completion \
+  ca-certificates \
+  tzdata \
+  git \
+  git-lfs \
+  vim \
+  curl \
+  locales \
+  gcc \
+  make \
+  binutils \
+  libc6-dev
+rm -rf /var/lib/apt/lists/*
+locale-gen en.UTF-8
+update-locale LANG=en.UTF-8 LC_ALL=en.UTF-8
+EOF
 
 RUN git lfs install
 
-{{.TimezoneSetup}}
+RUN <<-EOF
+ln -fs /usr/share/zoneinfo/UTC /etc/localtime
+dpkg-reconfigure -f noninteractive tzdata
+EOF
 
 RUN <<-EOF
 curl -o ~/.git-prompt.sh https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh
@@ -22,8 +44,8 @@ echo "[ -f ~/.git-completion.sh ] && source ~/.git-completion.sh" >> ~/.bashrc
 echo "GIT_PS1_SHOWDIRTYSTATE=true" >> ~/.bashrc
 echo "GIT_PS1_SHOWUNTRACKEDFILES=true" >> ~/.bashrc
 echo "GIT_PS1_SHOWUPSTREAM=auto"  >> ~/.bashrc
-git config --system --add safe.directory {{.WorkspaceFolder}}
+git config --system --add safe.directory /workspace
 echo 'export PS1="\[\033[01;32m\]\u@\h\[\033[01;33m\] \w \[\033[01;31m\]\$(__git_ps1 \"(%s)\") \\n+\[\033[01;34m\]\\$ \[\033[00m\]"' >> ~/.bashrc
 EOF
 
-{{.RunCommandBlock}}CMD ["bash"]
+CMD ["bash"]

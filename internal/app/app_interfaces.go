@@ -1,10 +1,8 @@
 package app
 
 import (
-	"encoding/json"
-
-	"codespacegen/internal/domain/entity"
-	"codespacegen/internal/workflow/collect"
+	"github.com/taka1156/codespacegen/internal/domain/entity"
+	"github.com/taka1156/codespacegen/internal/workflow/collect"
 )
 
 type inputCollector interface {
@@ -16,7 +14,7 @@ type initializeSettingJson interface {
 }
 
 type assembleConfigResolver interface {
-	Resolve(clientConfig entity.ClientConfig, defaultSetting entity.DefaultSetting, jsonConfig map[string]json.RawMessage) (*entity.CodespaceConfig, error)
+	Resolve(clientConfig entity.ClientConfig, defaultSetting entity.DefaultSetting, jsonConfig entity.JsonConfig) (*entity.CodespaceConfig, error)
 }
 
 type generateCodespaceArtifacts interface {

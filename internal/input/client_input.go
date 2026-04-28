@@ -1,11 +1,12 @@
 package input
 
 import (
-	"codespacegen/internal/domain/entity"
-	"codespacegen/internal/utils"
 	"flag"
 	"fmt"
 	"os"
+
+	"github.com/taka1156/codespacegen/internal/domain/entity"
+	"github.com/taka1156/codespacegen/internal/utils"
 )
 
 type ClientInput struct {
@@ -18,7 +19,6 @@ func NewClientInput() *ClientInput {
 func (ci *ClientInput) GetInput(args []string) entity.ClientConfig {
 	ClientConfig := entity.ClientConfig{}
 
-	// 引数が2つ以上あり、2番目が"init"ならinitコマンドとして扱う
 	if len(args) > 1 && args[1] == "init" {
 		initCmd := flag.NewFlagSet("init", flag.ExitOnError)
 		outputDir := initCmd.String("output", ".devcontainer", "output directory for generated files")

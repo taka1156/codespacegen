@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"codespacegen/internal/domain/entity"
+	"github.com/taka1156/codespacegen/internal/domain/entity"
 )
 
 var testAlpineModules = []string{
@@ -50,8 +50,8 @@ func TestCodespaceGenerator_Generate_UsesApkForAlpineImage(t *testing.T) {
 	if !strings.Contains(dockerfile, "ca-certificates") {
 		t.Fatal("expected Dockerfile to install ca-certificates for alpine image")
 	}
-	if strings.Contains(dockerfile, "apt-get install") {
-		t.Fatal("expected Dockerfile not to use apt-get for alpine image")
+	if strings.Contains(dockerfile, "apt get install") {
+		t.Fatal("expected Dockerfile not to use apt get for alpine image")
 	}
 }
 
@@ -98,8 +98,8 @@ func TestCodespaceGenerator_Generate_UsesAptForUbuntuImage(t *testing.T) {
 	}
 
 	dockerfile := findGeneratedFile(t, files, "Dockerfile")
-	if !strings.Contains(dockerfile, "apt-get install -y --no-install-recommends") {
-		t.Fatal("expected Dockerfile to use apt-get for ubuntu image")
+	if !strings.Contains(dockerfile, "apt install -y --no-install-recommends") {
+		t.Fatal("expected Dockerfile to use apt for ubuntu image")
 	}
 	if !strings.Contains(dockerfile, "ca-certificates") {
 		t.Fatal("expected Dockerfile to install ca-certificates for ubuntu image")
@@ -183,7 +183,7 @@ func TestCodespaceGenerator_Generate_UsesCustomLocale(t *testing.T) {
 	}
 }
 
-func TestCodespaceGenerator_Generate_EmbedsInstallCommand(t *testing.T) {
+func TestCodespaceGenerator_Generate_EmbedsRunCommand(t *testing.T) {
 	g := NewCodespaceGenerator()
 	cfg := entity.CodespaceConfig{
 		ContainerName:   "test",
@@ -191,7 +191,7 @@ func TestCodespaceGenerator_Generate_EmbedsInstallCommand(t *testing.T) {
 		WorkspaceFolder: "/workspace",
 		BaseImage:       "ubuntu:latest",
 		ComposeFileName: "docker-compose.yaml",
-		InstallCommand:  "apt-get update && apt-get install -y build-essential",
+		RunCommand:      "apt get update && apt get install -y build-essential",
 	}
 
 	files, err := g.Generate(cfg)
@@ -200,7 +200,7 @@ func TestCodespaceGenerator_Generate_EmbedsInstallCommand(t *testing.T) {
 	}
 
 	dockerfile := findGeneratedFile(t, files, "Dockerfile")
-	if !strings.Contains(dockerfile, "RUN apt-get update && apt-get install -y build-essential") {
+	if !strings.Contains(dockerfile, "RUN apt get update && apt get install -y build-essential") {
 		t.Fatal("expected Dockerfile to include install command")
 	}
 }

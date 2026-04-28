@@ -1,11 +1,12 @@
 package generate
 
 import (
-	"codespacegen/internal/domain/entity"
-	"codespacegen/internal/domain/service"
 	"fmt"
 	"path/filepath"
 	"strings"
+
+	"github.com/taka1156/codespacegen/internal/domain/entity"
+	"github.com/taka1156/codespacegen/internal/domain/service"
 )
 
 type GenerateCodespaceArtifacts struct {

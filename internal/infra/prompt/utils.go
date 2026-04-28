@@ -1,13 +1,14 @@
-package resolve
+package prompt
 
 import (
 	"bufio"
-	"codespacegen/internal/i18n"
 	"errors"
 	"fmt"
 	"io"
 	"regexp"
 	"strings"
+
+	"github.com/taka1156/codespacegen/internal/i18n"
 )
 
 var (
@@ -49,38 +50,4 @@ func promptWithDefault(reader *bufio.Reader, prompt string, defaultValue string)
 	return line, nil
 }
 
-func promptUntilResolved(reader *bufio.Reader, defaultValue string, promptFn func(), readErrMessage string, handleLine func(line string, defaultValue string, isEOF bool) (string, bool, error)) (string, error) {
-	for {
-		promptFn()
 
-		line, err := reader.ReadString('\n')
-		if err != nil {
-			if errors.Is(err, io.EOF) {
-				line = strings.TrimSpace(line)
-				result, _, handleErr := handleLine(line, defaultValue, true)
-				return result, handleErr
-			}
-			return "", fmt.Errorf("%s: %w", readErrMessage, err)
-		}
-
-		line = strings.TrimSpace(line)
-		result, done, handleErr := handleLine(line, defaultValue, false)
-		if handleErr != nil {
-			return "", handleErr
-		}
-		if done {
-			return result, nil
-		}
-	}
-}
-
-func firstNonEmpty(values ...string) string {
-	for _, v := range values {
-		trimmed := strings.TrimSpace(v)
-		if trimmed != "" {
-			return trimmed
-		}
-	}
-
-	return ""
-}

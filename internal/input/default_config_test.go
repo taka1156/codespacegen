@@ -1,8 +1,9 @@
 package input
 
 import (
-	"codespacegen/internal/domain/entity"
 	"testing"
+
+	"github.com/taka1156/codespacegen/internal/domain/entity"
 )
 
 func TestDefaultConfig_GetDefaultSetting_ReturnsExpectedValues(t *testing.T) {

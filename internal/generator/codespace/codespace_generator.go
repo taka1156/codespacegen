@@ -8,7 +8,7 @@ import (
 	"strings"
 	"text/template"
 
-	"codespacegen/internal/domain/entity"
+	"github.com/taka1156/codespacegen/internal/domain/entity"
 )
 
 //go:embed template/Dockerfile.tmpl template/docker-compose.yaml.tmpl
@@ -26,7 +26,7 @@ type dockerfileData struct {
 	Locale          entity.LocaleConfig
 	BaseSetup       string
 	TimezoneSetup   string
-	InstallBlock    string
+	RunCommandBlock string
 }
 
 type composeData struct {
@@ -105,9 +105,9 @@ func (g *CodespaceGenerator) renderDockerfile(config entity.CodespaceConfig) (st
 	}
 	timezoneSetup := strategy.renderTimezoneSetup(timezone)
 
-	installBlock := ""
-	if config.InstallCommand != "" {
-		installBlock = fmt.Sprintf("RUN %s\n\n", config.InstallCommand)
+	runCommandBlock := ""
+	if config.RunCommand != "" {
+		runCommandBlock = fmt.Sprintf("RUN %s\n\n", config.RunCommand)
 	}
 
 	var dockerfileBuf bytes.Buffer
@@ -118,7 +118,7 @@ func (g *CodespaceGenerator) renderDockerfile(config entity.CodespaceConfig) (st
 		Locale:          locale,
 		BaseSetup:       baseSetup,
 		TimezoneSetup:   timezoneSetup,
-		InstallBlock:    installBlock,
+		RunCommandBlock: runCommandBlock,
 	}); err != nil {
 		return "", fmt.Errorf("failed to render Dockerfile: %w", err)
 	}
@@ -203,8 +203,8 @@ EOF`
 
 func (debianLikeStrategy) renderBaseSetup(locale entity.LocaleConfig, osModules entity.OsModules) string {
 	return `RUN <<-EOF
-apt-get update
-apt-get install -y --no-install-recommends \
+apt update
+apt install -y --no-install-recommends \
   ` + strings.Join(osModules.DebianLikeModules, " \\\n  ") + `
 rm -rf /var/lib/apt/lists/*
 locale-gen ` + locale.Lang + `
