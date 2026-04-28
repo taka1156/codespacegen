@@ -31,6 +31,8 @@ RUN curl -fsSL \
   | tar -xz -C /usr/local/bin commitlint \
   && chmod +x /usr/local/bin/commitlint
 
+RUN curl -sSfL https://golangci-lint.run/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.11.4
+
 RUN <<-EOF
 curl -o ~/.git-prompt.sh https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh
 curl -o ~/.git-completion.sh https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash
