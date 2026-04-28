@@ -5,21 +5,21 @@ import "codespacegen/internal/utils"
 const DefaultTemplateJsonPath = "codespacegen.json"
 
 type TemplateJson struct {
-	Schema     string    `json:"$schema,omitempty"`
-	Common     JsonEntry `json:"common,omitempty"`
-	Go         JsonEntry `json:"go,omitempty"`
-	Python     JsonEntry `json:"python,omitempty"`
-	NodeBiome  JsonEntry `json:"node:biome,omitempty"`
-	NodeEslint JsonEntry `json:"node:eslint,omitempty"`
-	NodeReact  JsonEntry `json:"node:react,omitempty"`
-	Rust       JsonEntry `json:"rust,omitempty"`
-	Moonbit    JsonEntry `json:"moonbit,omitempty"`
-	Gcc        JsonEntry `json:"gcc,omitempty"`
+	Schema     string      `json:"$schema,omitempty"`
+	Common     CommonEntry `json:"common,omitempty"`
+	Go         JsonEntry   `json:"go,omitempty"`
+	Python     JsonEntry   `json:"python,omitempty"`
+	NodeBiome  JsonEntry   `json:"node:biome,omitempty"`
+	NodeEslint JsonEntry   `json:"node:eslint,omitempty"`
+	NodeReact  JsonEntry   `json:"node:react,omitempty"`
+	Rust       JsonEntry   `json:"rust,omitempty"`
+	Moonbit    JsonEntry   `json:"moonbit,omitempty"`
+	Gcc        JsonEntry   `json:"gcc,omitempty"`
 }
 
 var DefaultTemplateJson = TemplateJson{
 	Schema: "https://raw.githubusercontent.com/taka1156/codespacegen/master/codespacegen.schema.json",
-	Common: JsonEntry{
+	Common: CommonEntry{
 		Timezone: "Asia/Tokyo",
 		Locale:   utils.Ptr(DefaultLocale),
 		VSCodeExtensions: []string{
@@ -71,15 +71,15 @@ var DefaultTemplateJson = TemplateJson{
 		},
 	},
 	Moonbit: JsonEntry{
-		Image:   "ubuntu:24.04",
-		Install: "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
+		Image:      "ubuntu:24.04",
+		RunCommand: "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
 		VSCodeExtensions: []string{
 			"moonbit.moonbit-lang",
 		},
 	},
 	Gcc: JsonEntry{
-		Image:   "ubuntu:24.04",
-		Install: "apt install -y gcc make git binutils libc6-dev",
+		Image:      "ubuntu:24.04",
+		RunCommand: "apt install -y gcc make git binutils libc6-dev",
 		VSCodeExtensions: []string{
 			"ms-vscode.cpptools",
 		},

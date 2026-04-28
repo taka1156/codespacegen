@@ -71,7 +71,7 @@ func defaultFakeResolver() *fakeConfigResolver {
 		portMapping:     "",
 		timezone:        "UTC",
 		mergedEntries:   map[string]entity.JsonEntry{},
-		baseImageEntry:  entity.JsonEntry{Image: "python:3.12", Install: "pip install -r requirements.txt"},
+		baseImageEntry:  entity.JsonEntry{Image: "python:3.12", RunCommand: "pip install -r requirements.txt"},
 	}
 }
 
@@ -83,7 +83,7 @@ func TestAssembleCodespaceConfig_Resolve_BuildsConfigCorrectly(t *testing.T) {
 	resolver := defaultFakeResolver()
 	resolver.baseImageEntry = entity.JsonEntry{
 		Image:            "python:3.12",
-		Install:          "pip install -r requirements.txt",
+		RunCommand:       "pip install -r requirements.txt",
 		Timezone:         "Asia/Tokyo",
 		VSCodeExtensions: []string{"ms-python.python"},
 	}
@@ -121,8 +121,8 @@ func TestAssembleCodespaceConfig_Resolve_BuildsConfigCorrectly(t *testing.T) {
 	if got.ComposeFileName != composeName {
 		t.Errorf("ComposeFileName: got %q, want %q", got.ComposeFileName, composeName)
 	}
-	if got.InstallCommand != "pip install -r requirements.txt" {
-		t.Errorf("InstallCommand: got %q, want %q", got.InstallCommand, "pip install -r requirements.txt")
+	if got.RunCommand != "pip install -r requirements.txt" {
+		t.Errorf("RunCommand: got %q, want %q", got.RunCommand, "pip install -r requirements.txt")
 	}
 	if len(got.VSCodeExtensions) != 1 || got.VSCodeExtensions[0] != "ms-python.python" {
 		t.Errorf("VSCodeExtensions: got %v, want [ms-python.python]", got.VSCodeExtensions)

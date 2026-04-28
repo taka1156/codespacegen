@@ -83,7 +83,7 @@ Dependencies point inward.
 - Template generation happens in `internal/generator/default_template_generator.go`.
 - The generator chooses package setup based on the base image:
   - Alpine-like images use `apk`
-  - Non-Alpine images use `apt-get`
+  - Non-Alpine images use `apt get`
 - Generated `devcontainer.json` always includes:
   - `GitHub.copilot`
   - `GitHub.copilot-chat`
