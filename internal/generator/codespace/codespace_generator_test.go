@@ -233,34 +233,6 @@ func TestCodespaceGenerator_Generate_UsesCustomTimezone(t *testing.T) {
 	}
 }
 
-func TestCodespaceGenerator_Generate_EmbedsVSCodeExtensions(t *testing.T) {
-	g := NewCodespaceGenerator()
-	cfg := entity.CodespaceConfig{
-		ContainerName:    "test",
-		ServiceName:      "app",
-		WorkspaceFolder:  "/workspace",
-		BaseImage:        entity.DefaultImage,
-		ComposeFileName:  "docker-compose.yaml",
-		VSCodeExtensions: []string{"MS-CEINTL.vscode-language-pack-ja", "golang.Go", "MS-CEINTL.vscode-language-pack-ja"},
-	}
-
-	files, err := g.Generate(cfg)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-
-	devcontainer := findGeneratedFile(t, files, "devcontainer.json")
-	if !strings.Contains(devcontainer, "MS-CEINTL.vscode-language-pack-ja") {
-		t.Fatal("expected devcontainer.json to include merged common extension")
-	}
-	if !strings.Contains(devcontainer, "golang.Go") {
-		t.Fatal("expected devcontainer.json to include language extension")
-	}
-	if strings.Count(devcontainer, "MS-CEINTL.vscode-language-pack-ja") != 1 {
-		t.Fatal("expected devcontainer.json to deduplicate duplicated extension")
-	}
-}
-
 func TestCodespaceGenerator_Generate_DevcontainerKeyOrder(t *testing.T) {
 	g := NewCodespaceGenerator()
 	cfg := entity.CodespaceConfig{

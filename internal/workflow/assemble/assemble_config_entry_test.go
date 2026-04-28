@@ -103,6 +103,20 @@ func TestMergeLanguageEntries_LangExtensionsAppendCommon(t *testing.T) {
 	}
 }
 
+func TestMergeLanguageEntries_DeduplicatesExtensions(t *testing.T) {
+	common := entity.CommonEntry{
+		VSCodeExtensions: utils.Ptr([]string{"common.ext", "shared.ext"}),
+	}
+	lang := entity.LangEntry{
+		Image:            "python:3.12",
+		VSCodeExtensions: utils.Ptr([]string{"shared.ext", "lang.ext"}),
+	}
+	got := mergeLanguageEntries(common, lang)
+	if len(*got.VSCodeExtensions) != 3 {
+		t.Errorf("VSCodeExtensions len: got %d, want 3 (common.ext, shared.ext, lang.ext)", len(*got.VSCodeExtensions))
+	}
+}
+
 func TestMergeLanguageEntries_OnlyCommonExtensionsWhenLangHasNone(t *testing.T) {
 	common := entity.CommonEntry{
 		VSCodeExtensions: utils.Ptr([]string{"common.ext"}),

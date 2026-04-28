@@ -77,7 +77,9 @@ func mergeLanguageEntries(common entity.CommonEntry, LangEntry entity.LangEntry)
 	case common.VSCodeExtensions != nil && LangEntry.VSCodeExtensions != nil:
 		commonCopy := make([]string, len(*common.VSCodeExtensions))
 		copy(commonCopy, *common.VSCodeExtensions)
-		merged.VSCodeExtensions = utils.Ptr(append(commonCopy, *LangEntry.VSCodeExtensions...))
+		mergedExtensions := append(commonCopy, *LangEntry.VSCodeExtensions...)
+		removedDuplicateExtensions := uniqueStringsPreserveOrder(mergedExtensions)
+		merged.VSCodeExtensions = utils.Ptr(removedDuplicateExtensions)
 	case LangEntry.VSCodeExtensions != nil:
 		merged.VSCodeExtensions = LangEntry.VSCodeExtensions
 	case common.VSCodeExtensions != nil:
