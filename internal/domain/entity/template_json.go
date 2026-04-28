@@ -1,6 +1,6 @@
 package entity
 
-import "codespacegen/internal/utils"
+import "github.com/taka1156/codespacegen/internal/utils"
 
 const DefaultTemplateJsonPath = "codespacegen.json"
 

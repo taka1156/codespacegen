@@ -1,9 +1,10 @@
 package config
 
 import (
-	"codespacegen/internal/domain/entity"
 	"encoding/json"
 	"fmt"
+
+	"github.com/taka1156/codespacegen/internal/domain/entity"
 )
 
 type ConfigTemplateGenerator struct{}

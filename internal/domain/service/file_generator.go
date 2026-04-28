@@ -1,6 +1,6 @@
 package service
 
-import "codespacegen/internal/domain/entity"
+import "github.com/taka1156/codespacegen/internal/domain/entity"
 
 type SettingGenerator interface {
 	Generate(templateConfig entity.TemplateJson) ([]entity.GeneratedFile, error)

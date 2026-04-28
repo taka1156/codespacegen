@@ -3,7 +3,7 @@ E2E_TEST_DIR := ./e2e
 CMD := ./cmd/codespacegen
 BIN_DIR := ./bin
 VERSION := $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
-LDFLAGS := -X codespacegen/internal/app.Version=$(VERSION)
+LDFLAGS := -X github.com/taka1156/codespacegen/internal/app.Version=$(VERSION)
 
 DIST_TARGETS := \
 	linux/amd64/tar.gz \

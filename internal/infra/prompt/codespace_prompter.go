@@ -5,9 +5,10 @@ import (
 	"errors"
 	"io"
 
-	"codespacegen/internal/i18n"
 	"fmt"
 	"strings"
+
+	"github.com/taka1156/codespacegen/internal/i18n"
 )
 
 type CodespacegenPrompter struct {

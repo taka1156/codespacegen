@@ -1,6 +1,6 @@
 package assemble
 
-import "codespacegen/internal/domain/entity"
+import "github.com/taka1156/codespacegen/internal/domain/entity"
 
 type resolvedCoreValues struct {
 	ProjectName     string

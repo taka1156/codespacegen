@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	"codespacegen/internal/domain/entity"
-	"codespacegen/internal/utils"
+	"github.com/taka1156/codespacegen/internal/domain/entity"
+	"github.com/taka1156/codespacegen/internal/utils"
 )
 
 // fakeCodespacePromptResolver は CodespacePromptResolver のテスト用実装。

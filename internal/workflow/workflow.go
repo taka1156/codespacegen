@@ -1,11 +1,11 @@
 package workflow
 
 import (
-	"codespacegen/internal/domain/service"
-	"codespacegen/internal/workflow/assemble"
-	"codespacegen/internal/workflow/collect"
-	"codespacegen/internal/workflow/generate"
-	"codespacegen/internal/workflow/initialize"
+	"github.com/taka1156/codespacegen/internal/domain/service"
+	"github.com/taka1156/codespacegen/internal/workflow/assemble"
+	"github.com/taka1156/codespacegen/internal/workflow/collect"
+	"github.com/taka1156/codespacegen/internal/workflow/generate"
+	"github.com/taka1156/codespacegen/internal/workflow/initialize"
 )
 
 type CollectInputs = collect.CollectInputs

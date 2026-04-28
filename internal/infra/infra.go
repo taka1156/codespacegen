@@ -1,8 +1,9 @@
 package infra
 
 import (
-	"codespacegen/internal/infra/prompt"
 	"io"
+
+	"github.com/taka1156/codespacegen/internal/infra/prompt"
 )
 
 type CodespacePrompter = prompt.CodespacegenPrompter

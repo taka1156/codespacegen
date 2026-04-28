@@ -3,8 +3,8 @@ package assemble
 import (
 	"testing"
 
-	"codespacegen/internal/domain/entity"
-	"codespacegen/internal/utils"
+	"github.com/taka1156/codespacegen/internal/domain/entity"
+	"github.com/taka1156/codespacegen/internal/utils"
 )
 
 // --- resolveMergedEntry ---

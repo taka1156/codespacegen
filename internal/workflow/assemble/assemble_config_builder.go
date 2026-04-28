@@ -1,10 +1,11 @@
 package assemble
 
 import (
-	"codespacegen/internal/domain/entity"
-	"codespacegen/internal/i18n"
 	"errors"
 	"strings"
+
+	"github.com/taka1156/codespacegen/internal/domain/entity"
+	"github.com/taka1156/codespacegen/internal/i18n"
 )
 
 func (acc *AssembleCodespaceConfig) buildCodespaceConfig(clientConfig entity.ClientConfig, defaultSetting entity.DefaultSetting, promptValues resolvedCoreValues, langEntries map[string]entity.LangEntry) (*entity.CodespaceConfig, error) {

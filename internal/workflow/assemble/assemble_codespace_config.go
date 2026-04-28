@@ -1,7 +1,7 @@
 package assemble
 
 import (
-	"codespacegen/internal/domain/entity"
+	"github.com/taka1156/codespacegen/internal/domain/entity"
 )
 
 type AssembleCodespaceConfig struct {
