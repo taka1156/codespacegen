@@ -31,6 +31,7 @@ type ClientConfig struct {
 	ShowVersion         *bool
 	OutputTemplateJson  *bool
 	Initialize          *bool
+	Headless            *bool
 }
 
 func (c ClientConfig) OutputDirValue() string {
@@ -87,6 +88,10 @@ func (c ClientConfig) ShowVersionValue() bool {
 
 func (c ClientConfig) InitializeValue() bool {
 	return boolValue(c.Initialize)
+}
+
+func (c ClientConfig) HeadlessValue() bool {
+	return boolValue(c.Headless)
 }
 
 type LocaleConfig struct {
