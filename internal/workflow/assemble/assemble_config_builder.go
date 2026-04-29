@@ -6,6 +6,7 @@ import (
 
 	"github.com/taka1156/codespacegen/internal/domain/entity"
 	"github.com/taka1156/codespacegen/internal/i18n"
+	"github.com/taka1156/codespacegen/internal/utils"
 )
 
 func (acc *AssembleCodespaceConfig) buildCodespaceConfig(clientConfig entity.ClientConfig, defaultSetting entity.DefaultSetting, promptValues resolvedCoreValues, langEntries map[string]entity.LangEntry) (*entity.CodespaceConfig, error) {
@@ -96,12 +97,21 @@ func resolveTimezone(promptTimezone string, explicitTimezone string, configTimez
 	return strings.TrimSpace(resolved)
 }
 
+// エラー無視でノーマライズだけ行う
+func normalizePortMappingLenient(value string) string {
+	norm, err := utils.NormalizePortMapping(value)
+	if err != nil {
+		return value
+	}
+	return norm
+}
+
 func resolvePort(promptPort string, explicitPort string) string {
 	// priority: prompt > explicit(flag) > nil
 	if strings.TrimSpace(promptPort) != "" {
-		return strings.TrimSpace(promptPort)
+		return normalizePortMappingLenient(strings.TrimSpace(promptPort))
 	}
-	return strings.TrimSpace(explicitPort)
+	return normalizePortMappingLenient(strings.TrimSpace(explicitPort))
 }
 
 func mergeOsModules(base entity.OsModules, linuxPackages *[]entity.LinuxPackage) entity.OsModules {
