@@ -2,9 +2,9 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
-BIN_PATH="$ROOT_DIR/e2e/devcontainer_config/codespacegen"
-IMAGE_CONFIG="$ROOT_DIR/e2e/devcontainer_config/codespacegen.json"
-SNAPSHOT_DIR="$ROOT_DIR/e2e/devcontainer_config/snapshots"
+BIN_PATH="$ROOT_DIR/e2e/vscode_config/codespacegen"
+IMAGE_CONFIG="$ROOT_DIR/e2e/vscode_config/.vscode/settings.json"
+SNAPSHOT_DIR="$ROOT_DIR/e2e/vscode_config/snapshots"
 
 UPDATE=false
 for arg in "$@"; do
@@ -100,4 +100,4 @@ if [[ $failures -gt 0 ]]; then
 	exit 1
 fi
 
-echo "[e2e:devcontainer] all snapshot comparisons passed"
+echo "[e2e:vscode] all snapshot comparisons passed"
