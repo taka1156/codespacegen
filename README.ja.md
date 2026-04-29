@@ -5,14 +5,12 @@
       <img alt="codespacegen logo" src="./logo-light.svg" width="100%" height="100%">
   </picture>
 
-  ![GitHub Release](https://img.shields.io/github/v/release/taka1156/codespacegen?sort=semver&display_name=release&style=flat&logo=developmentcontainers&color=60a5fa&link=https%3A%2F%2Fgithub.com%2Ftaka1156%2Fcodespacegen%2Freleases%2F)
+  ![GitHub Release](https://img.shields.io/github/v/release/taka1156/codespacegen?sort=semver&display_name=release&color=60a5fa&link=https%3A%2F%2Fgithub.com%2Ftaka1156%2Fcodespacegen%2Freleases%2F)
   ![GitHub Release Date](https://img.shields.io/github/release-date/taka1156/codespacegen?color=60a5fa)
   ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/taka1156/codespacegen/release.yml?logo=github&color=60a5fa)
   ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/taka1156/codespacegen/main.yaml?event=push&logo=github&label=test&color=60a5fa)
-  ![GitHub License](https://img.shields.io/github/license/taka1156/codespacegen?color=60a5fa)
-
-developmentcontainer アイコン は [Simple Icons](https://simpleicons.org/?q=developmentcontainer)（[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)）より利用しています。
-
+	![GitHub License](https://img.shields.io/github/license/taka1156/codespacegen?color=60a5fa)
+  ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/taka1156/codespacegen?color=60a5fa&logo=go&logoColor=white)
 
 [English version](README.md)
 
