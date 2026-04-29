@@ -118,6 +118,15 @@ type JsonConfig struct {
 	Langs  map[string]*LangEntry `json:"-"`
 }
 
+type DevContainerGenConfig struct {
+	Common *CommonEntry          `json:"common,omitempty"`
+	Langs  map[string]*LangEntry `json:"-"`
+}
+
+type VSCodeConfig struct {
+	DevContainerGen DevContainerGenConfig `json:"devcontainergen,omitempty"`
+}
+
 type CodespaceConfig struct {
 	Schema           string
 	ContainerName    string
