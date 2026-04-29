@@ -77,7 +77,7 @@ for snapshot_case_dir in "$SNAPSHOT_DIR"/.devcontainer-*; do
 		-image-config "$IMAGE_CONFIG" \
 		-output "$out_dir" \
 		"${port_args[@]}" \
-		</dev/null >/dev/null
+		-headless
 
 	if [[ "$UPDATE" == "false" ]]; then
 		for target in Dockerfile devcontainer.json docker-compose.yaml; do
