@@ -86,29 +86,6 @@
             "minLength": 1
           }
         },
-        "timezone": {
-          "type": "string",
-          "description": "Default timezone for this entry (e.g. UTC, Asia/Tokyo)."
-        },
-        "locale": {
-          "type": "object",
-          "description": "OS locale settings for the container.",
-          "properties": {
-            "lang": {
-              "type": "string",
-              "description": "LANG environment variable (e.g. ja_JP.UTF-8)."
-            },
-            "language": {
-              "type": "string",
-              "description": "LANGUAGE environment variable (e.g. ja_JP:ja)."
-            },
-            "lcAll": {
-              "type": "string",
-              "description": "LC_ALL environment variable (e.g. ja_JP.UTF-8)."
-            }
-          },
-          "additionalProperties": false
-        },
         "vscodeExtensions": {
           "type": "array",
           "description": "VS Code extension IDs (e.g. golang.Go).",
@@ -140,7 +117,6 @@
       "moonbit": {
         "image": "ubuntu:24.04",
         "runCommand": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
-        "timezone": "UTC",
         "vscodeExtensions": [
           "moonbit.moonbit-lang"
         ]
