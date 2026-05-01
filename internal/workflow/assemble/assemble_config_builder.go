@@ -9,17 +9,22 @@ import (
 	"github.com/taka1156/codespacegen/internal/utils"
 )
 
-func (acc *AssembleCodespaceConfig) buildCodespaceConfig(clientConfig entity.ClientConfig, defaultSetting entity.DefaultSetting, promptValues resolvedCoreValues, langEntries map[string]entity.LangEntry) (*entity.CodespaceConfig, error) {
+func (acc *AssembleCodespaceConfig) buildCodespaceConfig(clientConfig entity.ClientConfig, defaultSetting entity.DefaultSetting, promptValues resolvedCoreValues, langEntries map[string]entity.LangEntry, jsonConfig entity.JsonConfig) (*entity.CodespaceConfig, error) {
 	imageEntry, err := resolveBaseImage(promptValues.Language, langEntries, defaultSetting.Image)
 	if err != nil {
 		return nil, err
 	}
 
-	if imageEntry.Locale == nil {
-		imageEntry.Locale = &defaultSetting.Locale
+	locale := defaultSetting.Locale
+	if jsonConfig.Common != nil && jsonConfig.Common.Locale != nil {
+		locale = *jsonConfig.Common.Locale
 	}
 
-	localeTimezone := resolveTimezone(promptValues.Timezone, clientConfig.TimezoneValue(), imageEntry.Timezone, defaultSetting.Timezone)
+	var commonTimezone *string
+	if jsonConfig.Common != nil {
+		commonTimezone = jsonConfig.Common.Timezone
+	}
+	localeTimezone := resolveTimezone(promptValues.Timezone, clientConfig.TimezoneValue(), commonTimezone, defaultSetting.Timezone)
 
 	osModules := mergeOsModules(defaultSetting.OsModules, imageEntry.LinuxPackages)
 
@@ -41,7 +46,7 @@ func (acc *AssembleCodespaceConfig) buildCodespaceConfig(clientConfig entity.Cli
 		ServiceName:      promptValues.ServiceName,
 		WorkspaceFolder:  promptValues.WorkspaceFolder,
 		BaseImage:        imageEntry.Image,
-		Locale:           *imageEntry.Locale,
+		Locale:           locale,
 		Timezone:         localeTimezone,
 		ComposeFileName:  clientConfig.ComposeFileValue(),
 		PortMapping:      portMapping,
@@ -93,7 +98,7 @@ func resolveTimezone(promptTimezone string, explicitTimezone string, configTimez
 	return strings.TrimSpace(resolved)
 }
 
-// エラー無視でノーマライズだけ行う
+// Normalize only, ignoring errors.
 func normalizePortMappingLenient(value string) string {
 	norm, err := utils.NormalizePortMapping(value)
 	if err != nil {

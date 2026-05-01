@@ -5,7 +5,7 @@ WORKDIR /workspace
 ENV LANG=en.UTF-8 \
     LANGUAGE=en_US:en \
     LC_ALL=en.UTF-8 \
-  TZ=Australia/Darwin
+  TZ=Asia/Tokyo
 
 RUN <<-EOF
 apk add --no-cache \
@@ -24,8 +24,8 @@ EOF
 RUN git lfs install
 
 RUN <<-EOF
-ln -sf /usr/share/zoneinfo/Australia/Darwin /etc/localtime
-echo "Australia/Darwin" > /etc/timezone
+ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+echo "Asia/Tokyo" > /etc/timezone
 EOF
 
 RUN <<-EOF

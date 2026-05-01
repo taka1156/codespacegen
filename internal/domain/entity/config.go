@@ -107,8 +107,6 @@ type LangEntry struct {
 	Image            string          `json:"image,omitempty"`
 	LinuxPackages    *[]LinuxPackage `json:"linuxPackages,omitempty"`
 	RunCommand       *string         `json:"runCommand,omitempty"`
-	Locale           *LocaleConfig   `json:"locale,omitempty"`
-	Timezone         *string         `json:"timezone,omitempty"`
 	VSCodeExtensions *[]string       `json:"vscodeExtensions,omitempty"`
 }
 

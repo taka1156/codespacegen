@@ -71,7 +71,8 @@ func (cp *CodespacegenPrompter) PromptWorkspaceFolder(explicitWorkspaceFolder st
 	return strings.TrimSpace(value), nil
 }
 
-func (cp *CodespacegenPrompter) PromptTimezone(defaultTimezone string) (string, error) {
+func (cp *CodespacegenPrompter) PromptTimezone(explicitTimezone string) (string, error) {
+	defaultTimezone := strings.TrimSpace(explicitTimezone)
 	value, err := promptWithDefault(cp.reader, i18n.T("prompt_timezone", map[string]interface{}{"Default": defaultTimezone}), defaultTimezone)
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", i18n.T("error_failed_to_read_timezone"), err)
