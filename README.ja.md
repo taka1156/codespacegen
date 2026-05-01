@@ -109,6 +109,7 @@ codespacegen init
 | `-compose-file` | `docker-compose.yaml` | Composeファイル名 |
 | `-force` | `false` | 既存ファイルを上書き |
 | `-lang` | *(自動検出)* | CLI メッセージの言語 (`en` or `ja`)。未指定の場合はシステムロケールを使用 |
+| `-headless` | `false` | 対話入力を一切スキップします。必要な値はすべてフラグで指定してください |
 | `-v` | — | バージョンを出力して終了 |
 
 ベースイメージ定義はリポジトリルートの [codespacegen.json](codespacegen.json) に分離しています。

@@ -108,6 +108,7 @@ The generated file serves as a starting point for customizing base images and VS
 | `-compose-file` | `docker-compose.yaml` | Compose file name |
 | `-force` | `false` | Overwrite existing files |
 | `-lang` | *(auto-detect)* | Language for CLI messages (`en` or `ja`). Defaults to system locale |
+| `-headless` | `false` | Skip all interactive prompts. All required values must be supplied via flags |
 | `-v` | — | Print version and exit |
 
 Base image definitions are separated into [codespacegen.json](codespacegen.json) at the repository root.
