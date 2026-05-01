@@ -7,24 +7,11 @@ import (
 	"github.com/taka1156/codespacegen/internal/utils"
 )
 
-func TestResolveBaseImage_ExplicitImageTakesPriority(t *testing.T) {
-	entries := map[string]entity.LangEntry{
-		"python": {Image: "python:3.12"},
-	}
-	got, err := resolveBaseImage("python", "custom:latest", entries, "alpine:latest")
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-	if got.Image != "custom:latest" {
-		t.Errorf("Image: got %q, want %q", got.Image, "custom:latest")
-	}
-}
-
 func TestResolveBaseImage_UsesLanguageEntry(t *testing.T) {
 	entries := map[string]entity.LangEntry{
 		"python": {Image: "python:3.12"},
 	}
-	got, err := resolveBaseImage("python", "", entries, "alpine:latest")
+	got, err := resolveBaseImage("python", entries, "alpine:latest")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -37,7 +24,7 @@ func TestResolveBaseImage_LanguageKeyIsCaseInsensitive(t *testing.T) {
 	entries := map[string]entity.LangEntry{
 		"python": {Image: "python:3.12"},
 	}
-	got, err := resolveBaseImage("Python", "", entries, "alpine:latest")
+	got, err := resolveBaseImage("Python", entries, "alpine:latest")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -47,7 +34,7 @@ func TestResolveBaseImage_LanguageKeyIsCaseInsensitive(t *testing.T) {
 }
 
 func TestResolveBaseImage_FallsBackToDefaultImageWhenLanguageEmpty(t *testing.T) {
-	got, err := resolveBaseImage("", "", nil, "alpine:latest")
+	got, err := resolveBaseImage("", nil, "alpine:latest")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -57,7 +44,7 @@ func TestResolveBaseImage_FallsBackToDefaultImageWhenLanguageEmpty(t *testing.T)
 }
 
 func TestResolveBaseImage_FallsBackToEntityDefaultImageWhenBothEmpty(t *testing.T) {
-	got, err := resolveBaseImage("", "", nil, "")
+	got, err := resolveBaseImage("", nil, "")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -67,7 +54,7 @@ func TestResolveBaseImage_FallsBackToEntityDefaultImageWhenBothEmpty(t *testing.
 }
 
 func TestResolveBaseImage_ErrorWhenLanguageNotInEntries(t *testing.T) {
-	_, err := resolveBaseImage("rust", "", map[string]entity.LangEntry{}, "alpine:latest")
+	_, err := resolveBaseImage("rust", map[string]entity.LangEntry{}, "alpine:latest")
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
@@ -77,7 +64,7 @@ func TestResolveBaseImage_ErrorWhenEntryImageIsEmpty(t *testing.T) {
 	entries := map[string]entity.LangEntry{
 		"rust": {Image: ""},
 	}
-	_, err := resolveBaseImage("rust", "", entries, "alpine:latest")
+	_, err := resolveBaseImage("rust", entries, "alpine:latest")
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
@@ -171,7 +158,6 @@ func TestBuildCodespaceConfig_NilRunCommandAndExtensionsDoNotPanic(t *testing.T)
 		Timezone: "UTC",
 	}
 	clientConfig := entity.ClientConfig{
-		BaseImage:   utils.Ptr("custom:latest"),
 		ComposeFile: utils.Ptr("docker-compose.yaml"),
 	}
 	jsonConfig := entity.JsonConfig{Common: &entity.CommonEntry{}}

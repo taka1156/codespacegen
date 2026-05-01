@@ -102,7 +102,6 @@ The generated file serves as a starting point for customizing base images and VS
 | `-service` | *(interactive, `app` on Enter)* | Docker Compose service name. Prompted every time and reflected in both `devcontainer.json` and `docker-compose.yaml` |
 | `-workspace-folder` | *(interactive, `/workspace` on Enter)* | Workspace path inside the container. Prompted every time |
 | `-timezone` | *(interactive, default from `common.timezone` or `UTC`)* | Timezone inside the container. Prompted every time and reflected in `ENV TZ` and timezone setup in the Dockerfile |
-| `-base-image` | *(language default)* | Explicit Docker base image. Overrides the default derived from `-language` |
 | `-image-config` | `codespacegen.json` | Local path or `https://` URL for base image definitions. Supports top-level `common` defaults plus per-language entries. `image` is required when `runCommand` or `linuxPackages` is specified; it can be omitted for timezone- or extension-only entries when `common` provides the image |
 | `-port` | *(interactive, no ports on Enter)* | Port mapping. For example, `3000` is normalized to `3000:3000`, and `8080:3000` is also accepted. Prompted every time |
 | `-compose-file` | `docker-compose.yaml` | Compose file name |
@@ -114,7 +113,6 @@ The generated file serves as a starting point for customizing base images and VS
 Base image definitions are separated into [codespacegen.json](codespacegen.json) at the repository root.
 
 - If the JSON file exists: values are loaded from the file
-- If `-base-image` is specified: it takes precedence over the JSON config
 
 In addition, extension IDs from `codespacegen.json` (`common.vscodeExtensions` and per-language `vscodeExtensions`) are appended.
 
@@ -229,12 +227,6 @@ go run ./cmd/codespacegen -image-config https://example.com/my-base-images.json 
 
 - Only `https://` URLs are supported. `http://` is rejected
 - If the JSON is missing or not specified, built-in Alpine defaults are used
-
-Example overriding with an explicit image:
-
-```bash
-go run ./cmd/codespacegen -language python -base-image python:3.12-alpine -force
-```
 
 Example exposing a port:
 

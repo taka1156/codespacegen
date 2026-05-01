@@ -85,7 +85,7 @@ Dependencies point inward (domain has no outward dependencies).
   - `common` is applied first
   - language-specific values override or extend the common values
   - `vscodeExtensions` are appended and later deduplicated in generated output
-- Base image resolution priority: explicit `-base-image` flag > language key lookup in JSON config > default image
+- Base image resolution priority: language key lookup in JSON config > default image
 - If timezone is not provided by prompt, flags, or config, the effective default is `UTC`.
 
 ## Generation Knowledge
