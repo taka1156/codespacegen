@@ -211,7 +211,7 @@ func TestAssembleCodespaceConfig_Resolve_ErrorFromUnknownLanguage(t *testing.T) 
 }
 
 func TestAssembleCodespaceConfig_Resolve_HeadlessMode(t *testing.T) {
-	// ヘッドレスモード用のClientConfigを用意
+	// Prepare ClientConfig for headless mode
 	clientConfig := entity.ClientConfig{
 		Headless:        utils.Ptr(true),
 		ContainerName:   utils.Ptr("headless-project"),

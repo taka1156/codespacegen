@@ -20,6 +20,11 @@ func (acc *AssembleCodespaceConfig) Resolve(clientConfig entity.ClientConfig, de
 	var resolvedValues resolvedCoreValues
 	var err error
 
+	resolvedEntries, err := acc.resolveMergedEntry(jsonConfig)
+	if err != nil {
+		return nil, err
+	}
+
 	if clientConfig.HeadlessValue() {
 		resolvedValues = resolvedCoreValues{
 			ProjectName:     clientConfig.ContainerNameValue(),
@@ -30,16 +35,15 @@ func (acc *AssembleCodespaceConfig) Resolve(clientConfig entity.ClientConfig, de
 			Timezone:        clientConfig.TimezoneValue(),
 		}
 	} else {
-		resolvedValues, err = acc.resolvePromptValues(&clientConfig, defaultSetting)
+		var commonTimezone *string
+		if jsonConfig.Common != nil {
+			commonTimezone = jsonConfig.Common.Timezone
+		}
+		resolvedValues, err = acc.resolvePromptValues(&clientConfig, defaultSetting, commonTimezone)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	resolvedEntries, err := acc.resolveMergedEntry(jsonConfig)
-	if err != nil {
-		return nil, err
-	}
-
-	return acc.buildCodespaceConfig(clientConfig, defaultSetting, resolvedValues, resolvedEntries)
+	return acc.buildCodespaceConfig(clientConfig, defaultSetting, resolvedValues, resolvedEntries, jsonConfig)
 }

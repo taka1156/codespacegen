@@ -11,7 +11,7 @@ type resolvedCoreValues struct {
 	Timezone        string
 }
 
-func (acc *AssembleCodespaceConfig) resolvePromptValues(ClientConfig *entity.ClientConfig, defaultSetting entity.DefaultSetting) (resolvedCoreValues, error) {
+func (acc *AssembleCodespaceConfig) resolvePromptValues(ClientConfig *entity.ClientConfig, defaultSetting entity.DefaultSetting, commonTimezone *string) (resolvedCoreValues, error) {
 	resolvedProjectName, err := acc.CodespacegenPrompter.PromptProjectName(ClientConfig.ContainerNameValue())
 	if err != nil {
 		return resolvedCoreValues{}, err
@@ -37,10 +37,15 @@ func (acc *AssembleCodespaceConfig) resolvePromptValues(ClientConfig *entity.Cli
 		return resolvedCoreValues{}, err
 	}
 
+	// priority: flag > common > defaultSetting.Timezone
 	timezoneDefault := ClientConfig.TimezoneValue()
+	if timezoneDefault == "" && commonTimezone != nil {
+		timezoneDefault = *commonTimezone
+	}
 	if timezoneDefault == "" {
 		timezoneDefault = defaultSetting.Timezone
 	}
+
 	resolvedTimezone, err := acc.CodespacegenPrompter.PromptTimezone(timezoneDefault)
 	if err != nil {
 		return resolvedCoreValues{}, err
