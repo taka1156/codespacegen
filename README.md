@@ -102,18 +102,17 @@ The generated file serves as a starting point for customizing base images and VS
 | `-service` | *(interactive, `app` on Enter)* | Docker Compose service name. Prompted every time and reflected in both `devcontainer.json` and `docker-compose.yaml` |
 | `-workspace-folder` | *(interactive, `/workspace` on Enter)* | Workspace path inside the container. Prompted every time |
 | `-timezone` | *(interactive, default from `common.timezone` or `UTC`)* | Timezone inside the container. Prompted every time and reflected in `ENV TZ` and timezone setup in the Dockerfile |
-| `-base-image` | *(language default)* | Explicit Docker base image. Overrides the default derived from `-language` |
-| `-image-config` | `codespacegen.json` | Local path or `https://` URL for base image definitions. Supports top-level `common` defaults plus per-language entries. `image` is required when `runCommand` or `linuxPackages` is specified; it can be omitted for timezone- or extension-only entries when `common` provides the image |
+| `-image-config` | `codespacegen.json` | Local path or `https://` URL for base image definitions. Supports top-level `common` defaults plus per-language entries. `image` is required when `runCommand` or `linuxPackages` is specified |
 | `-port` | *(interactive, no ports on Enter)* | Port mapping. For example, `3000` is normalized to `3000:3000`, and `8080:3000` is also accepted. Prompted every time |
 | `-compose-file` | `docker-compose.yaml` | Compose file name |
 | `-force` | `false` | Overwrite existing files |
 | `-lang` | *(auto-detect)* | Language for CLI messages (`en` or `ja`). Defaults to system locale |
+| `-headless` | `false` | Skip all interactive prompts. All required values must be supplied via flags |
 | `-v` | — | Print version and exit |
 
 Base image definitions are separated into [codespacegen.json](codespacegen.json) at the repository root.
 
 - If the JSON file exists: values are loaded from the file
-- If `-base-image` is specified: it takes precedence over the JSON config
 
 In addition, extension IDs from `codespacegen.json` (`common.vscodeExtensions` and per-language `vscodeExtensions`) are appended.
 
@@ -138,19 +137,13 @@ If `codespacegen.json` is at the repository root, `./codespacegen.schema.json` p
 }
 ```
 
-**Pattern 2: object value for run commands, Linux packages, timezone, locale, and VS Code extensions (`image` is required when `runCommand` or `linuxPackages` is specified)**
+**Pattern 2: object value for run commands, Linux packages, and VS Code extensions (`image` is required when `runCommand` or `linuxPackages` is specified)**
 
 ```json
 {
 	"moonbit": {
 		"image": "ubuntu:24.04",
 		"runCommand": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
-		"timezone": "UTC",
-		"locale": {
-			"lang": "ja_JP.UTF-8",
-			"language": "ja_JP:ja",
-			"lcAll": "ja_JP.UTF-8"
-		},
 		"vscodeExtensions": ["moonbit.moonbit-lang"]
 	}
 }
@@ -201,8 +194,8 @@ Merge behavior:
 
 - `common` is applied first, then language-specific values override/append
 - `vscodeExtensions` are merged in order and de-duplicated
-- `locale` is treated as a whole: if the language entry defines `lang`, its full `locale` object takes precedence; otherwise `common.locale` is used
-- If timezone is not set in flags or config, `UTC` is used
+- `timezone` and `locale` can only be set in `common`, not per-language
+- If timezone is not set in flags or `common`, `UTC` is used
 
 Patterns 1, 2, and 3 can be mixed in the same file.
 
@@ -228,12 +221,6 @@ go run ./cmd/codespacegen -image-config https://example.com/my-base-images.json 
 
 - Only `https://` URLs are supported. `http://` is rejected
 - If the JSON is missing or not specified, built-in Alpine defaults are used
-
-Example overriding with an explicit image:
-
-```bash
-go run ./cmd/codespacegen -language python -base-image python:3.12-alpine -force
-```
 
 Example exposing a port:
 

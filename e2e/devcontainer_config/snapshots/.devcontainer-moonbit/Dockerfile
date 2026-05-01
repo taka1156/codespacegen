@@ -5,7 +5,7 @@ WORKDIR /workspace
 ENV LANG=en.UTF-8 \
     LANGUAGE=en_US:en \
     LC_ALL=en.UTF-8 \
-  TZ=UTC
+  TZ=Asia/Tokyo
 
 RUN <<-EOF
 apt update
@@ -27,7 +27,7 @@ EOF
 RUN git lfs install
 
 RUN <<-EOF
-ln -fs /usr/share/zoneinfo/UTC /etc/localtime
+ln -fs /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 dpkg-reconfigure -f noninteractive tzdata
 EOF
 

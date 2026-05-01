@@ -6,19 +6,25 @@ import (
 
 	"github.com/taka1156/codespacegen/internal/domain/entity"
 	"github.com/taka1156/codespacegen/internal/i18n"
+	"github.com/taka1156/codespacegen/internal/utils"
 )
 
-func (acc *AssembleCodespaceConfig) buildCodespaceConfig(clientConfig entity.ClientConfig, defaultSetting entity.DefaultSetting, promptValues resolvedCoreValues, langEntries map[string]entity.LangEntry) (*entity.CodespaceConfig, error) {
-	imageEntry, err := resolveBaseImage(promptValues.Language, clientConfig.BaseImageValue(), langEntries, defaultSetting.Image)
+func (acc *AssembleCodespaceConfig) buildCodespaceConfig(clientConfig entity.ClientConfig, defaultSetting entity.DefaultSetting, promptValues resolvedCoreValues, langEntries map[string]entity.LangEntry, jsonConfig entity.JsonConfig) (*entity.CodespaceConfig, error) {
+	imageEntry, err := resolveBaseImage(promptValues.Language, langEntries, defaultSetting.Image)
 	if err != nil {
 		return nil, err
 	}
 
-	if imageEntry.Locale == nil {
-		imageEntry.Locale = &defaultSetting.Locale
+	locale := defaultSetting.Locale
+	if jsonConfig.Common != nil && jsonConfig.Common.Locale != nil {
+		locale = *jsonConfig.Common.Locale
 	}
 
-	localeTimezone := resolveTimezone(promptValues.Timezone, clientConfig.TimezoneValue(), imageEntry.Timezone, defaultSetting.Timezone)
+	var commonTimezone *string
+	if jsonConfig.Common != nil {
+		commonTimezone = jsonConfig.Common.Timezone
+	}
+	localeTimezone := resolveTimezone(promptValues.Timezone, clientConfig.TimezoneValue(), commonTimezone, defaultSetting.Timezone)
 
 	osModules := mergeOsModules(defaultSetting.OsModules, imageEntry.LinuxPackages)
 
@@ -40,7 +46,7 @@ func (acc *AssembleCodespaceConfig) buildCodespaceConfig(clientConfig entity.Cli
 		ServiceName:      promptValues.ServiceName,
 		WorkspaceFolder:  promptValues.WorkspaceFolder,
 		BaseImage:        imageEntry.Image,
-		Locale:           *imageEntry.Locale,
+		Locale:           locale,
 		Timezone:         localeTimezone,
 		ComposeFileName:  clientConfig.ComposeFileValue(),
 		PortMapping:      portMapping,
@@ -50,12 +56,8 @@ func (acc *AssembleCodespaceConfig) buildCodespaceConfig(clientConfig entity.Cli
 	}, nil
 }
 
-func resolveBaseImage(language string, explicitBaseImage string, jsonEntries map[string]entity.LangEntry, defaultImage string) (entity.LangEntry, error) {
-	// priority: explicit(flag) > language(json with selection key) > default
-	if explicitBaseImage != "" {
-		return entity.LangEntry{Image: explicitBaseImage}, nil
-	}
-
+func resolveBaseImage(language string, jsonEntries map[string]entity.LangEntry, defaultImage string) (entity.LangEntry, error) {
+	// priority: language(json with selection key) > default
 	if strings.TrimSpace(language) == "" {
 		image := strings.TrimSpace(defaultImage)
 		if image == "" {
@@ -96,12 +98,21 @@ func resolveTimezone(promptTimezone string, explicitTimezone string, configTimez
 	return strings.TrimSpace(resolved)
 }
 
+// Normalize only, ignoring errors.
+func normalizePortMappingLenient(value string) string {
+	norm, err := utils.NormalizePortMapping(value)
+	if err != nil {
+		return value
+	}
+	return norm
+}
+
 func resolvePort(promptPort string, explicitPort string) string {
 	// priority: prompt > explicit(flag) > nil
 	if strings.TrimSpace(promptPort) != "" {
-		return strings.TrimSpace(promptPort)
+		return normalizePortMappingLenient(strings.TrimSpace(promptPort))
 	}
-	return strings.TrimSpace(explicitPort)
+	return normalizePortMappingLenient(strings.TrimSpace(explicitPort))
 }
 
 func mergeOsModules(base entity.OsModules, linuxPackages *[]entity.LinuxPackage) entity.OsModules {

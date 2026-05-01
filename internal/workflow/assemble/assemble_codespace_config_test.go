@@ -209,3 +209,50 @@ func TestAssembleCodespaceConfig_Resolve_ErrorFromUnknownLanguage(t *testing.T) 
 		t.Fatal("expected error, got nil")
 	}
 }
+
+func TestAssembleCodespaceConfig_Resolve_HeadlessMode(t *testing.T) {
+	// Prepare ClientConfig for headless mode
+	clientConfig := entity.ClientConfig{
+		Headless:        utils.Ptr(true),
+		ContainerName:   utils.Ptr("headless-project"),
+		Language:        utils.Ptr("python"),
+		WorkspaceFolder: utils.Ptr("/workspace"),
+		ServiceName:     utils.Ptr("svc"),
+		Port:            utils.Ptr("8080:8080"),
+		Timezone:        utils.Ptr("Asia/Tokyo"),
+		ComposeFile:     utils.Ptr("docker-compose.yml"),
+	}
+
+	rcc := NewAssembleCodespaceConfig(defaultFakeResolver())
+	got, err := rcc.Resolve(clientConfig, defaultTestSetting, defaultJsonConfig)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if got.ContainerName != "headless-project" {
+		t.Errorf("ContainerName: got %q, want %q", got.ContainerName, "headless-project")
+	}
+	if got.ServiceName != "svc" {
+		t.Errorf("ServiceName: got %q, want %q", got.ServiceName, "svc")
+	}
+	if got.WorkspaceFolder != "/workspace" {
+		t.Errorf("WorkspaceFolder: got %q, want %q", got.WorkspaceFolder, "/workspace")
+	}
+	if got.BaseImage != "python:3.12" {
+		t.Errorf("BaseImage: got %q, want %q", got.BaseImage, "python:3.12")
+	}
+	if got.Timezone != "Asia/Tokyo" {
+		t.Errorf("Timezone: got %q, want %q", got.Timezone, "Asia/Tokyo")
+	}
+	if got.ComposeFileName != "docker-compose.yml" {
+		t.Errorf("ComposeFileName: got %q, want %q", got.ComposeFileName, "docker-compose.yml")
+	}
+	if got.PortMapping != "8080:8080" {
+		t.Errorf("PortMapping: got %q, want %q", got.PortMapping, "8080:8080")
+	}
+	if got.RunCommand != "pip install -r requirements.txt" {
+		t.Errorf("RunCommand: got %q, want %q", got.RunCommand, "pip install -r requirements.txt")
+	}
+	if len(got.VSCodeExtensions) != 1 || got.VSCodeExtensions[0] != "ms-python.python" {
+		t.Errorf("VSCodeExtensions: got %v, want [ms-python.python]", got.VSCodeExtensions)
+	}
+}

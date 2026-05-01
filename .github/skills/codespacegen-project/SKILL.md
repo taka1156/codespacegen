@@ -26,7 +26,7 @@ description: 'Repository knowledge for the codespacegen project. Use when answer
   - Collect inputs: CLI flags, JSON config, default settings
   - If `init` subcommand: generate `codespacegen.json` and exit
   - If `-v` flag: print version and exit
-  - Assemble `entity.CodespaceConfig` via interactive prompts and merge logic
+  - Assemble `entity.CodespaceConfig` — interactive prompts (or headless from flags) and merge logic
   - Execute `GenerateCodespaceArtifacts` — render templates and write files
 
 ## Architecture
@@ -43,7 +43,7 @@ description: 'Repository knowledge for the codespacegen project. Use when answer
   - `internal/infra/infra.go` — type alias facade; exports `CodespacePrompter`
   - `internal/infra/prompt/` — `CodespacegenPrompter` (stdin-based interactive prompter)
 - Generator (template rendering and file writing):
-  - `internal/generator/genarator.go` — factory functions for generators
+  - `internal/generator/generator.go` — factory functions for generators
   - `internal/generator/codespace/` — `CodespaceGenerator` (renders `Dockerfile`, `devcontainer.json`, `docker-compose.yaml`)
   - `internal/generator/setting/` — `SettingTemplateGenerator` (renders `codespacegen.json`)
   - `internal/generator/config/` — `ConfigTemplateGenerator` (JSON marshal for template config)
@@ -56,7 +56,7 @@ description: 'Repository knowledge for the codespacegen project. Use when answer
   - `internal/workflow/generate/` — `GenerateCodespaceArtifacts` (validate, render, write files)
   - `internal/workflow/initialize/` — `InitializeSettingJson` (generate and write `codespacegen.json` template)
 - Utilities:
-  - `internal/utils/` — shared helper functions
+  - `internal/utils/` — shared helper functions including `NormalizePortMapping`
   - `internal/i18n/` — locale-based message lookup (`locales/en.yaml`, `locales/ja.yaml`)
 
 Dependencies point inward (domain has no outward dependencies).
@@ -79,14 +79,18 @@ Dependencies point inward (domain has no outward dependencies).
 - Base image resolution supports built-in language keys and custom keys from `codespacegen.json`.
 - `-image-config` accepts a local path or `https://` URL.
 - `codespacegen.json` supports:
-  - top-level `common`
-  - per-language object entries with `image`, `runCommand`, `timezone`, `locale`, and `vscodeExtensions`
+  - top-level `common` with `locale`, `timezone`, and `vscodeExtensions`
+  - per-language object entries with `image`, `linuxPackages`, `runCommand`, and `vscodeExtensions`
+  - `locale` and `timezone` are **only** in `common`; `LangEntry` no longer carries them
 - Merge behavior:
-  - `common` is applied first
-  - language-specific values override or extend the common values
-  - `vscodeExtensions` are appended and later deduplicated in generated output
-- Base image resolution priority: explicit `-base-image` flag > language key lookup in JSON config > default image
-- If timezone is not provided by prompt, flags, or config, the effective default is `UTC`.
+  - `common.locale` is applied to all generated output (not per-language)
+  - `common.timezone` is used as the fallback default when no flag or prompt value is given
+  - `vscodeExtensions`: `common` extensions are prepended to language-specific extensions, then deduplicated
+  - `linuxPackages` in a lang entry are appended to the default OS modules for that image type
+- Base image resolution priority: language key lookup in JSON config > default image
+- Locale resolution: `jsonConfig.Common.Locale` > `defaultSetting.Locale`
+- Timezone resolution priority: explicit flag > `jsonConfig.Common.Timezone` > `defaultSetting.Timezone` (UTC)
+- `-headless` flag: skips all interactive prompts; all values must be supplied via CLI flags
 
 ## Generation Knowledge
 
@@ -99,6 +103,7 @@ Dependencies point inward (domain has no outward dependencies).
   - `GitHub.copilot-chat`
 - Additional VS Code extensions from config are merged and deduplicated.
 - `docker-compose.yaml` includes `ports` only when a port mapping is provided.
+- Port mapping is normalized at assembly time via `utils.NormalizePortMapping`: a bare port number `N` becomes `N:N`.
 
 ## Testing Knowledge
 
@@ -129,7 +134,6 @@ Dependencies point inward (domain has no outward dependencies).
   - runs `e2e/devcontainer_config/devcontainer_config.test.sh` — compares generated devcontainer files with snapshots under `e2e/devcontainer_config/snapshots/.devcontainer-*`
   - runs `e2e/codespacegen_config/codespacegen_config.test.sh` — verifies `codespacegen init` output against `e2e/codespacegen_config/snapshots/codespacegen.json`
 - Current snapshot cases for devcontainer_config:
-  - `go`
   - `python`
   - `rust`
   - `moonbit`

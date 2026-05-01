@@ -21,7 +21,6 @@ type ClientConfig struct {
 	ServiceName         *string
 	Language            *string
 	WorkspaceFolder     *string
-	BaseImage           *string
 	Timezone            *string
 	ImageConfig         *string
 	Port                *string
@@ -31,6 +30,7 @@ type ClientConfig struct {
 	ShowVersion         *bool
 	OutputTemplateJson  *bool
 	Initialize          *bool
+	Headless            *bool
 }
 
 func (c ClientConfig) OutputDirValue() string {
@@ -51,10 +51,6 @@ func (c ClientConfig) LanguageValue() string {
 
 func (c ClientConfig) WorkspaceFolderValue() string {
 	return stringValue(c.WorkspaceFolder)
-}
-
-func (c ClientConfig) BaseImageValue() string {
-	return stringValue(c.BaseImage)
 }
 
 func (c ClientConfig) TimezoneValue() string {
@@ -89,6 +85,10 @@ func (c ClientConfig) InitializeValue() bool {
 	return boolValue(c.Initialize)
 }
 
+func (c ClientConfig) HeadlessValue() bool {
+	return boolValue(c.Headless)
+}
+
 type LocaleConfig struct {
 	Lang     string `json:"lang,omitempty"`
 	Language string `json:"language,omitempty"`
@@ -107,8 +107,6 @@ type LangEntry struct {
 	Image            string          `json:"image,omitempty"`
 	LinuxPackages    *[]LinuxPackage `json:"linuxPackages,omitempty"`
 	RunCommand       *string         `json:"runCommand,omitempty"`
-	Locale           *LocaleConfig   `json:"locale,omitempty"`
-	Timezone         *string         `json:"timezone,omitempty"`
 	VSCodeExtensions *[]string       `json:"vscodeExtensions,omitempty"`
 }
 
