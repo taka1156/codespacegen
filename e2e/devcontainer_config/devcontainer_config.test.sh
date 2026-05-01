@@ -77,7 +77,7 @@ for snapshot_case_dir in "$SNAPSHOT_DIR"/.devcontainer-*; do
 		-image-config "$IMAGE_CONFIG" \
 		-output "$out_dir" \
 		"${port_args[@]}" \
-		-headless
+		</dev/null >/dev/null
 
 	if [[ "$UPDATE" == "false" ]]; then
 		for target in Dockerfile devcontainer.json docker-compose.yaml; do
@@ -100,4 +100,4 @@ if [[ $failures -gt 0 ]]; then
 	exit 1
 fi
 
-echo "[e2e:devcontainer] all snapshot comparisons passed"
+echo "[e2e] all snapshot comparisons passed"

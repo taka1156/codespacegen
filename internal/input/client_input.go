@@ -55,7 +55,6 @@ func (ci *ClientInput) GetInput(args []string) entity.ClientConfig {
 	ClientConfig.EnableOverwriteFile = fs.Bool("force", false, "overwrite existing files")
 	ClientConfig.Lang = fs.String("lang", "", "language for CLI messages (en/ja, default: auto-detect)")
 	ClientConfig.ShowVersion = fs.Bool("v", false, "print version and exit")
-	ClientConfig.Headless = fs.Bool("headless", false, "run in headless mode without interactive prompts")
 
 	if len(args) > 1 {
 		_ = fs.Parse(args[1:])
