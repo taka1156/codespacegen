@@ -30,7 +30,7 @@ func (acc *AssembleCodespaceConfig) Resolve(clientConfig entity.ClientConfig, de
 			Timezone:        clientConfig.TimezoneValue(),
 		}
 	} else {
-		resolvedValues, err = acc.resolvePromptValues(&clientConfig)
+		resolvedValues, err = acc.resolvePromptValues(&clientConfig, defaultSetting)
 		if err != nil {
 			return nil, err
 		}
