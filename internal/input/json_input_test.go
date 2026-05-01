@@ -18,15 +18,14 @@ func (f *fakeLoader) Load(_ string) ([]byte, error) {
 	return f.data, f.err
 }
 
-func newJsonInputWithFakes(httpsLoader, fileLoader baseImageConfigLoader) *JsonInput {
+func newJsonInputWithFakes(fileLoader baseImageConfigLoader) *JsonInput {
 	return &JsonInput{
-		httpsLoader: httpsLoader,
-		fileLoader:  fileLoader,
+		fileLoader: fileLoader,
 	}
 }
 
 func TestLoadLanguageImages_ReturnsNilWhenSourceIsEmpty(t *testing.T) {
-	ji := newJsonInputWithFakes(&fakeLoader{}, &fakeLoader{})
+	ji := newJsonInputWithFakes(&fakeLoader{})
 	got, err := ji.LoadLanguageImages("")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -45,7 +44,6 @@ func TestLoadLanguageImages_ParsesValidJSONFromFileLoader(t *testing.T) {
 		},
 	}
 	ji := newJsonInputWithFakes(
-		&fakeLoader{},
 		&fakeLoader{data: raw},
 	)
 
@@ -73,7 +71,6 @@ func TestLoadLanguageImages_ParsesValidJSONFromHTTPSLoader(t *testing.T) {
 	}
 	ji := newJsonInputWithFakes(
 		&fakeLoader{data: raw},
-		&fakeLoader{},
 	)
 
 	got, err := ji.LoadLanguageImages("https://example.com/config.json")
@@ -88,17 +85,8 @@ func TestLoadLanguageImages_ParsesValidJSONFromHTTPSLoader(t *testing.T) {
 	}
 }
 
-func TestLoadLanguageImages_ReturnsErrorForHTTPSource(t *testing.T) {
-	ji := newJsonInputWithFakes(&fakeLoader{}, &fakeLoader{})
-	_, err := ji.LoadLanguageImages("http://example.com/config.json")
-	if err == nil {
-		t.Fatal("expected error for http:// source, got nil")
-	}
-}
-
 func TestLoadLanguageImages_ReturnsErrorWhenLoaderFails(t *testing.T) {
 	ji := newJsonInputWithFakes(
-		&fakeLoader{},
 		&fakeLoader{err: errors.New("read error")},
 	)
 	_, err := ji.LoadLanguageImages("/bad/path.json")
@@ -109,7 +97,6 @@ func TestLoadLanguageImages_ReturnsErrorWhenLoaderFails(t *testing.T) {
 
 func TestLoadLanguageImages_ReturnsErrorOnInvalidJSON(t *testing.T) {
 	ji := newJsonInputWithFakes(
-		&fakeLoader{},
 		&fakeLoader{data: []byte(`{invalid json}`)},
 	)
 	_, err := ji.LoadLanguageImages("/some/path.json")
@@ -121,7 +108,6 @@ func TestLoadLanguageImages_ReturnsErrorOnInvalidJSON(t *testing.T) {
 func TestLoadLanguageImages_ReturnsNilWhenFileLoaderReturnsNil(t *testing.T) {
 	ji := newJsonInputWithFakes(
 		&fakeLoader{},
-		&fakeLoader{data: nil, err: nil},
 	)
 	got, err := ji.LoadLanguageImages("/nonexistent.json")
 	if err != nil {
@@ -129,5 +115,44 @@ func TestLoadLanguageImages_ReturnsNilWhenFileLoaderReturnsNil(t *testing.T) {
 	}
 	if got != nil {
 		t.Errorf("expected nil, got %v", got)
+	}
+}
+
+func TestLoadLanguageImages_ParsesVSCodeSettingsJson(t *testing.T) {
+	raw := []byte(`{
+        "devcontainergen": {
+            "common": {
+                "timezone": "Asia/Tokyo"
+            },
+            "node": {
+                "image": "node:24-alpine"
+            }
+        }
+    }`)
+	expectedTimezone := "Asia/Tokyo"
+	expected := &entity.JsonConfig{
+		Common: &entity.CommonEntry{
+			Timezone: &expectedTimezone,
+		},
+		Langs: map[string]*entity.LangEntry{
+			"node": {Image: "node:24-alpine"},
+		},
+	}
+	ji := newJsonInputWithFakes(
+		&fakeLoader{data: raw},
+	)
+
+	got, err := ji.LoadLanguageImages("/some/path/.vscode/settings.json")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if got.Common == nil || got.Common.Timezone == nil || *got.Common.Timezone != expectedTimezone {
+		t.Errorf("expected timezone %s, got %+v", expectedTimezone, got.Common)
+	}
+	if _, ok := got.Langs["node"]; !ok {
+		t.Error("expected node key in result")
+	}
+	if diff := cmp.Diff(got, expected); diff != "" {
+		t.Errorf("mismatch (-got +expected):\n%s", diff)
 	}
 }

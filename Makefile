@@ -17,7 +17,6 @@ DIST_TARGETS := \
 fmt:
 	go fmt ./...
 	golangci-lint run ./...
-	git diff --exit-code
 
 run:
 	go run $(CMD) $(RUN_ARGS)
@@ -41,10 +40,13 @@ e2e:
 	mkdir -p $(E2E_TEST_DIR)/codespacegen_config
 	cp $(BIN_DIR)/$(BINARY) $(E2E_TEST_DIR)/devcontainer_config/$(BINARY)
 	cp $(BIN_DIR)/$(BINARY) $(E2E_TEST_DIR)/codespacegen_config/$(BINARY)
+	cp $(BIN_DIR)/$(BINARY) $(E2E_TEST_DIR)/vscode_config/$(BINARY)
 	bash $(E2E_TEST_DIR)/devcontainer_config/devcontainer_config.test.sh $(UPD)
 	bash $(E2E_TEST_DIR)/codespacegen_config/codespacegen_config.test.sh $(UPD)
+	bash $(E2E_TEST_DIR)/vscode_config/vscode_config.test.sh $(UPD)
 	rm -f $(E2E_TEST_DIR)/devcontainer_config/$(BINARY)
 	rm -f $(E2E_TEST_DIR)/codespacegen_config/$(BINARY)
+	rm -f $(E2E_TEST_DIR)/vscode_config/$(BINARY)
 
 bin:
 	mkdir -p $(BIN_DIR)

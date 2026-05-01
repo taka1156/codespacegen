@@ -40,4 +40,4 @@ diff -u "$SNAPSHOT_PATH" "$GENERATED_PATH" || {
 	exit 1
 }
 
-echo "[e2e] codespacegen.json snapshot comparison passed"
+echo "[e2e:codespacegen] codespacegen.json snapshot comparison passed"
