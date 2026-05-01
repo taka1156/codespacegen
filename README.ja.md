@@ -103,7 +103,6 @@ codespacegen init
 | `-service` | *(対話入力、Enter で `app`)* | docker compose のサービス名。毎回確認され、`devcontainer.json` と `docker-compose.yaml` 両方に反映 |
 | `-workspace-folder` | *(対話入力、Enter で `/workspace`)* | コンテナ内ワークスペースパス。毎回確認される |
 | `-timezone` | *(対話入力、`common.timezone` または `UTC` が既定)* | コンテナ内のタイムゾーン。毎回確認され、Dockerfile の `ENV TZ` と timezone 設定に反映 |
-| `-base-image` | *(言語デフォルト)* | Dockerベースイメージを直接指定。`-language` のデフォルトより優先 |
 | `-image-config` | `codespacegen.json` | ベースイメージ定義のローカルパスまたは `https://` URL。トップレベル `common` と言語別設定をサポート。`runCommand` または `linuxPackages` を指定する場合は `image` が必須 |
 | `-port` | *(対話入力、Enter で ports なし)* | ポート指定。たとえば `3000` は `3000:3000` に自動正規化され、`8080:3000` も利用できます。毎回確認されます |
 | `-compose-file` | `docker-compose.yaml` | Composeファイル名 |
@@ -115,7 +114,6 @@ codespacegen init
 ベースイメージ定義はリポジトリルートの [codespacegen.json](codespacegen.json) に分離しています。
 
 - JSON が存在する場合: ファイルの値を読み込んで使用
-- `-base-image` を指定した場合: JSON の設定より優先
 
 
 加えて、`codespacegen.json` の `common.vscodeExtensions` と言語別 `vscodeExtensions` が追記されます。
@@ -225,12 +223,6 @@ go run ./cmd/codespacegen -image-config https://example.com/my-base-images.json 
 
 - `https://` URL のみ対応し、`http://` は拒否します
 - JSON が存在しない、または未指定の場合は内蔵の Alpine デフォルトで動作します
-
-明示イメージで上書きする例:
-
-```bash
-go run ./cmd/codespacegen -language python -base-image python:3.12-alpine -force
-```
 
 ポートを明示する例:
 

@@ -87,7 +87,7 @@ Dependencies point inward (domain has no outward dependencies).
   - `common.timezone` is used as the fallback default when no flag or prompt value is given
   - `vscodeExtensions`: `common` extensions are prepended to language-specific extensions, then deduplicated
   - `linuxPackages` in a lang entry are appended to the default OS modules for that image type
-- Base image resolution priority: explicit `-base-image` flag > language key lookup in JSON config > default image
+- Base image resolution priority: language key lookup in JSON config > default image
 - Locale resolution: `jsonConfig.Common.Locale` > `defaultSetting.Locale`
 - Timezone resolution priority: explicit flag > `jsonConfig.Common.Timezone` > `defaultSetting.Timezone` (UTC)
 - `-headless` flag: skips all interactive prompts; all values must be supplied via CLI flags
