@@ -31,7 +31,6 @@ type ClientConfig struct {
 	ShowVersion         *bool
 	OutputTemplateJson  *bool
 	Initialize          *bool
-	Headless            *bool
 }
 
 func (c ClientConfig) OutputDirValue() string {
@@ -90,10 +89,6 @@ func (c ClientConfig) InitializeValue() bool {
 	return boolValue(c.Initialize)
 }
 
-func (c ClientConfig) HeadlessValue() bool {
-	return boolValue(c.Headless)
-}
-
 type LocaleConfig struct {
 	Lang     string `json:"lang,omitempty"`
 	Language string `json:"language,omitempty"`
@@ -121,15 +116,6 @@ type JsonConfig struct {
 	Schema string
 	Common *CommonEntry          `json:"common,omitempty"`
 	Langs  map[string]*LangEntry `json:"-"`
-}
-
-type DevContainerGenConfig struct {
-	Common *CommonEntry          `json:"common,omitempty"`
-	Langs  map[string]*LangEntry `json:"-"`
-}
-
-type VSCodeConfig struct {
-	DevContainerGen DevContainerGenConfig `json:"devcontainergen,omitempty"`
 }
 
 type CodespaceConfig struct {

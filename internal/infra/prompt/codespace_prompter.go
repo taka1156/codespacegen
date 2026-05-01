@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/taka1156/codespacegen/internal/i18n"
-	"github.com/taka1156/codespacegen/internal/utils"
 )
 
 type CodespacegenPrompter struct {
@@ -110,14 +109,14 @@ func (cp *CodespacegenPrompter) PromptPortMapping(explicitPort string) (string, 
 			if defaultPort == "" {
 				return "", nil
 			}
-			normalized, normErr := utils.NormalizePortMapping(defaultPort)
+			normalized, normErr := normalizePortMapping(defaultPort)
 			if normErr == nil {
 				return normalized, nil
 			}
 			fmt.Println(i18n.T("error_invalid_port_format"))
 			continue
 		}
-		normalized, normErr := utils.NormalizePortMapping(line)
+		normalized, normErr := normalizePortMapping(line)
 		if normErr == nil {
 			return normalized, nil
 		}
