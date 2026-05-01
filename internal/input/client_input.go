@@ -47,7 +47,6 @@ func (ci *ClientInput) GetInput(args []string) entity.ClientConfig {
 	ClientConfig.ServiceName = fs.String("service", "", "docker compose service name")
 	ClientConfig.Language = fs.String("language", "", "programming language (go/python/node/rust or image-config keys)")
 	ClientConfig.WorkspaceFolder = fs.String("workspace-folder", "/workspace", "workspace folder inside container")
-	ClientConfig.BaseImage = fs.String("base-image", "", "base Docker image (overrides -language default)")
 	ClientConfig.Timezone = fs.String("timezone", "", "timezone inside container (default: image-config timezone or UTC)")
 	ClientConfig.ImageConfig = fs.String("image-config", "codespacegen.json", "local path or https:// URL to base image config JSON")
 	ClientConfig.Port = fs.String("port", "", "port mapping (e.g. 3000 or 3000:3000)")

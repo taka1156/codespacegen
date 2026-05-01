@@ -21,7 +21,6 @@ type ClientConfig struct {
 	ServiceName         *string
 	Language            *string
 	WorkspaceFolder     *string
-	BaseImage           *string
 	Timezone            *string
 	ImageConfig         *string
 	Port                *string
@@ -52,10 +51,6 @@ func (c ClientConfig) LanguageValue() string {
 
 func (c ClientConfig) WorkspaceFolderValue() string {
 	return stringValue(c.WorkspaceFolder)
-}
-
-func (c ClientConfig) BaseImageValue() string {
-	return stringValue(c.BaseImage)
 }
 
 func (c ClientConfig) TimezoneValue() string {

@@ -10,7 +10,7 @@ import (
 )
 
 func (acc *AssembleCodespaceConfig) buildCodespaceConfig(clientConfig entity.ClientConfig, defaultSetting entity.DefaultSetting, promptValues resolvedCoreValues, langEntries map[string]entity.LangEntry) (*entity.CodespaceConfig, error) {
-	imageEntry, err := resolveBaseImage(promptValues.Language, clientConfig.BaseImageValue(), langEntries, defaultSetting.Image)
+	imageEntry, err := resolveBaseImage(promptValues.Language, langEntries, defaultSetting.Image)
 	if err != nil {
 		return nil, err
 	}
@@ -51,12 +51,8 @@ func (acc *AssembleCodespaceConfig) buildCodespaceConfig(clientConfig entity.Cli
 	}, nil
 }
 
-func resolveBaseImage(language string, explicitBaseImage string, jsonEntries map[string]entity.LangEntry, defaultImage string) (entity.LangEntry, error) {
-	// priority: explicit(flag) > language(json with selection key) > default
-	if explicitBaseImage != "" {
-		return entity.LangEntry{Image: explicitBaseImage}, nil
-	}
-
+func resolveBaseImage(language string, jsonEntries map[string]entity.LangEntry, defaultImage string) (entity.LangEntry, error) {
+	// priority: language(json with selection key) > default
 	if strings.TrimSpace(language) == "" {
 		image := strings.TrimSpace(defaultImage)
 		if image == "" {

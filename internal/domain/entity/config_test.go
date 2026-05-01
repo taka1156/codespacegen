@@ -21,9 +21,6 @@ func TestClientConfig_StringAccessors_ReturnsEmptyWhenNil(t *testing.T) {
 	if got := c.WorkspaceFolderValue(); got != "" {
 		t.Errorf("WorkspaceFolderValue: got %q, want %q", got, "")
 	}
-	if got := c.BaseImageValue(); got != "" {
-		t.Errorf("BaseImageValue: got %q, want %q", got, "")
-	}
 	if got := c.TimezoneValue(); got != "" {
 		t.Errorf("TimezoneValue: got %q, want %q", got, "")
 	}
@@ -50,7 +47,6 @@ func TestClientConfig_StringAccessors_ReturnsValueWhenSet(t *testing.T) {
 		ServiceName:     str("myservice"),
 		Language:        str("python"),
 		WorkspaceFolder: str("/workspace"),
-		BaseImage:       str("alpine:latest"),
 		Timezone:        str("Asia/Tokyo"),
 		ImageConfig:     str("https://example.com/config.json"),
 		Port:            str("3000"),
@@ -72,9 +68,6 @@ func TestClientConfig_StringAccessors_ReturnsValueWhenSet(t *testing.T) {
 	}
 	if got := c.WorkspaceFolderValue(); got != "/workspace" {
 		t.Errorf("WorkspaceFolderValue: got %q, want %q", got, "/workspace")
-	}
-	if got := c.BaseImageValue(); got != "alpine:latest" {
-		t.Errorf("BaseImageValue: got %q, want %q", got, "alpine:latest")
 	}
 	if got := c.TimezoneValue(); got != "Asia/Tokyo" {
 		t.Errorf("TimezoneValue: got %q, want %q", got, "Asia/Tokyo")
