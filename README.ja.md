@@ -200,7 +200,7 @@ RUN curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
 
 マージ挙動:
 
-- `common` を先に適用し、その後に言語別設定で上書き・追記
+- `common` を基本設定として先に適用し、言語別エントリでは `vscodeExtensions` のみ追記できる
 - `vscodeExtensions` は順序を保って結合し、重複は除去
 - `timezone` と `locale` は `common` にのみ設定でき、言語別エントリには指定できない
 - フラグ・`common` のどちらにも timezone がない場合は `UTC` を使用
