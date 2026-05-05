@@ -12,20 +12,13 @@
     "common": {
       "$ref": "#/$defs/commonEntry",
       "description": "Base settings applied to all languages. Language-specific settings take precedence."
-    }
-  },
-  "patternProperties": {
-    "^(?!\\$schema$|common$).+": {
-      "oneOf": [
-        {
-          "type": "string",
-          "description": "Direct image name (e.g. golang:1.24-alpine)."
-        },
-        {
-          "$ref": "#/$defs/configEntry",
-          "description": "Extended configuration for a language entry."
-        }
-      ]
+    },
+    "langs": {
+      "type": "array",
+      "description": "Language-specific configuration entries.",
+      "items": {
+        "$ref": "#/$defs/langEntry"
+      }
     }
   },
   "additionalProperties": false,
@@ -67,9 +60,17 @@
       },
       "additionalProperties": false
     },
-    "configEntry": {
+    "langEntry": {
       "type": "object",
+      "required": [
+        "profileName"
+      ],
       "properties": {
+        "profileName": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Language identifier key (e.g. go, python, node:eslint)."
+        },
         "image": {
           "type": "string",
           "description": "Base image name. If omitted while runCommand is set, codespacegen uses alpine:latest."
@@ -108,29 +109,23 @@
           "streetsidesoftware.code-spell-checker"
         ]
       },
-      "go": {
-        "image": "golang:1.24-alpine",
-        "vscodeExtensions": [
-          "golang.Go"
-        ]
-      },
-      "moonbit": {
-        "image": "ubuntu:24.04",
-        "runCommand": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
-        "vscodeExtensions": [
-          "moonbit.moonbit-lang"
-        ]
-      }
-    },
-    {
-      "go": "golang:1.24-alpine",
-      "node:eslint": {
-        "image": "node:22-alpine",
-        "vscodeExtensions": [
-          "dbaeumer.vscode-eslint",
-          "esbenp.prettier-vscode"
-        ]
-      }
+      "langs": [
+        {
+          "profileName": "go",
+          "image": "golang:1.24-alpine",
+          "vscodeExtensions": [
+            "golang.Go"
+          ]
+        },
+        {
+          "profileName": "moonbit",
+          "image": "ubuntu:24.04",
+          "runCommand": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
+          "vscodeExtensions": [
+            "moonbit.moonbit-lang"
+          ]
+        }
+      ]
     }
   ]
 }
