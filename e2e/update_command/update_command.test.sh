@@ -40,7 +40,7 @@ if [[ $status -eq 0 ]]; then
 	exit 1
 fi
 
-if ! grep -Fq "No Major.Minor.Patch elements found" "$STDERR_PATH"; then
+if ! grep -Fq "Short version cannot contain" "$STDERR_PATH"; then
 	echo "[e2e] expected semver parse error in stderr"
 	cat "$STDERR_PATH"
 	exit 1

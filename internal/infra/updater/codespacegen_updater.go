@@ -16,7 +16,7 @@ func NewCodespacegenUpdater() *CodespacegenUpdater {
 }
 
 func (cu *CodespacegenUpdater) Update(currentVersion string) error {
-	parsedCurrentVersion, err := semver.Parse(currentVersion)
+	parsedCurrentVersion, err := semver.ParseTolerant(currentVersion)
 	if err != nil {
 		return fmt.Errorf("%s: %w", i18n.T("error_failed_to_parse_current_version"), err)
 	}
