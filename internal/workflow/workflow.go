@@ -6,6 +6,7 @@ import (
 	"github.com/taka1156/codespacegen/internal/workflow/collect"
 	"github.com/taka1156/codespacegen/internal/workflow/generate"
 	"github.com/taka1156/codespacegen/internal/workflow/initialize"
+	"github.com/taka1156/codespacegen/internal/workflow/update"
 )
 
 type CollectInputs = collect.CollectInputs
@@ -41,4 +42,10 @@ type InitializeSettingJson = initialize.InitializeSettingJson
 
 func NewInitializeSettingJson(settingTemplateGenerator service.SettingTemplateGenerator, workdirProvider service.WorkdirProvider, writer service.LocalFileWriter) *InitializeSettingJson {
 	return initialize.NewInitializeSettingJson(settingTemplateGenerator, workdirProvider, writer)
+}
+
+type UpdateCommandline = update.UpdateCommandline
+
+func NewUpdateCommandline(updateCodespacegenCommandline update.CodespacegenUpdater) *UpdateCommandline {
+	return update.NewUpdateCommandline(updateCodespacegenCommandline)
 }
