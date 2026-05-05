@@ -27,7 +27,7 @@ func (cu *CodespacegenUpdater) Update(currentVersion string) error {
 		return errors.New(i18n.T("error_failed_to_check_latest_version", map[string]interface{}{"Error": err.Error()}))
 	}
 
-	fmt.Printf(i18n.T("success_update"), latest.Version, latest.ReleaseNotes)
+	fmt.Print(i18n.T("success_update", map[string]interface{}{"Version": latest.Version, "ReleaseNotes": latest.ReleaseNotes}))
 
 	return nil
 }
