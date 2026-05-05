@@ -38,6 +38,20 @@ func TestClientInput_GetInput_UpdateCommand(t *testing.T) {
 	}
 }
 
+func TestClientInput_GetInput_UpdateCommand_WithLang(t *testing.T) {
+	ci := NewClientInput()
+	args := []string{"codespacegen", "update", "-lang", "ja"}
+
+	got := ci.GetInput(args)
+
+	if got.Mode.CommandlineModeValue() != entity.Update.CommandlineModeValue() {
+		t.Errorf("Mode: got %q, want %q", got.Mode.CommandlineModeValue(), entity.Update.CommandlineModeValue())
+	}
+	if got.LangValue() != "ja" {
+		t.Errorf("Lang: got %q, want %q", got.LangValue(), "ja")
+	}
+}
+
 func TestClientInput_GetInput_VersionCommand(t *testing.T) {
 	ci := NewClientInput()
 	args := []string{"codespacegen", "version"}

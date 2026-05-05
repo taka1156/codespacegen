@@ -33,9 +33,25 @@ func (ci *ClientInput) GetInput(args []string) entity.ClientConfig {
 			clientConfig.Mode = entity.Initialize
 			return clientConfig
 		case "update":
+			updateCmd := flag.NewFlagSet("update", flag.ExitOnError)
+			lang := updateCmd.String("lang", "", "language for CLI messages (en/ja, default: auto-detect)")
+			updateCmd.Usage = func() {
+				fmt.Fprintf(os.Stderr, "Usage: %s update [options]\n\n", os.Args[0])
+				fmt.Fprintf(os.Stderr, "Update codespacegen to the latest version\n")
+				updateCmd.PrintDefaults()
+			}
+			_ = updateCmd.Parse(args[2:])
+			clientConfig.Lang = lang
 			clientConfig.Mode = entity.Update
 			return clientConfig
 		case "version":
+			versionCmd := flag.NewFlagSet("version", flag.ExitOnError)
+			versionCmd.Usage = func() {
+				fmt.Fprintf(os.Stderr, "Usage: %s version\n\n", os.Args[0])
+				fmt.Fprintf(os.Stderr, "Show current version of codespacegen\n")
+				versionCmd.PrintDefaults()
+			}
+			_ = versionCmd.Parse(args[2:])
 			clientConfig.Mode = entity.Version
 			return clientConfig
 		}
@@ -43,9 +59,13 @@ func (ci *ClientInput) GetInput(args []string) entity.ClientConfig {
 
 	fs := flag.NewFlagSet("root", flag.ExitOnError)
 	fs.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage: %s [command]\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Commands:\n")
+		fmt.Fprintf(os.Stderr, "  version\tShow current version of codespacegen\n\n")
 		fmt.Fprintf(os.Stderr, "Usage: %s [command] [options]\n\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "Commands:\n")
-		fmt.Fprintf(os.Stderr, "  init\tInitialize setting JSON\n\n")
+		fmt.Fprintf(os.Stderr, "  init\t\tInitialize setting JSON\n")
+		fmt.Fprintf(os.Stderr, "  update\tUpdate codespacegen to the latest version\n\n")
 		fmt.Fprintf(os.Stderr, "Options:\n")
 		fs.PrintDefaults()
 	}
