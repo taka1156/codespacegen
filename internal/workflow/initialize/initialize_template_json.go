@@ -22,7 +22,7 @@ func NewInitializeSettingJson(settingTemplateGenerator service.SettingTemplateGe
 	}
 }
 
-func (isj *InitializeSettingJson) Execute(templateJson entity.TemplateJson, settingJsonFileName string) error {
+func (isj *InitializeSettingJson) Execute(templateJson entity.JsonConfig, settingJsonFileName string) error {
 	file, err := isj.settingTemplateGenerator.Generate(templateJson)
 	if err != nil {
 		return fmt.Errorf("failed to generate template JSON: %w", err)

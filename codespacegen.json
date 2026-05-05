@@ -15,71 +15,82 @@
       "username.errorlens"
     ]
   },
-  "go": {
-    "image": "golang:1.24-alpine",
-    "vscodeExtensions": [
-      "golang.Go"
-    ]
-  },
-  "python": {
-    "image": "python:3.12-alpine",
-    "vscodeExtensions": [
-      "ms-python.python"
-    ]
-  },
-  "node:biome": {
-    "image": "node:24-alpine",
-    "vscodeExtensions": [
-      "biomejs.biome"
-    ]
-  },
-  "node:eslint": {
-    "image": "node:24-alpine",
-    "vscodeExtensions": [
-      "dbaeumer.vscode-eslint",
-      "esbenp.prettier-vscode"
-    ]
-  },
-  "node:react": {
-    "image": "node:24-alpine",
-    "vscodeExtensions": [
-      "jawandarajbir.react-vscode-extension-pack",
-      "dbaeumer.vscode-eslint",
-      "stylelint.vscode-stylelint",
-      "esbenp.prettier-vscode"
-    ]
-  },
-  "rust": {
-    "image": "rust:1.72-alpine",
-    "vscodeExtensions": [
-      "Zerotaskx.rust-extension-pack"
-    ]
-  },
-  "moonbit": {
-    "image": "ubuntu:24.04",
-    "runCommand": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
-    "vscodeExtensions": [
-      "moonbit.moonbit-lang"
-    ]
-  },
-  "gcc": {
-    "image": "ubuntu:24.04",
-    "linuxPackages": [
-      "gcc",
-      "make",
-      "git",
-      "binutils",
-      "libc6-dev"
-    ],
-    "vscodeExtensions": [
-      "ms-vscode.cpptools"
-    ]
-  },
-  "node:zenn": {
-    "image": "node:24-alpine",
-    "runCommand": "yarn global add zenn-cli",
-    "vscodeExtensions": [
-      "zenn.zenn-vscode-extension"
-    ]
-  }
+  "langs": [
+    {
+      "profileName": "go",
+      "image": "golang:1.24-alpine",
+      "vscodeExtensions": [
+        "golang.Go"
+      ]
+    },
+    {
+      "profileName": "python",
+      "image": "python:3.12-alpine",
+      "vscodeExtensions": [
+        "ms-python.python"
+      ]
+    },
+    {
+      "profileName": "node:biome",
+      "image": "node:24-alpine",
+      "vscodeExtensions": [
+        "biomejs.biome"
+      ]
+    },
+    {
+      "profileName": "node:eslint",
+      "image": "node:24-alpine",
+      "vscodeExtensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ]
+    },
+    {
+      "profileName": "node:react",
+      "image": "node:24-alpine",
+      "vscodeExtensions": [
+        "jawandarajbir.react-vscode-extension-pack",
+        "dbaeumer.vscode-eslint",
+        "stylelint.vscode-stylelint",
+        "esbenp.prettier-vscode"
+      ]
+    },
+    {
+      "profileName": "rust",
+      "image": "rust:1.72-alpine",
+      "vscodeExtensions": [
+        "Zerotaskx.rust-extension-pack"
+      ]
+    },
+    {
+      "profileName": "moonbit",
+      "image": "ubuntu:24.04",
+      "runCommand": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
+      "vscodeExtensions": [
+        "moonbit.moonbit-lang"
+      ]
+    },
+    {
+      "profileName": "gcc",
+      "image": "ubuntu:24.04",
+      "linuxPackages": [
+        "gcc",
+        "make",
+        "git",
+        "binutils",
+        "libc6-dev"
+      ],
+      "vscodeExtensions": [
+        "ms-vscode.cpptools"
+      ]
+    },
+    {
+      "profileName": "node:zenn",
+      "image": "node:24-alpine",
+      "runCommand": "yarn global add zenn-cli",
+      "vscodeExtensions": [
+        "zenn.zenn-vscode-extension"
+      ]
+    }
+  ]
 }

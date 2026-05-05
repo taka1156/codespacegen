@@ -52,8 +52,9 @@ var (
 	defaultTestSetting = entity.DefaultSetting{Image: "alpine:latest", Timezone: "UTC"}
 	defaultJsonConfig  = entity.JsonConfig{
 		Common: &entity.CommonEntry{},
-		Langs: map[string]*entity.LangEntry{
-			"python": {
+		Langs: []*entity.LangEntry{
+			{
+				ProfileName:      "python",
 				Image:            "python:3.12",
 				RunCommand:       utils.Ptr("pip install -r requirements.txt"),
 				VSCodeExtensions: utils.Ptr([]string{"ms-python.python"}),
