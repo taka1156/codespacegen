@@ -4,10 +4,17 @@ import (
 	"io"
 
 	"github.com/taka1156/codespacegen/internal/infra/prompt"
+	"github.com/taka1156/codespacegen/internal/infra/updater"
 )
 
-type CodespacePrompter = prompt.CodespacegenPrompter
+type CodespacegenPrompter = prompt.CodespacegenPrompter
 
-func NewCodespacePrompter(reader io.Reader) *CodespacePrompter {
+func NewCodespacegenPrompter(reader io.Reader) *CodespacegenPrompter {
 	return prompt.NewCodespacegenPrompter(reader)
+}
+
+type CodespacegenUpdater = updater.CodespacegenUpdater
+
+func NewCodespacegenUpdater() *CodespacegenUpdater {
+	return updater.NewCodespacegenUpdater()
 }

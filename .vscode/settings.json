@@ -2,6 +2,7 @@
   "cSpell.words": [
     "binutils",
     "biomejs",
+    "blang",
     "CEINTL",
     "codespacegen",
     "commitizen",
@@ -28,6 +29,8 @@
     "nolint",
     "noninteractive",
     "pkgs",
+    "rhysd",
+    "selfupdate",
     "shfmt",
     "SHOWDIRTYSTATE",
     "SHOWUNTRACKEDFILES",
