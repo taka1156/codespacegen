@@ -198,9 +198,9 @@ RUN curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
 
 Merge behavior:
 
-- `common` is applied first, then language-specific values override/append
+- `common` is applied first as the base; per-language entries can only append `vscodeExtensions`
 - `vscodeExtensions` are merged in order and de-duplicated
-- `timezone` and `locale` can only be set in `common`, not per-language
+- `timezone` and `locale` can only be set in `common`; they are not available in per-language entries
 - If timezone is not set in flags or `common`, `UTC` is used
 
 Example:
