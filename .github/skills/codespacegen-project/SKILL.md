@@ -46,7 +46,6 @@ description: 'Repository knowledge for the codespacegen project. Use when answer
   - `internal/generator/generator.go` — factory functions for generators
   - `internal/generator/codespace/` — `CodespaceGenerator` (renders `Dockerfile`, `devcontainer.json`, `docker-compose.yaml`)
   - `internal/generator/setting/` — `SettingTemplateGenerator` (renders `codespacegen.json`)
-  - `internal/generator/config/` — `ConfigTemplateGenerator` (JSON marshal for template config)
   - `internal/generator/filewriter/` — `LocalFileWriter`
   - `internal/generator/workdirprovider/` — `WorkdirProvider`
 - Workflow (use-case layer):
@@ -122,7 +121,6 @@ Dependencies point inward (domain has no outward dependencies).
   - `internal/input/json_input_test.go` — HTTP/file loading and validation
   - `internal/infra/prompt/prompt_test.go` — interactive prompter behavior
   - `internal/generator/setting/setting_template_generator_test.go` — setting template generation
-  - `internal/generator/config/config_template_generator_test.go` — config template generation
 
 ### E2E snapshot tests
 
