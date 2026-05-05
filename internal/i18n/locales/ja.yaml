@@ -1,11 +1,16 @@
+# parse error msgs
 error_failed_to_parse_base_image_config_schema:
   other: "ベースイメージ設定のスキーマのパースに失敗しました: {{.Error}}"
-error_failed_to_parse_base_image_config_common:
-  other: "ベースイメージ設定の \"{{.Key}}\" エントリのパースに失敗しました: {{.Error}}"
-error_failed_to_parse_base_image_config_language_entry:
-  other: "ベースイメージ設定の \"{{.Key}}\" エントリのパースに失敗しました: {{.Error}}"
 error_failed_to_close_base_image_config_response_body:
   other: "ベースイメージ設定のレスポンスボディのクローズに失敗しました: {{.Error}}"
+# update error msgs
+error_failed_to_parse_current_version:
+  other: "現在のバージョンのパースに失敗しました: {{.Error}}"
+error_failed_to_check_latest_version:
+  other: "最新バージョンの確認に失敗しました: {{.Error}}"
+success_update:
+  other: "codespacegen は最新バージョンです。\n ({{.Version}}) \n release notes: {{.ReleaseNotes}}"
+# prompt error msgs
 prompt_project_name_required:
   other: "プロジェクト名を入力してください（必須）: "
 prompt_project_name_with_default:
