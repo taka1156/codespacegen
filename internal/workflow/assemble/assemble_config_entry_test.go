@@ -32,15 +32,22 @@ func TestResolveMergedEntry_ReturnsEmptyWhenBothNil(t *testing.T) {
 func TestResolveMergedEntry_CopiesLangsWhenCommonNil(t *testing.T) {
 	acc := NewAssembleCodespaceConfig(nil)
 	jsonConfig := entity.JsonConfig{
-		Langs: map[string]*entity.LangEntry{
-			"python": {Image: "python:3.12"},
+		Langs: []*entity.LangEntry{
+			{ProfileName: "python", Image: "python:3.12"},
 		},
 	}
 	got, err := acc.resolveMergedEntry(jsonConfig)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if _, ok := got["python"]; !ok {
+	found := false
+	for _, entry := range got {
+		if entry.ProfileName == "python" {
+			found = true
+			break
+		}
+	}
+	if !found {
 		t.Error("expected 'python' key in result")
 	}
 }
@@ -49,11 +56,11 @@ func TestResolveMergedEntry_SkipsReservedKeys(t *testing.T) {
 	acc := NewAssembleCodespaceConfig(nil)
 	jsonConfig := entity.JsonConfig{
 		Common: &entity.CommonEntry{},
-		Langs: map[string]*entity.LangEntry{
-			"python":  {Image: "python:3.12"},
-			"common":  {Image: "should-be-skipped"},
-			"$schema": {Image: "should-be-skipped"},
-			"":        {Image: "should-be-skipped"},
+		Langs: []*entity.LangEntry{
+			{ProfileName: "python", Image: "python:3.12"},
+			{ProfileName: "common", Image: "should-be-skipped"},
+			{ProfileName: "$schema", Image: "should-be-skipped"},
+			{ProfileName: "", Image: "should-be-skipped"},
 		},
 	}
 	got, err := acc.resolveMergedEntry(jsonConfig)
@@ -63,7 +70,14 @@ func TestResolveMergedEntry_SkipsReservedKeys(t *testing.T) {
 	if len(got) != 1 {
 		t.Errorf("len: got %d, want 1", len(got))
 	}
-	if _, ok := got["python"]; !ok {
+	found := false
+	for _, entry := range got {
+		if entry.ProfileName == "python" {
+			found = true
+			break
+		}
+	}
+	if !found {
 		t.Error("expected 'python' key in result")
 	}
 }
@@ -72,15 +86,22 @@ func TestResolveMergedEntry_NormalizesKeyToLower(t *testing.T) {
 	acc := NewAssembleCodespaceConfig(nil)
 	jsonConfig := entity.JsonConfig{
 		Common: &entity.CommonEntry{},
-		Langs: map[string]*entity.LangEntry{
-			"RUST": {Image: "rust:latest"},
+		Langs: []*entity.LangEntry{
+			{ProfileName: "rust", Image: "rust:latest"},
 		},
 	}
 	got, err := acc.resolveMergedEntry(jsonConfig)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if _, ok := got["rust"]; !ok {
+	found := false
+	for _, entry := range got {
+		if entry.ProfileName == "rust" {
+			found = true
+			break
+		}
+	}
+	if !found {
 		t.Error("expected 'rust' key (lowercase) in result")
 	}
 }

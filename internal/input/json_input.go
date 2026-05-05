@@ -53,26 +53,8 @@ func (ji *JsonInput) LoadLanguageImages(source string) (*entity.JsonConfig, erro
 
 	var jsonConfigEntity = entity.JsonConfig{}
 
-	for key, value := range jsonConfig {
-		switch key {
-		case "$schema":
-			if err := json.Unmarshal(value, &jsonConfigEntity.Schema); err != nil {
-				return nil, fmt.Errorf("%s: %w", i18n.T("error_failed_to_parse_base_image_config_schema"), err)
-			}
-		case "common":
-			if err := json.Unmarshal(value, &jsonConfigEntity.Common); err != nil {
-				return nil, fmt.Errorf("%s: %w", i18n.T("error_failed_to_parse_base_image_config_common"), err)
-			}
-		default:
-			var langEntry entity.LangEntry
-			if err := json.Unmarshal(value, &langEntry); err != nil {
-				return nil, fmt.Errorf("%s: %w", i18n.T("error_failed_to_parse_base_image_config_language_entry", map[string]interface{}{"Language": key}), err)
-			}
-			if jsonConfigEntity.Langs == nil {
-				jsonConfigEntity.Langs = make(map[string]*entity.LangEntry)
-			}
-			jsonConfigEntity.Langs[key] = &langEntry
-		}
+	if err := json.Unmarshal(rawJson, &jsonConfigEntity); err != nil {
+		return nil, fmt.Errorf("%s: %w", i18n.T("error_failed_to_parse_base_image_config_schema"), err)
 	}
 
 	return &jsonConfigEntity, nil

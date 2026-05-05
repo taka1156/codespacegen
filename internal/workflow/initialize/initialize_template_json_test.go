@@ -10,10 +10,10 @@ import (
 )
 
 type mockSettingTemplateGenerator struct {
-	generateFunc func(entity.TemplateJson) (string, error)
+	generateFunc func(entity.JsonConfig) (string, error)
 }
 
-func (m *mockSettingTemplateGenerator) Generate(tj entity.TemplateJson) (string, error) {
+func (m *mockSettingTemplateGenerator) Generate(tj entity.JsonConfig) (string, error) {
 	return m.generateFunc(tj)
 }
 
@@ -35,7 +35,7 @@ func (m *mockLocalFileWriter) Write(path string, content string, overwrite bool)
 
 func TestInitializeSettingJson_Execute_Success(t *testing.T) {
 	gen := &mockSettingTemplateGenerator{
-		generateFunc: func(tj entity.TemplateJson) (string, error) {
+		generateFunc: func(tj entity.JsonConfig) (string, error) {
 			return "test-content", nil
 		},
 	}
@@ -53,37 +53,37 @@ func TestInitializeSettingJson_Execute_Success(t *testing.T) {
 		},
 	}
 	isj := NewInitializeSettingJson(gen, wd, writer)
-	err := isj.Execute(entity.TemplateJson{}, "setting.json")
+	err := isj.Execute(entity.JsonConfig{}, "setting.json")
 	assert.NoError(t, err)
 }
 
 func TestInitializeSettingJson_Execute_GenerateError(t *testing.T) {
 	gen := &mockSettingTemplateGenerator{
-		generateFunc: func(tj entity.TemplateJson) (string, error) {
+		generateFunc: func(tj entity.JsonConfig) (string, error) {
 			return "", errors.New("generate error")
 		},
 	}
 	wd := &mockWorkdirProvider{getConfigOutputPathFunc: func() (string, error) { return "/", nil }}
 	writer := &mockLocalFileWriter{writeFunc: func(string, string, bool) error { return nil }}
 	isj := NewInitializeSettingJson(gen, wd, writer)
-	err := isj.Execute(entity.TemplateJson{}, "setting.json")
+	err := isj.Execute(entity.JsonConfig{}, "setting.json")
 	assert.ErrorContains(t, err, "failed to generate template JSON")
 }
 
 func TestInitializeSettingJson_Execute_GetConfigOutputPathError(t *testing.T) {
-	gen := &mockSettingTemplateGenerator{generateFunc: func(entity.TemplateJson) (string, error) { return "ok", nil }}
+	gen := &mockSettingTemplateGenerator{generateFunc: func(entity.JsonConfig) (string, error) { return "ok", nil }}
 	wd := &mockWorkdirProvider{getConfigOutputPathFunc: func() (string, error) { return "", errors.New("path error") }}
 	writer := &mockLocalFileWriter{writeFunc: func(string, string, bool) error { return nil }}
 	isj := NewInitializeSettingJson(gen, wd, writer)
-	err := isj.Execute(entity.TemplateJson{}, "setting.json")
+	err := isj.Execute(entity.JsonConfig{}, "setting.json")
 	assert.ErrorContains(t, err, "failed to get config output path")
 }
 
 func TestInitializeSettingJson_Execute_WriteError(t *testing.T) {
-	gen := &mockSettingTemplateGenerator{generateFunc: func(entity.TemplateJson) (string, error) { return "ok", nil }}
+	gen := &mockSettingTemplateGenerator{generateFunc: func(entity.JsonConfig) (string, error) { return "ok", nil }}
 	wd := &mockWorkdirProvider{getConfigOutputPathFunc: func() (string, error) { return "/tmp/", nil }}
 	writer := &mockLocalFileWriter{writeFunc: func(string, string, bool) error { return errors.New("write error") }}
 	isj := NewInitializeSettingJson(gen, wd, writer)
-	err := isj.Execute(entity.TemplateJson{}, "setting.json")
+	err := isj.Execute(entity.JsonConfig{}, "setting.json")
 	assert.ErrorContains(t, err, "failed to write template JSON")
 }

@@ -16,8 +16,8 @@ func (acc *AssembleCodespaceConfig) resolveMergedEntry(jsonConfig entity.JsonCon
 	case jsonConfig.Langs == nil:
 		return mergedImages, nil
 	case jsonConfig.Common == nil:
-		for k, entry := range jsonConfig.Langs {
-			normalizedKey := strings.ToLower(strings.TrimSpace(k))
+		for _, entry := range jsonConfig.Langs {
+			normalizedKey := strings.ToLower(strings.TrimSpace(entry.ProfileName))
 			if normalizedKey == "" || normalizedKey == "common" || normalizedKey == "$schema" {
 				continue
 			}
@@ -25,8 +25,8 @@ func (acc *AssembleCodespaceConfig) resolveMergedEntry(jsonConfig entity.JsonCon
 		}
 		return mergedImages, nil
 	default:
-		for k, entry := range jsonConfig.Langs {
-			normalizedKey := strings.ToLower(strings.TrimSpace(k))
+		for _, entry := range jsonConfig.Langs {
+			normalizedKey := strings.ToLower(strings.TrimSpace(entry.ProfileName))
 			if normalizedKey == "" || normalizedKey == "common" || normalizedKey == "$schema" {
 				continue
 			}
@@ -40,6 +40,7 @@ func (acc *AssembleCodespaceConfig) resolveMergedEntry(jsonConfig entity.JsonCon
 
 func mergeLanguageEntries(common entity.CommonEntry, langEntry entity.LangEntry) entity.LangEntry {
 	merged := entity.LangEntry{
+		ProfileName:   langEntry.ProfileName,
 		Image:         langEntry.Image,
 		LinuxPackages: langEntry.LinuxPackages,
 		RunCommand:    langEntry.RunCommand,

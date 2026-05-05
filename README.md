@@ -98,11 +98,11 @@ The generated file serves as a starting point for customizing base images and VS
 |---|---|---|
 | `-output` | `.devcontainer` | Output directory |
 | `-name` | *(interactive, required)* | Project name. Prompted every time and mapped to the `name` field in `devcontainer.json` |
-| `-language` | *(interactive, empty on Enter)* | Programming language key. Prompted every time. Any key defined in `codespacegen.json` (or the file specified by `-image-config`) can be used. If empty, no language-specific setting is used and `alpine:latest` is selected |
+| `-language` | *(interactive, empty on Enter)* | Programming language key. Prompted every time. Any `profileName` defined in the `langs` array of `codespacegen.json` (or the file specified by `-image-config`) can be used. If empty, no language-specific setting is used and `alpine:latest` is selected |
 | `-service` | *(interactive, `app` on Enter)* | Docker Compose service name. Prompted every time and reflected in both `devcontainer.json` and `docker-compose.yaml` |
 | `-workspace-folder` | *(interactive, `/workspace` on Enter)* | Workspace path inside the container. Prompted every time |
 | `-timezone` | *(interactive, default from `common.timezone` or `UTC`)* | Timezone inside the container. Prompted every time and reflected in `ENV TZ` and timezone setup in the Dockerfile |
-| `-image-config` | `codespacegen.json` | Local path or `https://` URL for base image definitions. Supports top-level `common` defaults plus per-language entries. `image` is required when `runCommand` or `linuxPackages` is specified |
+| `-image-config` | `codespacegen.json` | Local path or `https://` URL for base image definitions. Supports top-level `common` defaults plus a `langs` array for per-language entries. `image` is required when `runCommand` or `linuxPackages` is specified |
 | `-port` | *(interactive, no ports on Enter)* | Port mapping. For example, `3000` is normalized to `3000:3000`, and `8080:3000` is also accepted. Prompted every time |
 | `-compose-file` | `docker-compose.yaml` | Compose file name |
 | `-force` | `false` | Overwrite existing files |
@@ -123,51 +123,54 @@ You can attach the JSON Schema in editors that support JSON Schema validation an
 ```json
 {
 	"$schema": "./codespacegen.schema.json",
-	"go": "golang:1.24-alpine"
+	"langs": [
+		{
+			"profileName": "go",
+			"image": "golang:1.24-alpine"
+		}
+	]
 }
 ```
 
 If `codespacegen.json` is at the repository root, `./codespacegen.schema.json` points to the bundled schema file in this repository.
 
-**Pattern 1: string value for a direct image name**
+**Language entries (`langs` array)**
+
+Each entry in `langs` requires `profileName` and supports the following fields (`image` is required when `runCommand` or `linuxPackages` is specified):
 
 ```json
 {
-	"go": "golang:1.24-alpine"
+	"langs": [
+		{
+			"profileName": "go",
+			"image": "golang:1.24-alpine",
+			"vscodeExtensions": ["golang.Go"]
+		},
+		{
+			"profileName": "moonbit",
+			"image": "ubuntu:24.04",
+			"runCommand": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
+			"vscodeExtensions": ["moonbit.moonbit-lang"]
+		},
+		{
+			"profileName": "gcc",
+			"image": "ubuntu:24.04",
+			"linuxPackages": ["gcc", "make", "git", "binutils", "libc6-dev"],
+			"vscodeExtensions": ["ms-vscode.cpptools"]
+		}
+	]
 }
 ```
 
-**Pattern 2: object value for run commands, Linux packages, and VS Code extensions (`image` is required when `runCommand` or `linuxPackages` is specified)**
-
-```json
-{
-	"moonbit": {
-		"image": "ubuntu:24.04",
-		"runCommand": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
-		"vscodeExtensions": ["moonbit.moonbit-lang"]
-	}
-}
-```
-
-The generated Dockerfile adds the following `RUN` step.
+The `runCommand` value is injected as a `RUN` step in the Dockerfile:
 
 ```dockerfile
 RUN curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
 ```
 
-Use `linuxPackages` to specify Linux system packages. They are merged with the default package list and installed by the package manager appropriate for the base image (e.g. `apt` for Debian/Ubuntu, `apk` for Alpine).
+`linuxPackages` specifies Linux system packages. They are merged with the default package list and installed by the package manager appropriate for the base image (e.g. `apt` for Debian/Ubuntu, `apk` for Alpine).
 
-```json
-{
-	"gcc": {
-		"image": "ubuntu:24.04",
-		"linuxPackages": ["gcc", "make", "git", "binutils", "libc6-dev"],
-		"vscodeExtensions": ["ms-vscode.cpptools"]
-	}
-}
-```
-
-**Pattern 3: shared defaults with `common`**
+**Shared defaults with `common`**
 
 ```json
 {
@@ -183,10 +186,13 @@ Use `linuxPackages` to specify Linux system packages. They are merged with the d
 			"streetsidesoftware.code-spell-checker"
 		]
 	},
-	"go": {
-		"image": "golang:1.24-alpine",
-		"vscodeExtensions": ["golang.Go"]
-	}
+	"langs": [
+		{
+			"profileName": "go",
+			"image": "golang:1.24-alpine",
+			"vscodeExtensions": ["golang.Go"]
+		}
+	]
 }
 ```
 
@@ -196,8 +202,6 @@ Merge behavior:
 - `vscodeExtensions` are merged in order and de-duplicated
 - `timezone` and `locale` can only be set in `common`, not per-language
 - If timezone is not set in flags or `common`, `UTC` is used
-
-Patterns 1, 2, and 3 can be mixed in the same file.
 
 Example:
 

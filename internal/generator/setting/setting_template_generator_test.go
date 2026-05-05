@@ -9,10 +9,10 @@ import (
 
 func TestSettingTemplateGenerator_Generate_ReturnsValidJSON(t *testing.T) {
 	g := NewSettingTemplateGenerator()
-	input := entity.TemplateJson{
+	input := entity.JsonConfig{
 		Schema: "https://example.com/schema.json",
-		Go: entity.LangEntry{
-			Image: "golang:1.24-alpine",
+		Langs: []*entity.LangEntry{
+			{ProfileName: "go", Image: "golang:1.24-alpine"},
 		},
 	}
 
@@ -29,7 +29,7 @@ func TestSettingTemplateGenerator_Generate_ReturnsValidJSON(t *testing.T) {
 
 func TestSettingTemplateGenerator_Generate_EmptyTemplateReturnsJSON(t *testing.T) {
 	g := NewSettingTemplateGenerator()
-	got, err := g.Generate(entity.TemplateJson{})
+	got, err := g.Generate(entity.JsonConfig{})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
