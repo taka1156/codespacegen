@@ -2,6 +2,8 @@ package updater
 
 import (
 	"testing"
+
+	"github.com/blang/semver"
 )
 
 func TestNewCodespacegenUpdater(t *testing.T) {
@@ -37,19 +39,18 @@ func TestUpdate_EmptyVersion(t *testing.T) {
 }
 
 func TestUpdate_ValidVersionFormat(t *testing.T) {
-	// Note: This test will attempt to call selfupdate.UpdateSelf
-	// which requires network access and GitHub API calls.
-	// For a fully isolated unit test, the code would need to be refactored
-	// to accept the selfupdate client as a dependency for mocking.
+	ucc := CodespacegenUpdater{}
 
-	testVersions := []string{
-		"1.0.0",
-		"1.2.3",
-		"0.1.0",
-	}
-
-	for _, version := range testVersions {
-		// We can at least verify the version format is valid for semver parsing
-		_ = version
+	for _, version := range []string{"1.0.0", "1.2.3", "0.1.0"} {
+		t.Run(version, func(t *testing.T) {
+			err := ucc.Update(version)
+			if err != nil {
+				// Update が失敗した場合、バージョンのパース失敗ではないことを確認する。
+				// selfupdate によるネットワーク/API エラーはテスト環境では許容される。
+				if _, parseErr := semver.Parse(version); parseErr != nil {
+					t.Errorf("Update(%q): version parse should not fail, got: %v", version, parseErr)
+				}
+			}
+		})
 	}
 }

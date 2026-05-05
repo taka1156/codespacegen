@@ -3,14 +3,16 @@ error_failed_to_parse_base_image_config_schema:
   other: "Failed to parse base image config schema: {{.Error}}"
 error_failed_to_close_base_image_config_response_body:
   other: "Failed to close base image config response body: {{.Error}}"
-# update error msgs
+# update msgs
+already_latest_version:
+  other: "codespacegen is already the latest version."
 error_failed_to_parse_current_version:
-  other: "Failed to parse current version: {{.Error}}"
+  other: "Failed to parse current version"
 error_failed_to_check_latest_version:
-  other: "Failed to check latest version: {{.Error}}"
+  other: "Failed to check latest version"
 success_update:
   other: "codespacegen is up to date.\n ({{.Version}})\n release notes: {{.ReleaseNotes}}"
-# prompt error msgs
+# prompt msgs
 prompt_project_name_required:
   other: "Enter project name (required): "
 prompt_project_name_with_default:

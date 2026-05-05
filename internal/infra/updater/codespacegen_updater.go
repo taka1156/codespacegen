@@ -1,7 +1,6 @@
 package updater
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/blang/semver"
@@ -19,12 +18,17 @@ func NewCodespacegenUpdater() *CodespacegenUpdater {
 func (cu *CodespacegenUpdater) Update(currentVersion string) error {
 	parsedCurrentVersion, err := semver.Parse(currentVersion)
 	if err != nil {
-		return errors.New(i18n.T("error_failed_to_parse_current_version", map[string]interface{}{"Error": err.Error()}))
+		return fmt.Errorf("%s: %w", i18n.T("error_failed_to_parse_current_version"), err)
 	}
 
 	latest, err := selfupdate.UpdateSelf(parsedCurrentVersion, entity.DefaultRepositoryName)
 	if err != nil {
-		return errors.New(i18n.T("error_failed_to_check_latest_version", map[string]interface{}{"Error": err.Error()}))
+		return fmt.Errorf("%s: %w", i18n.T("error_failed_to_check_latest_version"), err)
+	}
+
+	if latest.Version.Equals(parsedCurrentVersion) {
+		fmt.Println(i18n.T("already_latest_version"))
+		return nil
 	}
 
 	fmt.Print(i18n.T("success_update", map[string]interface{}{"Version": latest.Version, "ReleaseNotes": latest.ReleaseNotes}))
