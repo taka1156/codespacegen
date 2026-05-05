@@ -5,6 +5,13 @@ description: 'Repository knowledge for the codespacegen project. Use when answer
 
 # codespacegen Project Knowledge
 
+## Important Behavioral Rules
+
+- **Do NOT modify any source code without explicit user permission.**
+- Before making any code change (editing files, adding files, refactoring, etc.), always ask the user for confirmation first.
+- Read-only operations (searching, reading files, running tests to observe output) do not require permission.
+- If the user asks a question or requests analysis, provide the answer or analysis only — do not apply changes unless the user explicitly approves them.
+
 ## When to Use
 
 - Answering questions about how this repository is organized
@@ -79,14 +86,19 @@ Dependencies point inward (domain has no outward dependencies).
 - `-image-config` accepts a local path or `https://` URL.
 - `codespacegen.json` supports:
   - top-level `common` with `locale`, `timezone`, and `vscodeExtensions`
-  - per-language object entries with `image`, `linuxPackages`, `runCommand`, and `vscodeExtensions`
-  - `locale` and `timezone` are **only** in `common`; `LangEntry` no longer carries them
+  - top-level `langs` array — each item is a `LangEntry` object with:
+    - `profileName` (required) — identifies the language profile (e.g. `"go"`, `"node:eslint"`)
+    - `image` — base Docker image
+    - `runCommand` — injected as `RUN` in the Dockerfile
+    - `linuxPackages` — list of OS packages to install
+    - `vscodeExtensions` — language-specific VS Code extension IDs
+  - `locale` and `timezone` are **only** in `common`; `LangEntry` does not carry them
 - Merge behavior:
   - `common.locale` is applied to all generated output (not per-language)
   - `common.timezone` is used as the fallback default when no flag or prompt value is given
   - `vscodeExtensions`: `common` extensions are prepended to language-specific extensions, then deduplicated
   - `linuxPackages` in a lang entry are appended to the default OS modules for that image type
-- Base image resolution priority: language key lookup in JSON config > default image
+- Base image resolution priority: `profileName` lookup in `langs` array of JSON config > default image
 - Locale resolution: `jsonConfig.Common.Locale` > `defaultSetting.Locale`
 - Timezone resolution priority: explicit flag > `jsonConfig.Common.Timezone` > `defaultSetting.Timezone` (UTC)
 - `-headless` flag: skips all interactive prompts; all values must be supplied via CLI flags
@@ -97,10 +109,7 @@ Dependencies point inward (domain has no outward dependencies).
 - The generator chooses package setup based on the base image:
   - Alpine-like images use `apk`
   - Non-Alpine images use `apt-get`
-- Generated `devcontainer.json` always includes:
-  - `GitHub.copilot`
-  - `GitHub.copilot-chat`
-- Additional VS Code extensions from config are merged and deduplicated.
+- VS Code extensions in `devcontainer.json` are taken directly from `config.VSCodeExtensions` (merged from `common` + lang-specific entries, deduplicated). The generator does not inject any hardcoded extensions.
 - `docker-compose.yaml` includes `ports` only when a port mapping is provided.
 - Port mapping is normalized at assembly time via `utils.NormalizePortMapping`: a bare port number `N` becomes `N:N`.
 
