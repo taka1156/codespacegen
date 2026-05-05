@@ -37,8 +37,8 @@ func TestCollectInputs_CollectConfig_ReturnsCollectedInputs(t *testing.T) {
 	clientConfig := entity.ClientConfig{ImageConfig: &imageConfig}
 
 	jsonResult := entity.JsonConfig{
-		Langs: map[string]*entity.LangEntry{
-			"python": {Image: "python:3.12"},
+		Langs: []*entity.LangEntry{
+			{ProfileName: "python", Image: "python:3.12"},
 		},
 	}
 	defaultSetting := entity.DefaultSetting{

@@ -37,11 +37,11 @@ func TestLoadLanguageImages_ReturnsNilWhenSourceIsEmpty(t *testing.T) {
 }
 
 func TestLoadLanguageImages_ParsesValidJSONFromFileLoader(t *testing.T) {
-	raw := []byte(`{"python": {"image": "python:3.12"},"node":{"image":"node:20"}}`)
+	raw := []byte(`{ "langs": [{"profileName": "python", "image": "python:3.12"},{"profileName": "node", "image":"node:20"}]}`)
 	expected := &entity.JsonConfig{
-		Langs: map[string]*entity.LangEntry{
-			"python": {Image: "python:3.12"},
-			"node":   {Image: "node:20"},
+		Langs: []*entity.LangEntry{
+			{ProfileName: "python", Image: "python:3.12"},
+			{ProfileName: "node", Image: "node:20"},
 		},
 	}
 	ji := newJsonInputWithFakes(
@@ -56,7 +56,14 @@ func TestLoadLanguageImages_ParsesValidJSONFromFileLoader(t *testing.T) {
 	if len(got.Langs) != 2 {
 		t.Errorf("expected 2 entries, got %d", len(got.Langs))
 	}
-	if _, ok := got.Langs["python"]; !ok {
+	found := false
+	for _, entry := range got.Langs {
+		if entry.ProfileName == "python" {
+			found = true
+			break
+		}
+	}
+	if !found {
 		t.Error("expected python key in result")
 	}
 	if diff := cmp.Diff(got, expected); diff != "" {
@@ -65,10 +72,10 @@ func TestLoadLanguageImages_ParsesValidJSONFromFileLoader(t *testing.T) {
 }
 
 func TestLoadLanguageImages_ParsesValidJSONFromHTTPSLoader(t *testing.T) {
-	raw := []byte(`{"rust": {"image": "rust:1.76"}}`)
+	raw := []byte(`{ "langs": [{"profileName": "rust", "image": "rust:1.76"}]}`)
 	expected := &entity.JsonConfig{
-		Langs: map[string]*entity.LangEntry{
-			"rust": {Image: "rust:1.76"},
+		Langs: []*entity.LangEntry{
+			{ProfileName: "rust", Image: "rust:1.76"},
 		},
 	}
 	ji := newJsonInputWithFakes(
@@ -80,7 +87,14 @@ func TestLoadLanguageImages_ParsesValidJSONFromHTTPSLoader(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if _, ok := got.Langs["rust"]; !ok {
+	found := false
+	for _, entry := range got.Langs {
+		if entry.ProfileName == "rust" {
+			found = true
+			break
+		}
+	}
+	if !found {
 		t.Error("expected rust key in result")
 	}
 	if diff := cmp.Diff(got, expected); diff != "" {

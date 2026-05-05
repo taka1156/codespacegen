@@ -104,6 +104,7 @@ type CommonEntry struct {
 type LinuxPackage = string
 
 type LangEntry struct {
+	ProfileName      string          `json:"profileName"`
 	Image            string          `json:"image,omitempty"`
 	LinuxPackages    *[]LinuxPackage `json:"linuxPackages,omitempty"`
 	RunCommand       *string         `json:"runCommand,omitempty"`
@@ -111,9 +112,9 @@ type LangEntry struct {
 }
 
 type JsonConfig struct {
-	Schema string
-	Common *CommonEntry          `json:"common,omitempty"`
-	Langs  map[string]*LangEntry `json:"-"`
+	Schema string       `json:"$schema,omitempty"`
+	Common *CommonEntry `json:"common,omitempty"`
+	Langs  []*LangEntry `json:"langs,omitempty"`
 }
 
 type CodespaceConfig struct {

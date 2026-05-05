@@ -11,7 +11,7 @@ type LocalFileWriter interface {
 }
 
 type SettingTemplateGenerator interface {
-	Generate(templateConfig entity.TemplateJson) (string, error)
+	Generate(templateConfig entity.JsonConfig) (string, error)
 }
 
 type WorkdirProvider interface {
