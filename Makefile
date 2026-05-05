@@ -4,6 +4,8 @@ CMD := ./cmd/codespacegen
 BIN_DIR := ./bin
 VERSION := $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
 LDFLAGS := -X github.com/taka1156/codespacegen/internal/app.Version=$(VERSION)
+UPDATE_E2E_VERSION := invalid-version
+UPDATE_E2E_LDFLAGS := -X github.com/taka1156/codespacegen/internal/app.Version=$(UPDATE_E2E_VERSION)
 
 DIST_TARGETS := \
 	linux/amd64/tar.gz \
@@ -39,12 +41,16 @@ e2e:
 	go build -ldflags="$(LDFLAGS)" -o $(BIN_DIR)/$(BINARY) $(CMD)
 	mkdir -p $(E2E_TEST_DIR)/devcontainer_config
 	mkdir -p $(E2E_TEST_DIR)/codespacegen_config
+	mkdir -p $(E2E_TEST_DIR)/update_command
 	cp $(BIN_DIR)/$(BINARY) $(E2E_TEST_DIR)/devcontainer_config/$(BINARY)
 	cp $(BIN_DIR)/$(BINARY) $(E2E_TEST_DIR)/codespacegen_config/$(BINARY)
+	go build -ldflags="$(UPDATE_E2E_LDFLAGS)" -o $(E2E_TEST_DIR)/update_command/$(BINARY) $(CMD)
 	bash $(E2E_TEST_DIR)/devcontainer_config/devcontainer_config.test.sh $(UPD)
 	bash $(E2E_TEST_DIR)/codespacegen_config/codespacegen_config.test.sh $(UPD)
+	bash $(E2E_TEST_DIR)/update_command/update_command.test.sh $(UPD)
 	rm -f $(E2E_TEST_DIR)/devcontainer_config/$(BINARY)
 	rm -f $(E2E_TEST_DIR)/codespacegen_config/$(BINARY)
+	rm -f $(E2E_TEST_DIR)/update_command/$(BINARY)
 
 bin:
 	mkdir -p $(BIN_DIR)
