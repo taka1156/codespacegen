@@ -32,7 +32,8 @@ description: 'Repository knowledge for the codespacegen project. Use when answer
   - Parse CLI flags (`input.ClientInput`)
   - Collect inputs: CLI flags, JSON config, default settings
   - If `init` subcommand: generate `codespacegen.json` and exit
-  - If `-v` flag: print version and exit
+  - If `version` subcommand: print embedded version string and exit
+  - If `update` subcommand: self-update the binary via GitHub Releases and exit
   - Assemble `entity.CodespaceConfig` — interactive prompts (or headless from flags) and merge logic
   - Execute `GenerateCodespaceArtifacts` — render templates and write files
 
@@ -47,8 +48,9 @@ description: 'Repository knowledge for the codespacegen project. Use when answer
 - Input adapters:
   - `internal/input/` — `ClientInput` (CLI flags), `JsonInput` (JSON config loader via file or HTTPS), `DefaultConfig` (hardcoded defaults)
 - Infra (external I/O):
-  - `internal/infra/infra.go` — type alias facade; exports `CodespacePrompter`
+  - `internal/infra/infra.go` — type alias facade; exports `CodespacePrompter` and `CodespacegenUpdater`
   - `internal/infra/prompt/` — `CodespacegenPrompter` (stdin-based interactive prompter)
+  - `internal/infra/updater/` — `CodespacegenUpdater` (self-update via `go-github-selfupdate`; calls GitHub Releases API using `entity.DefaultRepositoryName`)
 - Generator (template rendering and file writing):
   - `internal/generator/generator.go` — factory functions for generators
   - `internal/generator/codespace/` — `CodespaceGenerator` (renders `Dockerfile`, `devcontainer.json`, `docker-compose.yaml`)
@@ -61,6 +63,7 @@ description: 'Repository knowledge for the codespacegen project. Use when answer
   - `internal/workflow/assemble/` — `AssembleCodespaceConfig` (interactive prompt resolution, entry merge, config build)
   - `internal/workflow/generate/` — `GenerateCodespaceArtifacts` (validate, render, write files)
   - `internal/workflow/initialize/` — `InitializeSettingJson` (generate and write `codespacegen.json` template)
+  - `internal/workflow/update/` — `UpdateCommandline` (delegates to `CodespacegenUpdater.Update`)
 - Utilities:
   - `internal/utils/` — shared helper functions including `NormalizePortMapping`
   - `internal/i18n/` — locale-based message lookup (`locales/en.yaml`, `locales/ja.yaml`)
@@ -79,6 +82,7 @@ Dependencies point inward (domain has no outward dependencies).
 | `collect.JsonConfigLoader` | `internal/workflow/collect` | `input.JsonInput` |
 | `collect.DefaultSettingProvider` | `internal/workflow/collect` | `input.DefaultConfig` |
 | `assemble.CodespacegenPrompter` | `internal/workflow/assemble` | `infra.CodespacePrompter` (= `prompt.CodespacegenPrompter`) |
+| `update.CodespacegenUpdater` | `internal/workflow/update` | `infra.CodespacegenUpdater` (= `updater.CodespacegenUpdater`) |
 
 ## Configuration Knowledge
 
@@ -130,16 +134,19 @@ Dependencies point inward (domain has no outward dependencies).
   - `internal/input/json_input_test.go` — HTTP/file loading and validation
   - `internal/infra/prompt/prompt_test.go` — interactive prompter behavior
   - `internal/generator/setting/setting_template_generator_test.go` — setting template generation
+  - `internal/infra/updater/codespacegen_updater_test.go` — version parse validation (invalid/empty/valid semver strings)
 
 ### E2E snapshot tests
 
 - Run e2e tests from the repository root:
   - `make e2e`
 - `make e2e`:
-  - builds binary into `bin/codespacegen`
+  - builds binary into `bin/codespacegen` (with git-tag version via `LDFLAGS`)
   - copies it into `e2e/devcontainer_config/` and `e2e/codespacegen_config/`
+  - builds a **separate** binary with `UPDATE_E2E_LDFLAGS` (`Version=invalid-version`) into `e2e/update_command/codespacegen`
   - runs `e2e/devcontainer_config/devcontainer_config.test.sh` — compares generated devcontainer files with snapshots under `e2e/devcontainer_config/snapshots/.devcontainer-*`
   - runs `e2e/codespacegen_config/codespacegen_config.test.sh` — verifies `codespacegen init` output against `e2e/codespacegen_config/snapshots/codespacegen.json`
+  - runs `e2e/update_command/update_command.test.sh` — verifies the `update` subcommand exits non-zero and emits a semver parse error to stderr when the embedded version is `invalid-version`
 - Current snapshot cases for devcontainer_config:
   - `python`
   - `rust`
