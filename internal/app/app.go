@@ -22,7 +22,8 @@ type InputConfig struct {
 }
 
 type Infra struct {
-	CodespacePromptResolver *infra.CodespacePrompter
+	CodespacegenUpdater     *infra.CodespacegenUpdater
+	CodespacePromptResolver *infra.CodespacegenPrompter
 }
 
 type WorkflowCases struct {
@@ -30,6 +31,7 @@ type WorkflowCases struct {
 	assembleConfigResolver     assembleConfigResolver
 	generateCodespaceArtifacts generateCodespaceArtifacts
 	initializeSettingJson      initializeSettingJson
+	updateCommandline          updateCommandline
 }
 
 type App struct {
@@ -46,7 +48,8 @@ func NewApp() *App {
 	}
 
 	rs := Infra{
-		CodespacePromptResolver: infra.NewCodespacePrompter(os.Stdin),
+		CodespacegenUpdater:     infra.NewCodespacegenUpdater(),
+		CodespacePromptResolver: infra.NewCodespacegenPrompter(os.Stdin),
 	}
 
 	codespaceGenerator := generator.NewCodespaceGenerator()
@@ -59,6 +62,7 @@ func NewApp() *App {
 		assembleConfigResolver:     workflow.NewAssembleCodespaceConfig(rs.CodespacePromptResolver),
 		generateCodespaceArtifacts: workflow.NewGenerateCodespaceArtifacts(codespaceGenerator, writer),
 		initializeSettingJson:      workflow.NewInitializeSettingJson(settingTemplateGenerator, workdir, writer),
+		updateCommandline:          workflow.NewUpdateCommandline(rs.CodespacegenUpdater),
 	}
 
 	return &App{flows: flows}
@@ -73,21 +77,28 @@ func (a *App) Run() error {
 		return err
 	}
 
-	if inputs.ClientConfig.ShowVersionValue() {
-		fmt.Println(Version)
-		return nil
+	commandlineMode := inputs.ClientConfig.Mode.CommandlineModeValue()
+
+	if inputs.ClientConfig.LangValue() != "" {
+		i18n.SetLang(inputs.ClientConfig.LangValue())
 	}
 
-	if inputs.ClientConfig.InitializeValue() {
+	switch commandlineMode {
+	case "init":
 		err = a.flows.initializeSettingJson.Execute(entity.DefaultTemplateJson, inputs.DefaultConfig.SettingJsonFileName)
 		if err != nil {
 			return err
 		}
 		return nil
-	}
-
-	if inputs.ClientConfig.LangValue() != "" {
-		i18n.SetLang(inputs.ClientConfig.LangValue())
+	case "version":
+		fmt.Println(Version)
+		return nil
+	case "update":
+		err = a.flows.updateCommandline.Update(Version)
+		if err != nil {
+			return err
+		}
+		return nil
 	}
 
 	codespaceConfig, err := a.flows.assembleConfigResolver.Resolve(inputs.ClientConfig, inputs.DefaultConfig, inputs.JsonConfig)

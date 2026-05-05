@@ -2,16 +2,19 @@ package collect
 
 import (
 	"errors"
+	"reflect"
 	"testing"
 
 	"github.com/taka1156/codespacegen/internal/domain/entity"
 )
 
 type fakeClientInput struct {
-	config entity.ClientConfig
+	config       entity.ClientConfig
+	capturedArgs []string
 }
 
 func (f *fakeClientInput) GetInput(args []string) entity.ClientConfig {
+	f.capturedArgs = append([]string(nil), args...)
 	return f.config
 }
 
@@ -77,7 +80,7 @@ func TestCollectInputs_CollectConfig_ReturnsCollectedInputs(t *testing.T) {
 
 func TestCollectInputs_CollectConfig_PassesImageConfigToLoader(t *testing.T) {
 	imageConfig := "https://example.com/my-config.json"
-	ClientConfig := entity.ClientConfig{ImageConfig: &imageConfig}
+	clientConfig := entity.ClientConfig{ImageConfig: &imageConfig}
 
 	var capturedSource string
 	loader := &captureJsonConfigLoader{
@@ -86,7 +89,7 @@ func TestCollectInputs_CollectConfig_PassesImageConfigToLoader(t *testing.T) {
 	}
 
 	ci := NewCollectInputs(
-		&fakeClientInput{config: ClientConfig},
+		&fakeClientInput{config: clientConfig},
 		loader,
 		&fakeDefaultSettingProvider{},
 	)
@@ -97,6 +100,25 @@ func TestCollectInputs_CollectConfig_PassesImageConfigToLoader(t *testing.T) {
 
 	if capturedSource != imageConfig {
 		t.Errorf("LoadLanguageImages called with %q, want %q", capturedSource, imageConfig)
+	}
+}
+
+func TestCollectInputs_CollectConfig_PassesArgsToClientInput(t *testing.T) {
+	clientInput := &fakeClientInput{}
+	ci := NewCollectInputs(
+		clientInput,
+		&fakeJsonConfigLoader{result: &entity.JsonConfig{}},
+		&fakeDefaultSettingProvider{},
+	)
+
+	args := []string{"codespacegen", "-image-config", "custom.json", "-headless"}
+
+	if _, err := ci.CollectConfig(args); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if !reflect.DeepEqual(clientInput.capturedArgs, args) {
+		t.Errorf("GetInput args: got %v, want %v", clientInput.capturedArgs, args)
 	}
 }
 

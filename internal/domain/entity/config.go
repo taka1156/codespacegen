@@ -15,7 +15,37 @@ type DefaultSetting struct {
 	SettingJsonFileName string
 }
 
+// CommandlineMode represents the subcommand mode passed to the CLI.
+// The unexported val field prevents external construction of arbitrary values,
+// simulating a closed union type: Initialize | Update | Version.
+type CommandlineMode struct {
+	val string
+}
+
+// Predefined CommandlineMode values. These are the only valid modes.
+var (
+	Initialize = CommandlineMode{val: "init"}
+	Update     = CommandlineMode{val: "update"}
+	Version    = CommandlineMode{val: "version"}
+)
+
+// CommandlineModeValue returns the string representation of the mode.
+// Returns "undefined" if the mode does not match any known value.
+func (c CommandlineMode) CommandlineModeValue() string {
+	switch c.val {
+	case Initialize.val:
+		return "init"
+	case Update.val:
+		return "update"
+	case Version.val:
+		return "version"
+	default:
+		return "undefined"
+	}
+}
+
 type ClientConfig struct {
+	Mode                CommandlineMode
 	OutputDir           *string
 	ContainerName       *string
 	ServiceName         *string
@@ -27,9 +57,7 @@ type ClientConfig struct {
 	ComposeFile         *string
 	EnableOverwriteFile *bool
 	Lang                *string
-	ShowVersion         *bool
 	OutputTemplateJson  *bool
-	Initialize          *bool
 	Headless            *bool
 }
 
@@ -75,14 +103,6 @@ func (c ClientConfig) EnableOverwriteFileValue() bool {
 
 func (c ClientConfig) LangValue() string {
 	return stringValue(c.Lang)
-}
-
-func (c ClientConfig) ShowVersionValue() bool {
-	return boolValue(c.ShowVersion)
-}
-
-func (c ClientConfig) InitializeValue() bool {
-	return boolValue(c.Initialize)
 }
 
 func (c ClientConfig) HeadlessValue() bool {

@@ -91,11 +91,8 @@ func TestClientConfig_BoolAccessors_ReturnsFalseWhenNil(t *testing.T) {
 	if got := c.EnableOverwriteFileValue(); got != false {
 		t.Errorf("EnableOverwriteFileValue: got %v, want false", got)
 	}
-	if got := c.ShowVersionValue(); got != false {
-		t.Errorf("ShowVersionValue: got %v, want false", got)
-	}
-	if got := c.InitializeValue(); got != false {
-		t.Errorf("InitializeValue: got %v, want false", got)
+	if got := c.HeadlessValue(); got != false {
+		t.Errorf("HeadlessValue: got %v, want false", got)
 	}
 }
 
@@ -104,18 +101,14 @@ func TestClientConfig_BoolAccessors_ReturnsTrueWhenSet(t *testing.T) {
 
 	c := ClientConfig{
 		EnableOverwriteFile: b(true),
-		ShowVersion:         b(true),
-		Initialize:          b(true),
+		Headless:            b(true),
 	}
 
 	if got := c.EnableOverwriteFileValue(); got != true {
 		t.Errorf("EnableOverwriteFileValue: got %v, want true", got)
 	}
-	if got := c.ShowVersionValue(); got != true {
-		t.Errorf("ShowVersionValue: got %v, want true", got)
-	}
-	if got := c.InitializeValue(); got != true {
-		t.Errorf("InitializeValue: got %v, want true", got)
+	if got := c.HeadlessValue(); got != true {
+		t.Errorf("HeadlessValue: got %v, want true", got)
 	}
 }
 

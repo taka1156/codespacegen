@@ -2,6 +2,8 @@ package entity
 
 import "slices"
 
+const DefaultRepositoryName = "taka1156/codespacegen"
+
 const DefaultImage = "alpine:latest"
 
 const DefaultTimezone = "UTC"

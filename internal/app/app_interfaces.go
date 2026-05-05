@@ -20,3 +20,7 @@ type assembleConfigResolver interface {
 type generateCodespaceArtifacts interface {
 	Execute(config entity.CodespaceConfig, enableOverwriteFile bool, outputDir string) error
 }
+
+type updateCommandline interface {
+	Update(currentVersion string) error
+}
