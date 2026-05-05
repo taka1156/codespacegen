@@ -92,6 +92,16 @@ codespacegen init
 
 The generated file serves as a starting point for customizing base images and VS Code extensions.
 
+### Update codespacegen
+
+Run the `update` subcommand to self-update the binary to the latest release from GitHub.
+
+```bash
+codespacegen update
+```
+
+If the binary is already up to date, a message is printed and the command exits successfully.
+
 ### Main options
 
 | Option | Default | Description |
@@ -108,7 +118,6 @@ The generated file serves as a starting point for customizing base images and VS
 | `-force` | `false` | Overwrite existing files |
 | `-lang` | *(auto-detect)* | Language for CLI messages (`en` or `ja`). Defaults to system locale |
 | `-headless` | `false` | Skip all interactive prompts. All required values must be supplied via flags |
-| `-v` | — | Print version and exit |
 
 Base image definitions are separated into [codespacegen.json](codespacegen.json) at the repository root.
 
