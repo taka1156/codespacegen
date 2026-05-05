@@ -13,10 +13,5 @@ func NewUpdateCommandline(
 }
 
 func (uc *UpdateCommandline) Update(currentVersion string) error {
-	err := uc.updateCodespacegenCommandline.Update(currentVersion)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return uc.updateCodespacegenCommandline.Update(currentVersion)
 }
