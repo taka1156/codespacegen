@@ -7,14 +7,16 @@ import (
 	"github.com/taka1156/codespacegen/internal/utils"
 )
 
-func (acc *AssembleCodespaceConfig) resolveMergedEntry(jsonConfig entity.JsonConfig) (map[string]entity.LangEntry, error) {
+func (acc *AssembleCodespaceConfig) resolveMergedEntry(
+	jsonConfig entity.JsonConfig,
+) map[string]entity.LangEntry {
 	mergedImages := make(map[string]entity.LangEntry)
 
 	switch {
 	case jsonConfig.Common == nil && jsonConfig.Langs == nil:
-		return mergedImages, nil
+		return mergedImages
 	case jsonConfig.Langs == nil:
-		return mergedImages, nil
+		return mergedImages
 	case jsonConfig.Common == nil:
 		for _, entry := range jsonConfig.Langs {
 			normalizedKey := strings.ToLower(strings.TrimSpace(entry.ProfileName))
@@ -23,7 +25,7 @@ func (acc *AssembleCodespaceConfig) resolveMergedEntry(jsonConfig entity.JsonCon
 			}
 			mergedImages[normalizedKey] = *entry
 		}
-		return mergedImages, nil
+		return mergedImages
 	default:
 		for _, entry := range jsonConfig.Langs {
 			normalizedKey := strings.ToLower(strings.TrimSpace(entry.ProfileName))
@@ -34,7 +36,7 @@ func (acc *AssembleCodespaceConfig) resolveMergedEntry(jsonConfig entity.JsonCon
 		}
 	}
 
-	return mergedImages, nil
+	return mergedImages
 
 }
 
@@ -48,9 +50,9 @@ func mergeLanguageEntries(common entity.CommonEntry, langEntry entity.LangEntry)
 
 	switch {
 	case common.VSCodeExtensions != nil && langEntry.VSCodeExtensions != nil:
-		commonCopy := make([]string, len(*common.VSCodeExtensions))
-		copy(commonCopy, *common.VSCodeExtensions)
-		mergedExtensions := append(commonCopy, *langEntry.VSCodeExtensions...)
+		mergedExtensions := make([]string, 0, len(*common.VSCodeExtensions)+len(*langEntry.VSCodeExtensions))
+		mergedExtensions = append(mergedExtensions, *common.VSCodeExtensions...)
+		mergedExtensions = append(mergedExtensions, *langEntry.VSCodeExtensions...)
 		merged.VSCodeExtensions = utils.Ptr(uniqueStringsPreserveOrder(mergedExtensions))
 	case langEntry.VSCodeExtensions != nil:
 		merged.VSCodeExtensions = langEntry.VSCodeExtensions

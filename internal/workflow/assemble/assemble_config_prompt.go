@@ -11,34 +11,38 @@ type resolvedCoreValues struct {
 	Timezone        string
 }
 
-func (acc *AssembleCodespaceConfig) resolvePromptValues(ClientConfig *entity.ClientConfig, defaultSetting entity.DefaultSetting, commonTimezone *string) (resolvedCoreValues, error) {
-	resolvedProjectName, err := acc.CodespacegenPrompter.PromptProjectName(ClientConfig.ContainerNameValue())
+func (acc *AssembleCodespaceConfig) resolvePromptValues(
+	clientConfig *entity.ClientConfig,
+	defaultSetting entity.DefaultSetting,
+	commonTimezone *string,
+) (resolvedCoreValues, error) {
+	resolvedProjectName, err := acc.CodespacegenPrompter.PromptProjectName(clientConfig.ContainerNameValue())
 	if err != nil {
 		return resolvedCoreValues{}, err
 	}
 
-	resolvedLanguage, err := acc.CodespacegenPrompter.PromptLanguage(ClientConfig.LanguageValue())
+	resolvedLanguage, err := acc.CodespacegenPrompter.PromptLanguage(clientConfig.LanguageValue())
 	if err != nil {
 		return resolvedCoreValues{}, err
 	}
 
-	resolvedWorkspaceFolder, err := acc.CodespacegenPrompter.PromptWorkspaceFolder(ClientConfig.WorkspaceFolderValue())
+	resolvedWorkspaceFolder, err := acc.CodespacegenPrompter.PromptWorkspaceFolder(clientConfig.WorkspaceFolderValue())
 	if err != nil {
 		return resolvedCoreValues{}, err
 	}
 
-	resolvedServiceName, err := acc.CodespacegenPrompter.PromptServiceName(ClientConfig.ServiceNameValue())
+	resolvedServiceName, err := acc.CodespacegenPrompter.PromptServiceName(clientConfig.ServiceNameValue())
 	if err != nil {
 		return resolvedCoreValues{}, err
 	}
 
-	resolvedPort, err := acc.CodespacegenPrompter.PromptPortMapping(ClientConfig.PortValue())
+	resolvedPort, err := acc.CodespacegenPrompter.PromptPortMapping(clientConfig.PortValue())
 	if err != nil {
 		return resolvedCoreValues{}, err
 	}
 
 	// priority: flag > common > defaultSetting.Timezone
-	timezoneDefault := ClientConfig.TimezoneValue()
+	timezoneDefault := clientConfig.TimezoneValue()
 	if timezoneDefault == "" && commonTimezone != nil {
 		timezoneDefault = *commonTimezone
 	}

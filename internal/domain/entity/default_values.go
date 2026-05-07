@@ -8,6 +8,7 @@ const DefaultImage = "alpine:latest"
 
 const DefaultTimezone = "UTC"
 
+//nolint:lll // It's a URL, so breaking it into a new line will break it
 const DefaultVscSchema = "https://raw.githubusercontent.com/microsoft/vscode/main/extensions/configuration-editing/schemas/devContainer.vscode.schema.json"
 
 var commonModules = []string{

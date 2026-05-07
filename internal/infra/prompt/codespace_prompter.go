@@ -64,7 +64,11 @@ func (cp *CodespacegenPrompter) PromptWorkspaceFolder(explicitWorkspaceFolder st
 	if defaultWorkspaceFolder == "" {
 		defaultWorkspaceFolder = "/workspace"
 	}
-	value, err := promptWithDefault(cp.reader, i18n.T("prompt_workspace_folder", map[string]interface{}{"Default": defaultWorkspaceFolder}), defaultWorkspaceFolder)
+	value, err := promptWithDefault(
+		cp.reader,
+		i18n.T("prompt_workspace_folder", map[string]interface{}{"Default": defaultWorkspaceFolder}),
+		defaultWorkspaceFolder,
+	)
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", i18n.T("error_failed_to_read_workspace_folder"), err)
 	}
@@ -73,7 +77,11 @@ func (cp *CodespacegenPrompter) PromptWorkspaceFolder(explicitWorkspaceFolder st
 
 func (cp *CodespacegenPrompter) PromptTimezone(explicitTimezone string) (string, error) {
 	defaultTimezone := strings.TrimSpace(explicitTimezone)
-	value, err := promptWithDefault(cp.reader, i18n.T("prompt_timezone", map[string]interface{}{"Default": defaultTimezone}), defaultTimezone)
+	value, err := promptWithDefault(
+		cp.reader,
+		i18n.T("prompt_timezone", map[string]interface{}{"Default": defaultTimezone}),
+		defaultTimezone,
+	)
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", i18n.T("error_failed_to_read_timezone"), err)
 	}
@@ -86,7 +94,11 @@ func (cp *CodespacegenPrompter) PromptServiceName(explicitServiceName string) (s
 	if defaultServiceName == "" {
 		defaultServiceName = "app"
 	}
-	value, err := promptWithDefault(cp.reader, i18n.T("prompt_service_name", map[string]interface{}{"Default": defaultServiceName}), defaultServiceName)
+	value, err := promptWithDefault(
+		cp.reader,
+		i18n.T("prompt_service_name", map[string]interface{}{"Default": defaultServiceName}),
+		defaultServiceName,
+	)
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", i18n.T("error_failed_to_read_service_name"), err)
 	}

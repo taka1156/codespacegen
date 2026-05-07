@@ -24,7 +24,11 @@ func NewGenerateCodespaceArtifacts(
 	}
 }
 
-func (u *GenerateCodespaceArtifacts) Execute(config entity.CodespaceConfig, enableOverwriteFile bool, outputDir string) error {
+func (u *GenerateCodespaceArtifacts) Execute(
+	config entity.CodespaceConfig,
+	enableOverwriteFile bool,
+	outputDir string,
+) error {
 	if err := config.Validate(); err != nil {
 		return fmt.Errorf("failed to validate config: %w", err)
 	}
