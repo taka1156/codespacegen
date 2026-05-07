@@ -14,7 +14,11 @@ type initializeSettingJson interface {
 }
 
 type assembleConfigResolver interface {
-	Resolve(clientConfig entity.ClientConfig, defaultSetting entity.DefaultSetting, jsonConfig entity.JsonConfig) (*entity.CodespaceConfig, error)
+	Resolve(
+		clientConfig entity.ClientConfig,
+		defaultSetting entity.DefaultSetting,
+		jsonConfig entity.JsonConfig,
+	) (*entity.CodespaceConfig, error)
 }
 
 type generateCodespaceArtifacts interface {

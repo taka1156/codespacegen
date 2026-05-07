@@ -16,14 +16,15 @@ func NewAssembleCodespaceConfig(
 	}
 }
 
-func (acc *AssembleCodespaceConfig) Resolve(clientConfig entity.ClientConfig, defaultSetting entity.DefaultSetting, jsonConfig entity.JsonConfig) (*entity.CodespaceConfig, error) {
+func (acc *AssembleCodespaceConfig) Resolve(
+	clientConfig entity.ClientConfig,
+	defaultSetting entity.DefaultSetting,
+	jsonConfig entity.JsonConfig,
+) (*entity.CodespaceConfig, error) {
 	var resolvedValues resolvedCoreValues
 	var err error
 
-	resolvedEntries, err := acc.resolveMergedEntry(jsonConfig)
-	if err != nil {
-		return nil, err
-	}
+	resolvedEntries := acc.resolveMergedEntry(jsonConfig)
 
 	if clientConfig.HeadlessValue() {
 		resolvedValues = resolvedCoreValues{

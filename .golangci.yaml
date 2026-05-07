@@ -1,0 +1,99 @@
+version: "2"
+
+run:
+  timeout: 5m
+
+linters:
+  default: none
+
+  enable:
+    - govet
+    - errcheck
+    - staticcheck
+    - unused
+    - ineffassign
+    - errorlint
+    - nilerr
+    # - nilnil
+    - bodyclose
+    - noctx
+    - rowserrcheck
+    - sqlclosecheck
+    - gosec
+    - gocritic
+    - revive
+    - unparam
+    - nakedret
+    - makezero
+    - gocyclo
+    - nestif
+    - goconst
+    - misspell
+    - nolintlint
+    - predeclared
+    - reassign
+    - usestdlibvars
+    - lll
+
+  settings:
+    gocyclo:
+      min-complexity: 20
+
+    lll:
+      line-length: 120
+
+    revive:
+      severity: warning
+      rules:
+        - name: exported
+          disabled: true
+          arguments:
+            - disableStutteringCheck
+
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - style
+      disabled-checks:
+        # We avoid using paramTypeCombine to prevent errors from implicit type inclusion.
+        - paramTypeCombine
+        - whyNoLint
+
+    gosec:
+      excludes:
+        - G601
+        - G304
+
+    nolintlint:
+      require-explanation: true
+      require-specific: true
+      allow-unused: false
+
+    nakedret:
+      max-func-lines: 30
+
+    goconst:
+      min-len: 3
+      min-occurrences: 3
+
+  exclusions:
+    use-default: false
+    generated: lax
+    rules:
+      - path: "_test\\.go$"
+        linters:
+          - gosec
+          - goconst
+          - unparam
+
+formatters:
+  enable:
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/your_org/your_repo
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0

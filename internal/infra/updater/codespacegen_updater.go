@@ -31,7 +31,9 @@ func (cu *CodespacegenUpdater) Update(currentVersion string) error {
 		return nil
 	}
 
-	fmt.Print(i18n.T("success_update", map[string]interface{}{"Version": latest.Version, "ReleaseNotes": latest.ReleaseNotes}))
+	fmt.Print(
+		i18n.T("success_update", map[string]interface{}{"Version": latest.Version, "ReleaseNotes": latest.ReleaseNotes}),
+	)
 
 	return nil
 }

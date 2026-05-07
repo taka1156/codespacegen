@@ -25,7 +25,7 @@ func (w *LocalFileWriter) Write(path string, content string, overwrite bool) err
 		}
 	}
 
-	if err := os.MkdirAll(filepath.Dir(fullPath), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(fullPath), 0o750); err != nil {
 		return err
 	}
 

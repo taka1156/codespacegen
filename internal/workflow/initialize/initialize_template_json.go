@@ -14,7 +14,11 @@ type InitializeSettingJson struct {
 	writer                   service.LocalFileWriter
 }
 
-func NewInitializeSettingJson(settingTemplateGenerator service.SettingTemplateGenerator, workdirProvider service.WorkdirProvider, writer service.LocalFileWriter) *InitializeSettingJson {
+func NewInitializeSettingJson(
+	settingTemplateGenerator service.SettingTemplateGenerator,
+	workdirProvider service.WorkdirProvider,
+	writer service.LocalFileWriter,
+) *InitializeSettingJson {
 	return &InitializeSettingJson{
 		settingTemplateGenerator: settingTemplateGenerator,
 		workdirProvider:          workdirProvider,

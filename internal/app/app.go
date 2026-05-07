@@ -85,7 +85,10 @@ func (a *App) Run() error {
 
 	switch commandlineMode {
 	case "init":
-		err = a.flows.initializeSettingJson.Execute(entity.DefaultTemplateJson, inputs.DefaultConfig.SettingJsonFileName)
+		err = a.flows.initializeSettingJson.Execute(
+			entity.DefaultTemplateJson,
+			inputs.DefaultConfig.SettingJsonFileName,
+		)
 		if err != nil {
 			return err
 		}
@@ -101,12 +104,20 @@ func (a *App) Run() error {
 		return nil
 	}
 
-	codespaceConfig, err := a.flows.assembleConfigResolver.Resolve(inputs.ClientConfig, inputs.DefaultConfig, inputs.JsonConfig)
+	codespaceConfig, err := a.flows.assembleConfigResolver.Resolve(
+		inputs.ClientConfig,
+		inputs.DefaultConfig,
+		inputs.JsonConfig,
+	)
 	if err != nil {
 		return err
 	}
 
-	err = a.flows.generateCodespaceArtifacts.Execute(*codespaceConfig, inputs.ClientConfig.EnableOverwriteFileValue(), inputs.ClientConfig.OutputDirValue())
+	err = a.flows.generateCodespaceArtifacts.Execute(
+		*codespaceConfig,
+		inputs.ClientConfig.EnableOverwriteFileValue(),
+		inputs.ClientConfig.OutputDirValue(),
+	)
 	if err != nil {
 		return err
 	}
