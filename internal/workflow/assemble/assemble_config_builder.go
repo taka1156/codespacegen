@@ -9,7 +9,12 @@ import (
 	"github.com/taka1156/codespacegen/internal/utils"
 )
 
-func (acc *AssembleCodespaceConfig) buildCodespaceConfig(clientConfig entity.ClientConfig, defaultSetting entity.DefaultSetting, promptValues resolvedCoreValues, langEntries map[string]entity.LangEntry, jsonConfig entity.JsonConfig) (*entity.CodespaceConfig, error) {
+func (acc *AssembleCodespaceConfig) buildCodespaceConfig(
+	clientConfig entity.ClientConfig,
+	defaultSetting entity.DefaultSetting,
+	promptValues resolvedCoreValues,
+	langEntries map[string]entity.LangEntry, jsonConfig entity.JsonConfig,
+) (*entity.CodespaceConfig, error) {
 	imageEntry, err := resolveBaseImage(promptValues.Language, langEntries, defaultSetting.Image)
 	if err != nil {
 		return nil, err
@@ -24,7 +29,12 @@ func (acc *AssembleCodespaceConfig) buildCodespaceConfig(clientConfig entity.Cli
 	if jsonConfig.Common != nil {
 		commonTimezone = jsonConfig.Common.Timezone
 	}
-	localeTimezone := resolveTimezone(promptValues.Timezone, clientConfig.TimezoneValue(), commonTimezone, defaultSetting.Timezone)
+	localeTimezone := resolveTimezone(
+		promptValues.Timezone,
+		clientConfig.TimezoneValue(),
+		commonTimezone,
+		defaultSetting.Timezone,
+	)
 
 	osModules := mergeOsModules(defaultSetting.OsModules, imageEntry.LinuxPackages)
 
@@ -56,7 +66,11 @@ func (acc *AssembleCodespaceConfig) buildCodespaceConfig(clientConfig entity.Cli
 	}, nil
 }
 
-func resolveBaseImage(language string, jsonEntries map[string]entity.LangEntry, defaultImage string) (entity.LangEntry, error) {
+func resolveBaseImage(
+	language string,
+	jsonEntries map[string]entity.LangEntry,
+	defaultImage string,
+) (entity.LangEntry, error) {
 	// priority: language(json with selection key) > default
 	if strings.TrimSpace(language) == "" {
 		image := strings.TrimSpace(defaultImage)
@@ -69,17 +83,26 @@ func resolveBaseImage(language string, jsonEntries map[string]entity.LangEntry, 
 	key := strings.ToLower(strings.TrimSpace(language))
 	entry, ok := jsonEntries[key]
 	if !ok {
-		return entity.LangEntry{}, errors.New(i18n.T("error_unsupported_language", map[string]interface{}{"Language": language}))
+		return entity.LangEntry{}, errors.New(
+			i18n.T("error_unsupported_language", map[string]interface{}{"Language": language}),
+		)
 	}
 
 	if entry.Image == "" {
-		return entity.LangEntry{}, errors.New(i18n.T("error_image_required_for_language", map[string]interface{}{"Language": language}))
+		return entity.LangEntry{}, errors.New(
+			i18n.T("error_image_required_for_language", map[string]interface{}{"Language": language}),
+		)
 	}
 
 	return entry, nil
 }
 
-func resolveTimezone(promptTimezone string, explicitTimezone string, configTimezone *string, defaultTimezone string) string {
+func resolveTimezone(
+	promptTimezone string,
+	explicitTimezone string,
+	configTimezone *string,
+	defaultTimezone string,
+) string {
 	// priority: prompt > explicit(flag) > config > default
 	resolved := strings.TrimSpace(promptTimezone)
 	if resolved == "" {
@@ -120,8 +143,13 @@ func mergeOsModules(base entity.OsModules, linuxPackages *[]entity.LinuxPackage)
 		return base
 	}
 
-	mergedAlpineModules := append(base.AlpineModules, *linuxPackages...)
-	mergedDebianLikeModules := append(base.DebianLikeModules, *linuxPackages...)
+	mergedAlpineModules := make([]entity.LinuxPackage, 0, len(base.AlpineModules)+len(*linuxPackages))
+	mergedAlpineModules = append(mergedAlpineModules, base.AlpineModules...)
+	mergedAlpineModules = append(mergedAlpineModules, *linuxPackages...)
+
+	mergedDebianLikeModules := make([]entity.LinuxPackage, 0, len(base.DebianLikeModules)+len(*linuxPackages))
+	mergedDebianLikeModules = append(mergedDebianLikeModules, base.DebianLikeModules...)
+	mergedDebianLikeModules = append(mergedDebianLikeModules, *linuxPackages...)
 
 	removedDuplicateAlpineModules := uniqueStringsPreserveOrder(mergedAlpineModules)
 	removedDuplicateDebianLikeModules := uniqueStringsPreserveOrder(mergedDebianLikeModules)

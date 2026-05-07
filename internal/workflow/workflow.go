@@ -9,43 +9,49 @@ import (
 	"github.com/taka1156/codespacegen/internal/workflow/update"
 )
 
-type CollectInputs = collect.CollectInputs
+type collectInputs = collect.CollectInputs
 
 func NewCollectInputs(
 	cliInput collect.ClientInputProvider,
 	jsonInput collect.JsonConfigLoader,
 	defaultConfig collect.DefaultSettingProvider,
-) *CollectInputs {
+) *collectInputs {
 	return collect.NewCollectInputs(cliInput, jsonInput, defaultConfig)
 }
 
-type AssembleCodespaceConfig = assemble.AssembleCodespaceConfig
+type assembleCodespaceConfig = assemble.AssembleCodespaceConfig
 
 func NewAssembleCodespaceConfig(
-	CodespacePrompter assemble.CodespacegenPrompter,
-) *AssembleCodespaceConfig {
-	return assemble.NewAssembleCodespaceConfig(CodespacePrompter)
+	codespacePrompter assemble.CodespacegenPrompter,
+) *assembleCodespaceConfig {
+	return assemble.NewAssembleCodespaceConfig(codespacePrompter)
 }
 
 type FileWriter = service.LocalFileWriter
 
-type GenerateCodespaceArtifacts = generate.GenerateCodespaceArtifacts
+type generateCodespaceArtifacts = generate.GenerateCodespaceArtifacts
 
 func NewGenerateCodespaceArtifacts(
 	codespaceGenerator service.CodespaceGenerator,
 	writer service.LocalFileWriter,
-) *GenerateCodespaceArtifacts {
+) *generateCodespaceArtifacts {
 	return generate.NewGenerateCodespaceArtifacts(codespaceGenerator, writer)
 }
 
-type InitializeSettingJson = initialize.InitializeSettingJson
+type initializeSettingJson = initialize.InitializeSettingJson
 
-func NewInitializeSettingJson(settingTemplateGenerator service.SettingTemplateGenerator, workdirProvider service.WorkdirProvider, writer service.LocalFileWriter) *InitializeSettingJson {
+func NewInitializeSettingJson(
+	settingTemplateGenerator service.SettingTemplateGenerator,
+	workdirProvider service.WorkdirProvider,
+	writer service.LocalFileWriter,
+) *initializeSettingJson {
 	return initialize.NewInitializeSettingJson(settingTemplateGenerator, workdirProvider, writer)
 }
 
-type UpdateCommandline = update.UpdateCommandline
+type updateCommandline = update.UpdateCommandline
 
-func NewUpdateCommandline(updateCodespacegenCommandline update.CodespacegenUpdater) *UpdateCommandline {
+func NewUpdateCommandline(
+	updateCodespacegenCommandline update.CodespacegenUpdater,
+) *updateCommandline {
 	return update.NewUpdateCommandline(updateCodespacegenCommandline)
 }

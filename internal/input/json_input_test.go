@@ -37,7 +37,9 @@ func TestLoadLanguageImages_ReturnsNilWhenSourceIsEmpty(t *testing.T) {
 }
 
 func TestLoadLanguageImages_ParsesValidJSONFromFileLoader(t *testing.T) {
-	raw := []byte(`{ "langs": [{"profileName": "python", "image": "python:3.12"},{"profileName": "node", "image":"node:20"}]}`)
+	raw := []byte(`{
+		"langs": [{"profileName": "python", "image": "python:3.12"},{"profileName": "node", "image":"node:20"}]
+	}`)
 	expected := &entity.JsonConfig{
 		Langs: []*entity.LangEntry{
 			{ProfileName: "python", Image: "python:3.12"},

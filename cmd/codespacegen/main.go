@@ -8,8 +8,8 @@ import (
 )
 
 func main() {
-	app := app.NewApp()
-	if err := app.Run(); err != nil {
+	launchApp := app.NewApp()
+	if err := launchApp.Run(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}

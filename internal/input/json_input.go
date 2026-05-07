@@ -1,6 +1,7 @@
 package input
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -73,18 +74,27 @@ func (ji *JsonInput) fetchBaseImageConfig(source string) ([]byte, error) {
 }
 
 func (l httpsConfigLoader) Load(source string) ([]byte, error) {
-	resp, err := l.client.Get(source) //nolint:noctx
+	ctx := context.Background() // 必要に応じて上位から引き継ぐ
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, source, http.NoBody)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", i18n.T("error_failed_to_fetch_base_image_config_url"), err)
 	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", i18n.T("error_failed_to_fetch_base_image_config_url"), err)
+	}
+
 	defer func() {
 		err := resp.Body.Close()
 		if err != nil {
 			fmt.Printf("%s: %v\n", i18n.T("error_failed_to_close_base_image_config_response_body"), err)
 		}
 	}()
+
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(i18n.T("error_base_image_config_url_status", map[string]interface{}{"StatusCode": resp.StatusCode}))
+		return nil, errors.New(
+			i18n.T("error_base_image_config_url_status", map[string]interface{}{"StatusCode": resp.StatusCode}),
+		)
 	}
 
 	raw, err := io.ReadAll(io.LimitReader(resp.Body, 1<<20))

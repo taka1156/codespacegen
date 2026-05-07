@@ -9,10 +9,7 @@ import (
 
 func TestResolveMergedEntry_ReturnsEmptyWhenLangsNil(t *testing.T) {
 	acc := NewAssembleCodespaceConfig(nil)
-	got, err := acc.resolveMergedEntry(entity.JsonConfig{Common: &entity.CommonEntry{}})
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
+	got := acc.resolveMergedEntry(entity.JsonConfig{Common: &entity.CommonEntry{}})
 	if len(got) != 0 {
 		t.Errorf("len: got %d, want 0", len(got))
 	}
@@ -20,10 +17,7 @@ func TestResolveMergedEntry_ReturnsEmptyWhenLangsNil(t *testing.T) {
 
 func TestResolveMergedEntry_ReturnsEmptyWhenBothNil(t *testing.T) {
 	acc := NewAssembleCodespaceConfig(nil)
-	got, err := acc.resolveMergedEntry(entity.JsonConfig{})
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
+	got := acc.resolveMergedEntry(entity.JsonConfig{})
 	if len(got) != 0 {
 		t.Errorf("len: got %d, want 0", len(got))
 	}
@@ -36,10 +30,7 @@ func TestResolveMergedEntry_CopiesLangsWhenCommonNil(t *testing.T) {
 			{ProfileName: "python", Image: "python:3.12"},
 		},
 	}
-	got, err := acc.resolveMergedEntry(jsonConfig)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
+	got := acc.resolveMergedEntry(jsonConfig)
 	found := false
 	for _, entry := range got {
 		if entry.ProfileName == "python" {
@@ -63,10 +54,7 @@ func TestResolveMergedEntry_SkipsReservedKeys(t *testing.T) {
 			{ProfileName: "", Image: "should-be-skipped"},
 		},
 	}
-	got, err := acc.resolveMergedEntry(jsonConfig)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
+	got := acc.resolveMergedEntry(jsonConfig)
 	if len(got) != 1 {
 		t.Errorf("len: got %d, want 1", len(got))
 	}
@@ -90,10 +78,7 @@ func TestResolveMergedEntry_NormalizesKeyToLower(t *testing.T) {
 			{ProfileName: "rust", Image: "rust:latest"},
 		},
 	}
-	got, err := acc.resolveMergedEntry(jsonConfig)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
+	got := acc.resolveMergedEntry(jsonConfig)
 	found := false
 	for _, entry := range got {
 		if entry.ProfileName == "rust" {
