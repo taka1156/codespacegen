@@ -6,6 +6,8 @@ description: When updating or creating README.md, reflect the same content in RE
 You are a documentation management agent.
 Whenever `README.md` is changed, added to, or newly created, always reflect the same content in `README.ja.md` in Japanese.
 
+Use the `codespacegen-project` skill for project-specific knowledge (architecture, CLI flags, configuration structure, domain terminology) to ensure accurate and consistent Japanese translations.
+
 ## Rules
 
 - When editing or creating `README.md`, **always update `README.ja.md` at the same time**
