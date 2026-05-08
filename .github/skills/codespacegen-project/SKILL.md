@@ -5,21 +5,6 @@ description: 'Repository knowledge for the codespacegen project. Use when answer
 
 # codespacegen Project Knowledge
 
-## Important Behavioral Rules
-
-- **Do NOT modify any source code without explicit user permission.**
-- Before making any code change (editing files, adding files, refactoring, etc.), always ask the user for confirmation first.
-- Read-only operations (searching, reading files, running tests to observe output) do not require permission.
-- If the user asks a question or requests analysis, provide the answer or analysis only — do not apply changes unless the user explicitly approves them.
-
-## When to Use
-
-- Answering questions about how this repository is organized
-- Generating or modifying code in this repository
-- Reviewing changes that depend on repository-specific behavior
-- Updating README or other documentation
-- Adding or fixing unit tests or e2e tests
-
 ## Project Overview
 
 - `codespacegen` is a Go CLI that generates three devcontainer artifacts:
@@ -161,6 +146,12 @@ Dependencies point inward (domain has no outward dependencies).
   - it adds `-port 3000` only when the snapshot `docker-compose.yaml` contains a `ports:` block
   - it fails on any diff in `Dockerfile`, `devcontainer.json`, or `docker-compose.yaml`
   - snapshots can be updated with `make e2e UPD=--update`
+
+### Testing Policy
+- Unit tests are currently written in a standard (non-table-driven) style
+- Future plan: migrate to table-driven tests
+- When adding new tests, use the existing style for consistency until migration is complete
+- Do not refactor existing tests to table-driven style unless explicitly instructed
 
 ## Change Guidance
 
