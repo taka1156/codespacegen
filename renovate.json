@@ -3,7 +3,7 @@
   "extends": [
     "config:recommended"
   ],
-  "baseBranches": [
+  "baseBranchPatterns": [
     "develop"
   ],
   "schedule": [
@@ -37,21 +37,28 @@
       "description": "Test tools - handle with care as they are fragile",
       "matchManagers": ["gomod"],
       "matchDepTypes": ["require"],
-      "matchPackagePatterns": ["testify", "go-cmp"],
       "groupName": "Test tools",
       "automerge": false,
       "labels": ["dependencies", "renovate", "go-direct", "test-tools", "requires-review"],
-      "prPriority": 8
+      "prPriority": 8,
+      "matchPackageNames": [
+        "/testify/",
+        "/go-cmp/"
+      ]
     },
     {
       "description": "Critical dependencies - verify minor updates for direct dependencies",
       "matchManagers": ["gomod"],
       "matchDepTypes": ["require"],
-      "matchPackagePatterns": ["^go-i18n", "^go-github", "^go-update"],
       "groupName": "Critical dependencies",
       "automerge": false,
       "labels": ["dependencies", "renovate", "go-direct", "critical", "requires-review"],
-      "prPriority": 7
+      "prPriority": 7,
+      "matchPackageNames": [
+        "/^go-i18n/",
+        "/^go-github/",
+        "/^go-update/"
+      ]
     },
     {
       "description": "Direct dependencies - auto-merge patch only (requires test pass)",
@@ -61,8 +68,7 @@
       "groupName": "Go direct dependencies - patch",
       "automerge": true,
       "automergeType": "pr",
-      "labels": ["dependencies", "renovate", "go-direct", "patch"],
-      "requiredStatusChecks": ["test", "test-cover"]
+      "labels": ["dependencies", "renovate", "go-direct", "patch"]
     },
     {
       "description": "Direct dependencies - manual review for minor/major updates",
@@ -81,8 +87,7 @@
       "groupName": "Go indirect dependencies",
       "automerge": true,
       "automergeType": "pr",
-      "labels": ["dependencies", "renovate", "go-indirect"],
-      "requiredStatusChecks": ["test"]
+      "labels": ["dependencies", "renovate", "go-indirect"]
     },
     {
       "description": "GitHub Actions - security focused, digest pinned",
@@ -91,8 +96,7 @@
       "automerge": true,
       "automergeType": "pr",
       "pinDigests": true,
-      "labels": ["dependencies", "renovate", "github-actions"],
-      "requiredStatusChecks": []
+      "labels": ["dependencies", "renovate", "github-actions"]
     },
     {
       "description": "Go base image - requires manual review due to system impact",
