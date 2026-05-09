@@ -27,7 +27,7 @@ fi
 trap 'rm -f "$GENERATED_PATH"' EXIT
 
 # initコマンドはカレントディレクトリにファイルを生成するためSCRIPT_DIR内で実行
-(cd "$SCRIPT_DIR" && "$BIN_PATH" init -output codespacegen.json)
+(cd "$SCRIPT_DIR" && "$BIN_PATH" init)
 
 if [[ "$UPDATE" == "true" ]]; then
 	cp "$GENERATED_PATH" "$SNAPSHOT_PATH"

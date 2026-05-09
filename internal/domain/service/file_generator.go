@@ -13,7 +13,3 @@ type LocalFileWriter interface {
 type SettingTemplateGenerator interface {
 	Generate(templateConfig entity.JsonConfig) (string, error)
 }
-
-type WorkdirProvider interface {
-	GetConfigOutputPath() (string, error)
-}

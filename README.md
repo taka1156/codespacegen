@@ -34,6 +34,8 @@ To change the install destination:
 curl -fsSL https://raw.githubusercontent.com/taka1156/codespacegen/master/scripts/install.sh | INSTALL_DIR=$HOME/.local/bin bash
 ```
 
+After installation, `csg` is also available as a shortcut alias for `codespacegen`.
+
 ## Release with GitHub Actions
 
 Main generated assets:
@@ -54,17 +56,16 @@ Main generated assets:
 	- internal/app
 - Input adapters (CLI/JSON/defaults)
 	- internal/input
-- Infra (interactive prompt I/O)
+- Infra (interactive prompt I/O, file writing)
 	- internal/infra
+	- internal/infra/filewriter
 - Workflows (use cases)
 	- internal/workflow/collect
 	- internal/workflow/assemble
 	- internal/workflow/generate
 	- internal/workflow/initialize
-- Artifact generation and file writing
+- Artifact generation
 	- internal/generator
-	- internal/generator/filewriter
-	- internal/generator/workdirprovider
 - i18n resources
 	- internal/i18n
 - Entry point: CLI
@@ -82,15 +83,27 @@ go run ./cmd/codespacegen
 
 By default, files are generated under .devcontainer.
 
+### Show version
+
+Run the `version` subcommand to display the current version of the binary.
+
+```bash
+codespacegen version
+```
+
 ### Initialize codespacegen.json
 
-Run the `init` subcommand to generate a `codespacegen.json` template in the current directory.
+Run the `init` subcommand to generate a `codespacegen.json` template.
 
 ```bash
 codespacegen init
 ```
 
 The generated file serves as a starting point for customizing base images and VS Code extensions.
+
+| Option | Default | Description |
+|---|---|---|
+| `-output` | `.` | Output directory for `codespacegen.json` |
 
 ### Update codespacegen
 
@@ -101,6 +114,10 @@ codespacegen update
 ```
 
 If the binary is already up to date, a message is printed and the command exits successfully.
+
+| Option | Default | Description |
+|---|---|---|
+| `-lang` | *(auto-detect)* | Language for CLI messages (`en` or `ja`). Defaults to system locale |
 
 ### Main options
 
