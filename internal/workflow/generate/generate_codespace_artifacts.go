@@ -2,11 +2,10 @@ package generate
 
 import (
 	"fmt"
-	"path/filepath"
-	"strings"
 
 	"github.com/taka1156/codespacegen/internal/domain/entity"
 	"github.com/taka1156/codespacegen/internal/domain/service"
+	"github.com/taka1156/codespacegen/internal/utils"
 )
 
 type GenerateCodespaceArtifacts struct {
@@ -39,7 +38,7 @@ func (u *GenerateCodespaceArtifacts) Execute(
 	}
 
 	for _, file := range files {
-		outputPath, err := resolveOutputPath(outputDir, file.RelativePath)
+		outputPath, err := utils.ResolveOutputPath(outputDir, file.RelativePath)
 		if err != nil {
 			return fmt.Errorf("failed to resolve output path for %s: %w", file.RelativePath, err)
 		}
@@ -48,46 +47,6 @@ func (u *GenerateCodespaceArtifacts) Execute(
 		if err != nil {
 			return fmt.Errorf("failed to write %s: %w", file.RelativePath, err)
 		}
-	}
-
-	return nil
-}
-
-func resolveOutputPath(outputDir string, relativePath string) (string, error) {
-	cleanRelativePath, err := sanitizeRelativePath(relativePath)
-	if err != nil {
-		return "", err
-	}
-
-	joinedPath := filepath.Join(outputDir, cleanRelativePath)
-	if err := validatePathWithinOutputDir(outputDir, joinedPath, relativePath); err != nil {
-		return "", err
-	}
-
-	return joinedPath, nil
-}
-
-func sanitizeRelativePath(relativePath string) (string, error) {
-	cleanRelativePath := filepath.Clean(relativePath)
-	if cleanRelativePath == "." || cleanRelativePath == "" {
-		return "", fmt.Errorf("invalid file path: %s", relativePath)
-	}
-	if filepath.IsAbs(cleanRelativePath) {
-		return "", fmt.Errorf("absolute path is not allowed: %s", relativePath)
-	}
-
-	return cleanRelativePath, nil
-}
-
-func validatePathWithinOutputDir(outputDir string, joinedPath string, relativePath string) error {
-	cleanOutputDir := filepath.Clean(outputDir)
-	relativeToOutputDir, err := filepath.Rel(cleanOutputDir, joinedPath)
-	if err != nil {
-		return fmt.Errorf("failed to calculate relative path: %w", err)
-	}
-
-	if relativeToOutputDir == ".." || strings.HasPrefix(relativeToOutputDir, ".."+string(filepath.Separator)) {
-		return fmt.Errorf("path escapes output directory: %s", relativePath)
 	}
 
 	return nil

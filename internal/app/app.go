@@ -8,7 +8,6 @@ import (
 	"github.com/taka1156/codespacegen/internal/domain/entity"
 	"github.com/taka1156/codespacegen/internal/generator"
 	"github.com/taka1156/codespacegen/internal/generator/filewriter"
-	"github.com/taka1156/codespacegen/internal/generator/workdirprovider"
 	"github.com/taka1156/codespacegen/internal/i18n"
 	"github.com/taka1156/codespacegen/internal/infra"
 	"github.com/taka1156/codespacegen/internal/input"
@@ -54,14 +53,13 @@ func NewApp() *App {
 
 	codespaceGenerator := generator.NewCodespaceGenerator()
 	settingTemplateGenerator := generator.NewSettingTemplateGenerator()
-	workdir := workdirprovider.NewWorkdirProvider()
 	writer := filewriter.NewLocalFileWriter()
 
 	flows := WorkflowCases{
 		inputCollector:             workflow.NewCollectInputs(ic.clientInput, ic.jsonInput, ic.defaultConfig),
 		assembleConfigResolver:     workflow.NewAssembleCodespaceConfig(rs.CodespacePromptResolver),
 		generateCodespaceArtifacts: workflow.NewGenerateCodespaceArtifacts(codespaceGenerator, writer),
-		initializeSettingJson:      workflow.NewInitializeSettingJson(settingTemplateGenerator, workdir, writer),
+		initializeSettingJson:      workflow.NewInitializeSettingJson(settingTemplateGenerator, writer),
 		updateCommandline:          workflow.NewUpdateCommandline(rs.CodespacegenUpdater),
 	}
 
@@ -88,6 +86,7 @@ func (a *App) Run() error {
 		err = a.flows.initializeSettingJson.Execute(
 			entity.DefaultTemplateJson,
 			inputs.DefaultConfig.SettingJsonFileName,
+			inputs.ClientConfig.OutputDirValue(),
 		)
 		if err != nil {
 			return err

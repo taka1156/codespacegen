@@ -10,7 +10,11 @@ type inputCollector interface {
 }
 
 type initializeSettingJson interface {
-	Execute(templateJson entity.JsonConfig, settingJsonFileName string) error
+	Execute(
+		templateJson entity.JsonConfig,
+		settingJsonFileName string,
+		outputDir string,
+	) error
 }
 
 type assembleConfigResolver interface {
