@@ -20,9 +20,6 @@
   "semanticCommits": "enabled",
   "semanticCommitType": "chore",
   "semanticCommitScope": "deps",
-  "golang": {
-    "enabled": true
-  },
   "gomod": {
     "enabled": true
   },
@@ -210,9 +207,6 @@
     ],
     "prPriority": 100
   },
-  "changelog": {
-    "enabled": true
-  },
   "ignorePaths": [
     "e2e/**/snapshots/**"
   ],
@@ -220,5 +214,4 @@
   "postUpdateOptions": [
     "gomodTidy"
   ],
-  "ignoreTests": false
 }
