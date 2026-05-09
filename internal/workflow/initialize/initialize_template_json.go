@@ -5,7 +5,7 @@ import (
 
 	"github.com/taka1156/codespacegen/internal/domain/entity"
 	"github.com/taka1156/codespacegen/internal/domain/service"
-	"github.com/taka1156/codespacegen/internal/utils"
+	"github.com/taka1156/codespacegen/internal/infra/filewriter"
 )
 
 type InitializeSettingJson struct {
@@ -33,7 +33,7 @@ func (isj *InitializeSettingJson) Execute(
 		return fmt.Errorf("failed to generate template JSON: %w", err)
 	}
 
-	outputPath, err := utils.ResolveOutputPath(outputDir, settingJsonFileName)
+	outputPath, err := filewriter.ResolveOutputPath(outputDir, settingJsonFileName)
 	if err != nil {
 		return fmt.Errorf("failed to resolve output path: %w", err)
 	}

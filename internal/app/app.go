@@ -7,9 +7,9 @@ import (
 
 	"github.com/taka1156/codespacegen/internal/domain/entity"
 	"github.com/taka1156/codespacegen/internal/generator"
-	"github.com/taka1156/codespacegen/internal/generator/filewriter"
 	"github.com/taka1156/codespacegen/internal/i18n"
 	"github.com/taka1156/codespacegen/internal/infra"
+	"github.com/taka1156/codespacegen/internal/infra/filewriter"
 	"github.com/taka1156/codespacegen/internal/input"
 	"github.com/taka1156/codespacegen/internal/workflow"
 )

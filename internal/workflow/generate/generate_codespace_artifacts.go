@@ -5,7 +5,7 @@ import (
 
 	"github.com/taka1156/codespacegen/internal/domain/entity"
 	"github.com/taka1156/codespacegen/internal/domain/service"
-	"github.com/taka1156/codespacegen/internal/utils"
+	"github.com/taka1156/codespacegen/internal/infra/filewriter"
 )
 
 type GenerateCodespaceArtifacts struct {
@@ -38,7 +38,7 @@ func (u *GenerateCodespaceArtifacts) Execute(
 	}
 
 	for _, file := range files {
-		outputPath, err := utils.ResolveOutputPath(outputDir, file.RelativePath)
+		outputPath, err := filewriter.ResolveOutputPath(outputDir, file.RelativePath)
 		if err != nil {
 			return fmt.Errorf("failed to resolve output path for %s: %w", file.RelativePath, err)
 		}
