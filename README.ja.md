@@ -35,6 +35,8 @@ curl -fsSL https://raw.githubusercontent.com/taka1156/codespacegen/master/script
 curl -fsSL https://raw.githubusercontent.com/taka1156/codespacegen/master/scripts/install.sh | INSTALL_DIR=$HOME/.local/bin bash
 ```
 
+インストール後は `csg` も `codespacegen` のショートカットエイリアスとして利用できます。
+
 ## リリース（GitHub Actions）
 
 生成される主なアセット:
@@ -55,17 +57,16 @@ curl -fsSL https://raw.githubusercontent.com/taka1156/codespacegen/master/script
   - internal/app
 - Input adapters: CLI/JSON/デフォルト値の入力
   - internal/input
-- Infra: 対話入力（標準入力プロンプト）
+- Infra: 対話入力（標準入力プロンプト）・ファイル書き込み
   - internal/infra
+  - internal/infra/filewriter
 - Workflow: ユースケース
   - internal/workflow/collect
   - internal/workflow/assemble
   - internal/workflow/generate
   - internal/workflow/initialize
-- Generator: テンプレート生成とファイル書き込み
+- Generator: テンプレート生成
   - internal/generator
-  - internal/generator/filewriter
-  - internal/generator/workdirprovider
 - i18n: ローカライズリソース
   - internal/i18n
 - Entry Point: CLI
@@ -83,15 +84,27 @@ go run ./cmd/codespacegen
 
 デフォルトでは .devcontainer 配下にファイルを生成します。
 
+### バージョン表示
+
+`version` サブコマンドを実行すると、バイナリの現在のバージョンを表示します。
+
+```bash
+codespacegen version
+```
+
 ### codespacegen.json の初期化
 
-`init` サブコマンドを実行すると、カレントディレクトリに `codespacegen.json` のテンプレートを生成します。
+`init` サブコマンドを実行すると、`codespacegen.json` のテンプレートを生成します。
 
 ```bash
 codespacegen init
 ```
 
 生成されたファイルをベースイメージや VS Code 拡張機能のカスタマイズの出発点として使用できます。
+
+| オプション | 既定値 | 説明 |
+|---|---|---|
+| `-output` | `.` | `codespacegen.json` の出力先ディレクトリ |
 
 ### codespacegen のアップデート
 
@@ -102,6 +115,10 @@ codespacegen update
 ```
 
 すでに最新バージョンの場合はその旨のメッセージが表示され、正常終了します。
+
+| オプション | 既定値 | 説明 |
+|---|---|---|
+| `-lang` | *(自動検出)* | CLI メッセージの言語 (`en` または `ja`)。未指定の場合はシステムロケールを使用 |
 
 ### 主なオプション
 

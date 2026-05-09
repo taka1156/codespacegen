@@ -22,26 +22,24 @@ func (ci *ClientInput) GetInput(args []string) entity.ClientConfig {
 		switch args[1] {
 		case "init":
 			initCmd := flag.NewFlagSet("init", flag.ExitOnError)
-			outputDir := initCmd.String("output", ".devcontainer", "output directory for generated files")
+			clientConfig.OutputDir = initCmd.String("output", ".", "output directory for generated files")
 			initCmd.Usage = func() {
 				fmt.Fprintf(os.Stderr, "Usage: %s init [options]\n\n", os.Args[0])
 				fmt.Fprintf(os.Stderr, "Initialize setting JSON\n")
 				initCmd.PrintDefaults()
 			}
 			_ = initCmd.Parse(args[2:])
-			clientConfig.OutputDir = outputDir
 			clientConfig.Mode = entity.Initialize
 			return clientConfig
 		case "update":
 			updateCmd := flag.NewFlagSet("update", flag.ExitOnError)
-			lang := updateCmd.String("lang", "", "language for CLI messages (en/ja, default: auto-detect)")
+			clientConfig.Lang = updateCmd.String("lang", "", "language for CLI messages (en/ja, default: auto-detect)")
 			updateCmd.Usage = func() {
 				fmt.Fprintf(os.Stderr, "Usage: %s update [options]\n\n", os.Args[0])
 				fmt.Fprintf(os.Stderr, "Update codespacegen to the latest version\n")
 				updateCmd.PrintDefaults()
 			}
 			_ = updateCmd.Parse(args[2:])
-			clientConfig.Lang = lang
 			clientConfig.Mode = entity.Update
 			return clientConfig
 		case "version":

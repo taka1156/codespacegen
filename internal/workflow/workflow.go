@@ -42,10 +42,9 @@ type initializeSettingJson = initialize.InitializeSettingJson
 
 func NewInitializeSettingJson(
 	settingTemplateGenerator service.SettingTemplateGenerator,
-	workdirProvider service.WorkdirProvider,
 	writer service.LocalFileWriter,
 ) *initializeSettingJson {
-	return initialize.NewInitializeSettingJson(settingTemplateGenerator, workdirProvider, writer)
+	return initialize.NewInitializeSettingJson(settingTemplateGenerator, writer)
 }
 
 type updateCommandline = update.UpdateCommandline
