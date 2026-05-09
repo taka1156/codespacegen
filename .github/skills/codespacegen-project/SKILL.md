@@ -16,7 +16,7 @@ description: 'Repository knowledge for the codespacegen project. Use when answer
 - Main flow:
   - Parse CLI flags (`input.ClientInput`)
   - Collect inputs: CLI flags, JSON config, default settings
-  - If `init` subcommand: generate `codespacegen.json` and exit
+  - If `init` subcommand: generate `codespacegen.json` in the directory specified by `-output` (default: `.`) and exit
   - If `version` subcommand: print embedded version string and exit
   - If `update` subcommand: self-update the binary via GitHub Releases and exit
   - Assemble `entity.CodespaceConfig` — interactive prompts (or headless from flags) and merge logic
@@ -29,19 +29,18 @@ description: 'Repository knowledge for the codespacegen project. Use when answer
   - `internal/app/app_interfaces.go` — internal interfaces used by `App`
 - Domain:
   - `internal/domain/entity/` — entity types (`CodespaceConfig`, `ClientConfig`, `JsonConfig`, `LangEntry`, `GeneratedFile`, `TemplateJson`, etc.)
-  - `internal/domain/service/` — service interfaces (`CodespaceGenerator`, `LocalFileWriter`, `SettingTemplateGenerator`, `WorkdirProvider`)
+  - `internal/domain/service/` — service interfaces (`CodespaceGenerator`, `LocalFileWriter`, `SettingTemplateGenerator`)
 - Input adapters:
   - `internal/input/` — `ClientInput` (CLI flags), `JsonInput` (JSON config loader via file or HTTPS), `DefaultConfig` (hardcoded defaults)
 - Infra (external I/O):
   - `internal/infra/infra.go` — type alias facade; exports `CodespacePrompter` and `CodespacegenUpdater`
   - `internal/infra/prompt/` — `CodespacegenPrompter` (stdin-based interactive prompter)
   - `internal/infra/updater/` — `CodespacegenUpdater` (self-update via `go-github-selfupdate`; calls GitHub Releases API using `entity.DefaultRepositoryName`)
-- Generator (template rendering and file writing):
+  - `internal/infra/filewriter/` — `LocalFileWriter` (file write with intermediate directory creation); `ResolveOutputPath` (path sanitization and traversal guard)
+- Generator (template rendering):
   - `internal/generator/generator.go` — factory functions for generators
   - `internal/generator/codespace/` — `CodespaceGenerator` (renders `Dockerfile`, `devcontainer.json`, `docker-compose.yaml`)
   - `internal/generator/setting/` — `SettingTemplateGenerator` (renders `codespacegen.json`)
-  - `internal/generator/filewriter/` — `LocalFileWriter`
-  - `internal/generator/workdirprovider/` — `WorkdirProvider`
 - Workflow (use-case layer):
   - `internal/workflow/workflow.go` — facade (type aliases and constructor wrappers only)
   - `internal/workflow/collect/` — `CollectInputs` (gathers CLI, JSON, and default config into `CollectedInputs`)
@@ -60,9 +59,8 @@ Dependencies point inward (domain has no outward dependencies).
 | Interface | Defined in | Implemented by |
 |---|---|---|
 | `service.CodespaceGenerator` | `internal/domain/service` | `codespace.CodespaceGenerator` |
-| `service.LocalFileWriter` | `internal/domain/service` | `filewriter.LocalFileWriter` |
+| `service.LocalFileWriter` | `internal/domain/service` | `infra/filewriter.LocalFileWriter` |
 | `service.SettingTemplateGenerator` | `internal/domain/service` | `setting.SettingTemplateGenerator` |
-| `service.WorkdirProvider` | `internal/domain/service` | `workdirprovider.WorkdirProvider` |
 | `collect.ClientInputProvider` | `internal/workflow/collect` | `input.ClientInput` |
 | `collect.JsonConfigLoader` | `internal/workflow/collect` | `input.JsonInput` |
 | `collect.DefaultSettingProvider` | `internal/workflow/collect` | `input.DefaultConfig` |
