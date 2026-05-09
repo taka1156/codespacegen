@@ -26,186 +26,96 @@
   "packageRules": [
     {
       "description": "Go toolchain - requires manual review due to importance",
-      "matchManagers": [
-        "gomod"
-      ],
-      "matchDepTypes": [
-        "toolchain"
-      ],
+      "matchManagers": ["gomod"],
+      "matchDepTypes": ["toolchain"],
       "groupName": "Go toolchain",
       "automerge": false,
-      "labels": [
-        "dependencies",
-        "renovate",
-        "go-toolchain",
-        "requires-review"
-      ],
+      "labels": ["dependencies", "renovate", "go-toolchain", "requires-review"],
       "prPriority": 10
     },
     {
       "description": "Test tools - handle with care as they are fragile",
-      "matchManagers": [
-        "gomod"
-      ],
-      "matchDepTypes": [
-        "require"
-      ],
-      "matchPackagePatterns": [
-        "testify",
-        "go-cmp"
-      ],
+      "matchManagers": ["gomod"],
+      "matchDepTypes": ["require"],
+      "matchPackagePatterns": ["testify", "go-cmp"],
       "groupName": "Test tools",
       "automerge": false,
-      "labels": [
-        "dependencies",
-        "renovate",
-        "go-direct",
-        "test-tools",
-        "requires-review"
-      ],
+      "labels": ["dependencies", "renovate", "go-direct", "test-tools", "requires-review"],
       "prPriority": 8
     },
     {
       "description": "Critical dependencies - verify minor updates for direct dependencies",
-      "matchManagers": [
-        "gomod"
-      ],
-      "matchDepTypes": [
-        "require"
-      ],
-      "matchPackagePatterns": [
-        "^go-i18n",
-        "^go-github",
-        "^go-update"
-      ],
+      "matchManagers": ["gomod"],
+      "matchDepTypes": ["require"],
+      "matchPackagePatterns": ["^go-i18n", "^go-github", "^go-update"],
       "groupName": "Critical dependencies",
       "automerge": false,
-      "labels": [
-        "dependencies",
-        "renovate",
-        "go-direct",
-        "critical",
-        "requires-review"
-      ],
+      "labels": ["dependencies", "renovate", "go-direct", "critical", "requires-review"],
       "prPriority": 7
     },
     {
       "description": "Direct dependencies - auto-merge patch only (requires test pass)",
-      "matchManagers": [
-        "gomod"
-      ],
-      "matchDepTypes": [
-        "require"
-      ],
-      "matchUpdateTypes": [
-        "patch"
-      ],
+      "matchManagers": ["gomod"],
+      "matchDepTypes": ["require"],
+      "matchUpdateTypes": ["patch"],
       "groupName": "Go direct dependencies - patch",
       "automerge": true,
       "automergeType": "pr",
-      "labels": [
-        "dependencies",
-        "renovate",
-        "go-direct",
-        "patch"
-      ],
-      "requiredStatusChecks": [
-        "test",
-        "test-cover"
-      ]
+      "labels": ["dependencies", "renovate", "go-direct", "patch"],
+      "requiredStatusChecks": ["test", "test-cover"]
     },
     {
       "description": "Direct dependencies - manual review for minor/major updates",
-      "matchManagers": [
-        "gomod"
-      ],
-      "matchDepTypes": [
-        "require"
-      ],
-      "matchUpdateTypes": [
-        "minor",
-        "major"
-      ],
+      "matchManagers": ["gomod"],
+      "matchDepTypes": ["require"],
+      "matchUpdateTypes": ["minor", "major"],
       "groupName": "Go direct dependencies - breaking",
       "automerge": false,
-      "labels": [
-        "dependencies",
-        "renovate",
-        "go-direct",
-        "requires-review"
-      ],
+      "labels": ["dependencies", "renovate", "go-direct", "requires-review"],
       "prPriority": 6
     },
     {
       "description": "Indirect dependencies - auto-merge OK as protected by tests",
-      "matchManagers": [
-        "gomod"
-      ],
-      "matchDepTypes": [
-        "indirect"
-      ],
+      "matchManagers": ["gomod"],
+      "matchDepTypes": ["indirect"],
       "groupName": "Go indirect dependencies",
       "automerge": true,
       "automergeType": "pr",
-      "labels": [
-        "dependencies",
-        "renovate",
-        "go-indirect"
-      ],
-      "requiredStatusChecks": [
-        "test"
-      ]
+      "labels": ["dependencies", "renovate", "go-indirect"],
+      "requiredStatusChecks": ["test"]
     },
     {
       "description": "GitHub Actions - security focused, digest pinned",
-      "matchManagers": [
-        "github-actions"
-      ],
+      "matchManagers": ["github-actions"],
       "groupName": "GitHub Actions",
       "automerge": true,
       "automergeType": "pr",
       "pinDigests": true,
-      "labels": [
-        "dependencies",
-        "renovate",
-        "github-actions"
-      ],
+      "labels": ["dependencies", "renovate", "github-actions"],
       "requiredStatusChecks": []
     },
     {
       "description": "Go base image - requires manual review due to system impact",
-      "matchManagers": [
-        "dockerfile"
-      ],
-      "matchPackageNames": [
-        "golang"
-      ],
+      "matchManagers": ["dockerfile"],
+      "matchPackageNames": ["golang"],
       "groupName": "Go base image",
       "automerge": false,
-      "labels": [
-        "dependencies",
-        "renovate",
-        "docker",
-        "requires-review"
-      ],
+      "labels": ["dependencies", "renovate", "docker", "requires-review"],
       "prPriority": 9
+    },
+    {
+      "description": "Vulnerability alerts - highest priority",
+      "matchCategories": ["security"],
+      "labels": ["security", "renovate", "critical"],
+      "prPriority": 100
     }
   ],
   "pinDigests": false,
   "vulnerabilityAlerts": {
     "enabled": true,
-    "schedule": [
-      "at any time"
-    ],
-    "labels": [
-      "security",
-      "renovate",
-      "critical"
-    ],
-    "assignees": [
-      "@taka1156"
-    ],
-    "prPriority": 100
+    "schedule": ["at any time"],
+    "labels": ["security", "renovate", "critical"],
+    "assignees": ["@taka1156"]
   },
   "ignorePaths": [
     "e2e/**/snapshots/**"
@@ -213,5 +123,5 @@
   "ignoreDeps": [],
   "postUpdateOptions": [
     "gomodTidy"
-  ],
+  ]
 }
