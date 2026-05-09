@@ -16,6 +16,7 @@
     "filewriter",
     "GOARCH",
     "golangci",
+    "gomod",
     "GOPATH",
     "jawandarajbir",
     "ldflags",
